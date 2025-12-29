@@ -1,5 +1,6 @@
 package fr.amu.bestchoice.web.exception;
 
+import fr.amu.bestchoice.web.dto.ApiError;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.*;
 import org.springframework.validation.FieldError;
@@ -9,6 +10,9 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Gestionnaire global des exceptions REST
+ */
 @RestControllerAdvice
 public class ApiExceptionHandler {
 
@@ -17,6 +21,7 @@ public class ApiExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(ApiError.of(404, "NOT_FOUND", ex.getMessage(), req.getRequestURI(), Map.of()));
     }
+
 
     @ExceptionHandler(BusinessException.class)
     public ResponseEntity<ApiError> business(BusinessException ex, HttpServletRequest req) {
