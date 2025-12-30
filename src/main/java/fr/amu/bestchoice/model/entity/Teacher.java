@@ -15,7 +15,8 @@ import java.util.List;
                 @Index(name = "idx_teacher_department", columnList = "department")})
 
 
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder

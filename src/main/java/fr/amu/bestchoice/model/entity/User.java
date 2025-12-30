@@ -23,10 +23,10 @@ import java.util.Set;
                 @UniqueConstraint(columnNames = "student_number", name = "uk_user_student_number")
         },
         indexes = {
-                @Index(name = "idx_user_email", columnList = "email"),
-                @Index(name = "idx_user_role", columnList = "role")})
+                @Index(name = "idx_user_email", columnList = "email")})
 
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -36,6 +36,7 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    // Optionnel : uniquement pour les étudiants
     @Column(name = "student_number", unique = true, length = 20)
     private String studentNumber;
 
@@ -55,9 +56,8 @@ public class User {
     private String email;
 
     @NotBlank(message = "Le mot de passe est obligatoire")
-    @Size(min = 8, message = "Le mot de passe doit contenir au moins 8 caractères")
-    @Column(name = "password", nullable = false)
-    private String password;
+    @Column(name = "password_hash", nullable = false)
+    private String passwordHash;
 
     @Column(name = "active", nullable = false)
     @Builder.Default

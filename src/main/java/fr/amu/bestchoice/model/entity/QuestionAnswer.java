@@ -24,7 +24,8 @@ import java.time.LocalDateTime;
                 @Index(name = "idx_qa_active", columnList = "active")
         }
 )
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder

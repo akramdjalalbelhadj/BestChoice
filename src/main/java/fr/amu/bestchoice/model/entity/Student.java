@@ -19,7 +19,8 @@ import java.util.Set;
                 @Index(name = "idx_student_year", columnList = "study_year")})
 
 
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder

@@ -22,7 +22,8 @@ import java.util.Set;
         indexes = {@Index(name = "idx_skill_category", columnList = "category")}
 )
 
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder

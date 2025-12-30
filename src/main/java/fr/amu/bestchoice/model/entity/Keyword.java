@@ -22,7 +22,8 @@ import java.util.Set;
         indexes = {@Index(name = "idx_keyword_domain", columnList = "domain")}
 )
 
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder

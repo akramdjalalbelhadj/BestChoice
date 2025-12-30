@@ -33,7 +33,8 @@ import java.time.LocalDateTime;
                 @Index(name = "idx_result_session", columnList = "matching_session_id")
         }
 )
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder

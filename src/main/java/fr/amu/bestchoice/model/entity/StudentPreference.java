@@ -28,7 +28,8 @@ import java.time.LocalDateTime;
                 @Index(name = "idx_preference_project", columnList = "project_id"),
                 @Index(name = "idx_preference_rank", columnList = "rank")
         })
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
