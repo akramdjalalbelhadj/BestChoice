@@ -1,4 +1,4 @@
-package fr.amu.bestchoice.service;
+package fr.amu.bestchoice.service.preference;
 
 import fr.amu.bestchoice.model.entity.Project;
 import fr.amu.bestchoice.model.entity.Student;

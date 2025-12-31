@@ -1,6 +1,6 @@
 package fr.amu.bestchoice.web.controller;
 
-import fr.amu.bestchoice.service.AuthService;
+import fr.amu.bestchoice.service.auth.AuthService;
 import fr.amu.bestchoice.web.dto.auth.LoginRequest;
 import fr.amu.bestchoice.web.dto.auth.LoginResponse;
 import jakarta.validation.Valid;

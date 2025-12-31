@@ -1,4 +1,4 @@
-package fr.amu.bestchoice.service;
+package fr.amu.bestchoice.service.project;
 
 import fr.amu.bestchoice.model.entity.Keyword;
 import fr.amu.bestchoice.model.entity.Project;

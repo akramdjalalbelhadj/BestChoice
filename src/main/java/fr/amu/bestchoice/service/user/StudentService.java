@@ -1,4 +1,4 @@
-package fr.amu.bestchoice.service;
+package fr.amu.bestchoice.service.user;
 
 import fr.amu.bestchoice.model.entity.Keyword;
 import fr.amu.bestchoice.model.entity.Skill;

@@ -1,8 +1,6 @@
-package fr.amu.bestchoice.service;
+package fr.amu.bestchoice.service.matching;
 
 import fr.amu.bestchoice.model.entity.MatchingResult;
-import fr.amu.bestchoice.model.entity.Project;
-import fr.amu.bestchoice.model.entity.Student;
 import fr.amu.bestchoice.repository.MatchingResultRepository;
 import fr.amu.bestchoice.repository.ProjectRepository;
 import fr.amu.bestchoice.repository.StudentRepository;
