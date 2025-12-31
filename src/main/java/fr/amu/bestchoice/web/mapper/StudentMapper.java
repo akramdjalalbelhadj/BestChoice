@@ -153,6 +153,9 @@ public interface StudentMapper {
     // Sera rempli dans le Service :
     // student.interests.stream().map(Keyword::getLabel).collect(toSet())
 
+    @Mapping(target = "githubUrl", source = "githubUrl")
+    @Mapping(target = "linkedinUrl", source = "linkedinUrl")
+
     @Mapping(target = "assignedProjectId", source = "assignedProject.id")
     // On extrait l'ID depuis student.assignedProject.id
 

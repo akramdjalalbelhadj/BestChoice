@@ -25,7 +25,7 @@ public record StudentResponse(
         Set<String> interestKeyword,
 
         String githubUrl,
-        String portfolioUrl,
+        String linkedinUrl,
 
         // affectation actuelle (si existante)
         Long assignedProjectId
