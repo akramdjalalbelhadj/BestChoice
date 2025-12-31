@@ -18,12 +18,11 @@ public record StudentResponse(
         String studentNumber,
 
         // infos académiques
-        Integer yearLevel,
+        Integer studyYear,
         WorkType preferredWorkType,
 
-        // relations sous forme d'IDs
-        Set<Long> skillIds,
-        Set<Long> interestKeywordIds,
+        Set<String> skill,
+        Set<String> interestKeyword,
 
         String githubUrl,
         String portfolioUrl,

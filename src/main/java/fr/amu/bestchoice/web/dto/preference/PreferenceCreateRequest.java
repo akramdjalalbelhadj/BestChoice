@@ -22,5 +22,9 @@ public record PreferenceCreateRequest(
         @NotNull(message = "Le rank est obligatoire")
         @Min(value = 1, message = "Le rank doit être >= 1")
         @Max(value = 10, message = "Le rank doit être <= 10")
-        Integer rank
+        Integer rank,
+
+        String motivation,
+        String comment
+
 ) {}

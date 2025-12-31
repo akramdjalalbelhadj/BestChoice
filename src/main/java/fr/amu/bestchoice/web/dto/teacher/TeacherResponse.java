@@ -18,6 +18,5 @@ public record TeacherResponse(
         String specialty,
         String websiteUrl,
 
-        // projets liés (IDs)
-        Set<Long> projectIds
+        Set<String> project
 ) {}

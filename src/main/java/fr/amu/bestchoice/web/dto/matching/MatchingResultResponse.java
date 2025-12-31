@@ -11,6 +11,5 @@ public record MatchingResultResponse(
         BigDecimal globalScore,
         BigDecimal skillsScore,
         BigDecimal interestsScore,
-        BigDecimal constraintsScore,
         LocalDateTime calculationDate
 ) {}

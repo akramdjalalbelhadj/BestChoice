@@ -6,8 +6,18 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
 public record SkillCreateRequest(
-        @NotBlank @Size(max = 100) String name,
-        @Size(max = 500) String description,
-        @Size(max = 50) String category,
-        @Min(1) @Max(5) Integer level
+
+        @NotBlank(message = "Le nom de la compétence est obligatoire")
+        @Size(max = 100, message = "Le nom de la compétence ne doit pas dépasser 100 caractères")
+        String name,
+
+        @Size(max = 500, message = "La description ne doit pas dépasser 500 caractères")
+        String description,
+
+        @Size(max = 50, message = "La catégorie ne doit pas dépasser 50 caractères")
+        String category,
+
+        @Min(value = 1, message = "Le niveau doit être au minimum 1")
+        @Max(value = 5, message = "Le niveau doit être au maximum 5")
+        Integer level
 ) {}

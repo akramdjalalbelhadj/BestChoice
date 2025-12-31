@@ -22,17 +22,15 @@ import java.util.Set;
 public record StudentUpdateRequest(
 
         @Min(value = 1, message = "Le niveau d'étude doit être au minimum 1")
-        @Max(value = 5, message = "Le niveau d'étude doit être au maximum 5")
+        @Max(value = 8, message = "Le niveau d'étude doit être au maximum 8")
         Integer studyYear,
 
         // Type de travail préféré (optionnel)
         WorkType preferredWorkType,
 
-        // IDs de compétences (Skill)
-        Set<Long> skillIds,
 
-        // IDs de centres d'intérêt (Keyword)
-        Set<Long> interestKeywordIds,
+        Set<String> skill,
+        Set<String> interestKeyword,
 
         @Size(max = 255, message = "L'URL GitHub ne doit pas dépasser 255 caractères")
         String githubUrl,

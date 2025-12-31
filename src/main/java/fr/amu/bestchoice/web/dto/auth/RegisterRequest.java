@@ -36,7 +36,11 @@ public record RegisterRequest(
         @Size(min = 8, max = 64, message = "Le mot de passe doit contenir au moins 8 caractères")
         String password,
 
-        // numero étudiant (optionnel --> uniquement pour les étudiants)
+        /**
+         * numero étudiant
+         * (optionnel --> uniquement pour les étudiants)
+         * ignoré pour les enseignants*/
+
         @Size(max = 20, message = "Le numéro étudiant ne doit pas dépasser 20 caractères")
         String studentNumber,
 

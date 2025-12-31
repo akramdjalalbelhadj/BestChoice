@@ -14,8 +14,6 @@ public record ProjectUpdateRequest(
         Integer minStudents,
         Integer maxStudents,
         Boolean active,
-        LocalDate startDate,
-        LocalDate endDate,
-        Set<Long> requiredSkillIds,
-        Set<Long> keywordIds
+        Set<String> requiredSkill,
+        Set<String> keyword
 ) {}

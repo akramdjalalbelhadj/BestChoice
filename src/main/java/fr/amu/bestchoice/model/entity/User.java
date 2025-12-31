@@ -55,7 +55,6 @@ public class User {
     @Column(name = "email", nullable = false, unique = true, length = 100)
     private String email;
 
-    @NotBlank(message = "Le mot de passe est obligatoire")
     @Column(name = "password_hash", nullable = false)
     private String passwordHash;
 
