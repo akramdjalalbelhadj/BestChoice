@@ -108,12 +108,6 @@ public class UserService {
      *
      * ATTENTION : Ne modifie que les informations d'identité (nom, prénom, email).
      * Les rôles et le mot de passe ne peuvent pas être modifiés via cette méthode.
-     *
-     * @param id L'ID de l'utilisateur à modifier
-     * @param dto Les nouvelles données
-     * @return UserResponse avec les données mises à jour
-     * @throws NotFoundException Si l'utilisateur n'existe pas
-     * @throws BusinessException Si le nouvel email est déjà utilisé
      */
     @Transactional
     public UserResponse update(Long id, UserUpdateRequest dto) {
@@ -170,10 +164,6 @@ public class UserService {
 
     /**
      * Récupère un utilisateur par son ID.
-     *
-     * @param id L'ID de l'utilisateur
-     * @return UserResponse
-     * @throws NotFoundException Si l'utilisateur n'existe pas
      */
     public UserResponse findById(Long id) {
 
@@ -192,8 +182,6 @@ public class UserService {
 
     /**
      * Récupère tous les utilisateurs.
-     *
-     * @return Liste de UserResponse
      */
     public List<UserResponse> findAll() {
 
@@ -208,8 +196,6 @@ public class UserService {
 
     /**
      * Récupère uniquement les utilisateurs actifs.
-     *
-     * @return Liste de UserResponse
      */
     public List<UserResponse> findAllActive() {
 
@@ -226,11 +212,6 @@ public class UserService {
 
     /**
      * Désactive un utilisateur.
-     *
-     * L'utilisateur ne pourra plus se connecter.
-     *
-     * @param id L'ID de l'utilisateur à désactiver
-     * @throws NotFoundException Si l'utilisateur n'existe pas
      */
     @Transactional
     public void deactivate(Long id) {
@@ -256,9 +237,6 @@ public class UserService {
 
     /**
      * Active un utilisateur.
-     *
-     * @param id L'ID de l'utilisateur à activer
-     * @throws NotFoundException Si l'utilisateur n'existe pas
      */
     @Transactional
     public void activate(Long id) {

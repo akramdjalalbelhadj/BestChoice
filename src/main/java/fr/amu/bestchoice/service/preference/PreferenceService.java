@@ -194,7 +194,8 @@ public class PreferenceService {
             throw new NotFoundException("Projet introuvable avec l'ID : " + projectId);
         }
 
-        List<StudentPreference> preferences = preferenceRepository.findByProjectId(projectId);
+        // ✅ CORRIGÉ : Utiliser findByProjectIdOrderByRankAsc au lieu de findByProjectId
+        List<StudentPreference> preferences = preferenceRepository.findByProjectIdOrderByRankAsc(projectId);
 
         log.info("Préférences trouvées pour le projet {} : {} préférence(s)", projectId, preferences.size());
 

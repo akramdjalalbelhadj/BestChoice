@@ -6,7 +6,7 @@ package fr.amu.bestchoice.web.dto.auth;
  */
 public record RegisterResponse(
 
-        Long userId,
+        Long id,
         String email,
         String firstName,
         String lastName,
