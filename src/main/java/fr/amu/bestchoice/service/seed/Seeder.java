@@ -1,4 +1,4 @@
-package fr.amu.bestchoice.service;
+package fr.amu.bestchoice.service.seed;
 
 import fr.amu.bestchoice.model.entity.User;
 import fr.amu.bestchoice.model.enums.Role;
