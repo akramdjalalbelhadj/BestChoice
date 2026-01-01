@@ -31,7 +31,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     /**
      * Récupère tous les utilisateurs actifs
-     * @return Liste des utilisateurs actifs
      */
     List<User> findByActiveTrue();
 
@@ -50,7 +49,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     /**
      * Compte le nombre d'utilisateurs actifs
-     * @return Nombre d'utilisateurs actifs
      */
     long countByActiveTrue();
 }

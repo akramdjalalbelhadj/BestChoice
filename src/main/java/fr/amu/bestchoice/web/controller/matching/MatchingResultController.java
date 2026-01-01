@@ -1,6 +1,6 @@
 package fr.amu.bestchoice.web.controller.matching;
 
-import fr.amu.bestchoice.service.matching.MatchingResultService;
+import fr.amu.bestchoice.service.implementation.matching.MatchingResultService;
 import fr.amu.bestchoice.web.dto.matching.MatchingResultResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;

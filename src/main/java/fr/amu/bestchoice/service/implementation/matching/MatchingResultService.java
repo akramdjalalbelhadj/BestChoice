@@ -1,4 +1,4 @@
-package fr.amu.bestchoice.service.matching;
+package fr.amu.bestchoice.service.implementation.matching;
 
 import fr.amu.bestchoice.model.entity.MatchingResult;
 import fr.amu.bestchoice.model.entity.Project;

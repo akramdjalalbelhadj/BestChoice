@@ -1,4 +1,4 @@
-package fr.amu.bestchoice.service.auth;
+package fr.amu.bestchoice.service.implementation.auth;
 
 import fr.amu.bestchoice.model.entity.Student;
 import fr.amu.bestchoice.model.entity.Teacher;

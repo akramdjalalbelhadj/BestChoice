@@ -1,7 +1,6 @@
 package fr.amu.bestchoice.web.controller.preference;
 
-import fr.amu.bestchoice.model.enums.PreferenceStatus;
-import fr.amu.bestchoice.service.preference.PreferenceService;
+import fr.amu.bestchoice.service.implementation.preference.PreferenceService;
 import fr.amu.bestchoice.web.dto.preference.PreferenceCreateRequest;
 import fr.amu.bestchoice.web.dto.preference.PreferenceResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
