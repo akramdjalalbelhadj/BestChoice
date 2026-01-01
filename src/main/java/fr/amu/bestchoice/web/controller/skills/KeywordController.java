@@ -1,4 +1,4 @@
-package fr.amu.bestchoice.web.controller.referential;
+package fr.amu.bestchoice.web.controller.skills;
 
 import fr.amu.bestchoice.service.implementation.referential.KeywordService;
 import fr.amu.bestchoice.web.dto.PageResponseDto;          // 🌐 AJOUT
