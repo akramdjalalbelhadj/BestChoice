@@ -7,6 +7,7 @@ import fr.amu.bestchoice.model.enums.Role;
 import fr.amu.bestchoice.repository.StudentRepository;
 import fr.amu.bestchoice.repository.TeacherRepository;
 import fr.amu.bestchoice.repository.UserRepository;
+import fr.amu.bestchoice.service.interfaces.IRegisterService;
 import fr.amu.bestchoice.web.dto.auth.RegisterRequest;
 import fr.amu.bestchoice.web.dto.auth.RegisterResponse;
 import fr.amu.bestchoice.web.exception.BusinessException;
@@ -36,7 +37,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 @Transactional
-public class RegisterService {
+public class RegisterService implements IRegisterService {
 
     // ==================== DÉPENDANCES ====================
 

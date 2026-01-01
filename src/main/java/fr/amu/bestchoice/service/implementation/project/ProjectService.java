@@ -8,6 +8,7 @@ import fr.amu.bestchoice.repository.KeywordRepository;
 import fr.amu.bestchoice.repository.ProjectRepository;
 import fr.amu.bestchoice.repository.SkillRepository;
 import fr.amu.bestchoice.repository.TeacherRepository;
+import fr.amu.bestchoice.service.interfaces.IProjectService;
 import fr.amu.bestchoice.web.dto.project.ProjectCreateRequest;
 import fr.amu.bestchoice.web.dto.project.ProjectResponse;
 import fr.amu.bestchoice.web.dto.project.ProjectUpdateRequest;
@@ -32,7 +33,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class ProjectService {
+public class ProjectService implements IProjectService {
 
     private final ProjectRepository projectRepository;
     private final TeacherRepository teacherRepository;
@@ -41,8 +42,6 @@ public class ProjectService {
     private final ProjectMapper projectMapper;
 
     // ==================== CREATE ====================
-    // ... tout le code CREATE reste inchangé ...
-
     @Transactional
     public ProjectResponse create(Long teacherId, ProjectCreateRequest dto) {
         log.info("Début création projet : teacherId={}, title={}", teacherId, dto.title());
@@ -100,7 +99,6 @@ public class ProjectService {
     }
 
     // ==================== UPDATE ====================
-    // ... tout le code UPDATE reste inchangé ...
 
     @Transactional
     public ProjectResponse update(Long id, ProjectUpdateRequest dto) {
@@ -311,19 +309,19 @@ public class ProjectService {
 
         return new ProjectResponse(
                 response.id(),
-                response.teacherId(),
-                response.teacherName(),
                 response.title(),
                 response.description(),
                 response.workType(),
                 response.remotePossible(),
+                response.active(),
                 response.minStudents(),
                 response.maxStudents(),
+                response.full(),
+                response.teacherId(),
+                response.teacherName(),
                 skillNames,
-                keywordLabels,
-                studentEmails,
-                response.active(),
-                response.full()
+                keywordLabels
+
         );
     }
 

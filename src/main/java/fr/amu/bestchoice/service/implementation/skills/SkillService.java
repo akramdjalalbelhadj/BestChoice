@@ -1,7 +1,8 @@
-package fr.amu.bestchoice.service.implementation.referential;
+package fr.amu.bestchoice.service.implementation.skills;
 
 import fr.amu.bestchoice.model.entity.Skill;
 import fr.amu.bestchoice.repository.SkillRepository;
+import fr.amu.bestchoice.service.interfaces.ISkillService;
 import fr.amu.bestchoice.web.dto.skill.SkillCreateRequest;
 import fr.amu.bestchoice.web.dto.skill.SkillResponse;
 import fr.amu.bestchoice.web.dto.skill.SkillUpdateRequest;
@@ -23,7 +24,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class SkillService {
+public class SkillService implements ISkillService {
 
     private final SkillRepository skillRepository;
     private final SkillMapper skillMapper;

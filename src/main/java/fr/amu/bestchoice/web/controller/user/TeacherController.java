@@ -1,6 +1,7 @@
 package fr.amu.bestchoice.web.controller.user;
 
-import fr.amu.bestchoice.service.implementation.user.TeacherService;
+
+import fr.amu.bestchoice.service.interfaces.ITeacherService;
 import fr.amu.bestchoice.web.dto.PageResponseDto;
 import fr.amu.bestchoice.web.dto.teacher.TeacherCreateRequest;
 import fr.amu.bestchoice.web.dto.teacher.TeacherResponse;
@@ -27,7 +28,7 @@ import java.util.List;
 @Tag(name = "Enseignants", description = "Enseignants")
 public class TeacherController {
 
-    private final TeacherService teacherService;
+    private final ITeacherService teacherService;
 
     // ==================== READ ====================
 

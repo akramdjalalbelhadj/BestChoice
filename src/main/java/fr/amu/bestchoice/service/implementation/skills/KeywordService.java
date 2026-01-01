@@ -1,7 +1,8 @@
-package fr.amu.bestchoice.service.implementation.referential;
+package fr.amu.bestchoice.service.implementation.skills;
 
 import fr.amu.bestchoice.model.entity.Keyword;
 import fr.amu.bestchoice.repository.KeywordRepository;
+import fr.amu.bestchoice.service.interfaces.IKeywordService;
 import fr.amu.bestchoice.web.dto.keyword.KeywordCreateRequest;
 import fr.amu.bestchoice.web.dto.keyword.KeywordResponse;
 import fr.amu.bestchoice.web.dto.keyword.KeywordUpdateRequest;
@@ -23,7 +24,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class KeywordService {
+public class KeywordService implements IKeywordService {
 
     private final KeywordRepository keywordRepository;
     private final KeywordMapper keywordMapper;

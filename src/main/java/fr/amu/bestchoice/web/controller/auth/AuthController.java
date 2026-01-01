@@ -1,6 +1,7 @@
 package fr.amu.bestchoice.web.controller.auth;
 
 import fr.amu.bestchoice.service.implementation.auth.AuthService;
+import fr.amu.bestchoice.service.interfaces.IAuthService;
 import fr.amu.bestchoice.web.dto.auth.LoginRequest;
 import fr.amu.bestchoice.web.dto.auth.LoginResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -26,7 +27,7 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "Authentification", description = "Endpoints d'authentification (login, JWT)")
 public class AuthController {
 
-    private final AuthService authService;
+    private final IAuthService authService;
 
     @Operation(
             summary = "Connexion utilisateur",

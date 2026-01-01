@@ -1,17 +1,17 @@
 package fr.amu.bestchoice.web.controller.project;
 
-import fr.amu.bestchoice.service.implementation.project.ProjectService;
-import fr.amu.bestchoice.web.dto.PageResponseDto;          // 🌐 AJOUT
+import fr.amu.bestchoice.service.interfaces.IProjectService;
+import fr.amu.bestchoice.web.dto.PageResponseDto;
 import fr.amu.bestchoice.web.dto.project.ProjectCreateRequest;
 import fr.amu.bestchoice.web.dto.project.ProjectResponse;
 import fr.amu.bestchoice.web.dto.project.ProjectUpdateRequest;
-import io.swagger.v3.oas.annotations.Operation;            // 🌐 AJOUT
-import io.swagger.v3.oas.annotations.Parameter;            // 🌐 AJOUT
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;                // 🌐 AJOUT
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -27,7 +27,7 @@ import java.util.List;
 @Tag(name = "Projets", description = "Projets")
 public class ProjectController {
 
-    private final ProjectService projectService;
+    private final IProjectService projectService;
 
     // ==================== READ ====================
 

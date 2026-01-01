@@ -7,6 +7,7 @@ import fr.amu.bestchoice.model.enums.PreferenceStatus;
 import fr.amu.bestchoice.repository.ProjectRepository;
 import fr.amu.bestchoice.repository.StudentPreferenceRepository;
 import fr.amu.bestchoice.repository.StudentRepository;
+import fr.amu.bestchoice.service.interfaces.IPreferenceService;
 import fr.amu.bestchoice.web.dto.preference.PreferenceCreateRequest;
 import fr.amu.bestchoice.web.dto.preference.PreferenceResponse;
 import fr.amu.bestchoice.web.exception.BusinessException;
@@ -40,9 +41,9 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class PreferenceService {
+public class PreferenceService implements IPreferenceService {
 
-    // ==================== DÉPENDANCES ====================
+
 
     private final StudentPreferenceRepository preferenceRepository;
     private final StudentRepository studentRepository;

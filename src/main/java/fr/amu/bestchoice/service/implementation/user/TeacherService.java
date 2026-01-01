@@ -4,6 +4,7 @@ import fr.amu.bestchoice.model.entity.Teacher;
 import fr.amu.bestchoice.model.entity.User;
 import fr.amu.bestchoice.repository.TeacherRepository;
 import fr.amu.bestchoice.repository.UserRepository;
+import fr.amu.bestchoice.service.interfaces.ITeacherService;
 import fr.amu.bestchoice.web.dto.teacher.TeacherCreateRequest;
 import fr.amu.bestchoice.web.dto.teacher.TeacherResponse;
 import fr.amu.bestchoice.web.dto.teacher.TeacherUpdateRequest;
@@ -27,7 +28,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class TeacherService {
+public class TeacherService implements ITeacherService {
 
     private final TeacherRepository teacherRepository;
     private final UserRepository userRepository;

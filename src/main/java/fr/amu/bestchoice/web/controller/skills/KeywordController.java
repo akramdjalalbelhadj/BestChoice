@@ -1,6 +1,6 @@
 package fr.amu.bestchoice.web.controller.skills;
 
-import fr.amu.bestchoice.service.implementation.referential.KeywordService;
+import fr.amu.bestchoice.service.interfaces.IKeywordService;
 import fr.amu.bestchoice.web.dto.PageResponseDto;          // 🌐 AJOUT
 import fr.amu.bestchoice.web.dto.keyword.KeywordCreateRequest;
 import fr.amu.bestchoice.web.dto.keyword.KeywordResponse;
@@ -27,7 +27,7 @@ import java.util.List;
 @Tag(name = "Mots-clés", description = "Mots-clés")
 public class KeywordController {
 
-    private final KeywordService keywordService;
+    private final IKeywordService keywordService;
 
     // ==================== READ ====================
 

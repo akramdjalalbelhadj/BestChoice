@@ -3,6 +3,7 @@ package fr.amu.bestchoice.service.implementation.auth;
 import fr.amu.bestchoice.model.entity.User;
 import fr.amu.bestchoice.repository.UserRepository;
 import fr.amu.bestchoice.security.jwt.JwtService;
+import fr.amu.bestchoice.service.interfaces.IAuthService;
 import fr.amu.bestchoice.web.dto.auth.LoginRequest;
 import fr.amu.bestchoice.web.dto.auth.LoginResponse;
 import fr.amu.bestchoice.web.exception.UnauthorizedException;
@@ -36,9 +37,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class AuthService {
+public class AuthService implements IAuthService {
 
-    // ==================== DÉPENDANCES ====================
 
     /**
      * AuthenticationManager : fourni par Spring Security.

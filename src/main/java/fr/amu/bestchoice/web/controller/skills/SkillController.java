@@ -1,6 +1,6 @@
 package fr.amu.bestchoice.web.controller.skills;
 
-import fr.amu.bestchoice.service.implementation.referential.SkillService;
+import fr.amu.bestchoice.service.interfaces.ISkillService;
 import fr.amu.bestchoice.web.dto.PageResponseDto;          // 🌐 AJOUT
 import fr.amu.bestchoice.web.dto.skill.SkillCreateRequest;
 import fr.amu.bestchoice.web.dto.skill.SkillResponse;
@@ -27,7 +27,7 @@ import java.util.List;
 @Tag(name = "Compétences", description = "Compétences")
 public class SkillController {
 
-    private final SkillService skillService;
+    private final ISkillService skillService;
 
     // ==================== READ ====================
 

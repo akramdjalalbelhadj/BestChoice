@@ -8,6 +8,7 @@ import fr.amu.bestchoice.repository.KeywordRepository;
 import fr.amu.bestchoice.repository.SkillRepository;
 import fr.amu.bestchoice.repository.StudentRepository;
 import fr.amu.bestchoice.repository.UserRepository;
+import fr.amu.bestchoice.service.interfaces.IStudentService;
 import fr.amu.bestchoice.web.dto.student.StudentCreateRequest;
 import fr.amu.bestchoice.web.dto.student.StudentResponse;
 import fr.amu.bestchoice.web.dto.student.StudentUpdateRequest;
@@ -32,7 +33,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class StudentService {
+public class StudentService implements IStudentService {
 
     private final StudentRepository studentRepository;
     private final UserRepository userRepository;

@@ -2,6 +2,7 @@ package fr.amu.bestchoice.service.implementation.user;
 
 import fr.amu.bestchoice.model.entity.User;
 import fr.amu.bestchoice.repository.UserRepository;
+import fr.amu.bestchoice.service.interfaces.IUserService;
 import fr.amu.bestchoice.web.dto.auth.RegisterRequest;
 import fr.amu.bestchoice.web.dto.auth.RegisterResponse;
 import fr.amu.bestchoice.web.dto.user.UserResponse;
@@ -25,7 +26,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class UserService {
+public class UserService implements IUserService {
 
     private final UserRepository userRepository;
     private final UserMapper userMapper;

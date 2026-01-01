@@ -2,6 +2,7 @@ package fr.amu.bestchoice.web.controller.user;
 
 import fr.amu.bestchoice.service.implementation.auth.RegisterService;
 import fr.amu.bestchoice.service.implementation.user.UserService;
+import fr.amu.bestchoice.service.interfaces.IUserService;
 import fr.amu.bestchoice.web.dto.PageResponseDto;
 import fr.amu.bestchoice.web.dto.auth.RegisterRequest;
 import fr.amu.bestchoice.web.dto.auth.RegisterResponse;
@@ -31,7 +32,7 @@ import java.util.List;
 @Tag(name = "Utilisateurs", description = "Gestion des utilisateurs")
 public class UserController {
 
-    private final UserService userService;
+    private final IUserService userService;
     private final RegisterService registerService;
 
     // ==================== READ ====================

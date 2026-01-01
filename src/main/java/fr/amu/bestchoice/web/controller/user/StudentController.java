@@ -1,6 +1,7 @@
 package fr.amu.bestchoice.web.controller.user;
 
 import fr.amu.bestchoice.service.implementation.user.StudentService;
+import fr.amu.bestchoice.service.interfaces.IStudentService;
 import fr.amu.bestchoice.web.dto.PageResponseDto;
 import fr.amu.bestchoice.web.dto.student.StudentCreateRequest;
 import fr.amu.bestchoice.web.dto.student.StudentResponse;
@@ -27,7 +28,7 @@ import java.util.List;
 @Tag(name = "Étudiants", description = "Étudiants")
 public class StudentController {
 
-    private final StudentService studentService;
+    private final IStudentService studentService;
 
     // ==================== READ ====================
 

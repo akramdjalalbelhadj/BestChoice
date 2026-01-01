@@ -6,6 +6,7 @@ import fr.amu.bestchoice.model.entity.Student;
 import fr.amu.bestchoice.repository.MatchingResultRepository;
 import fr.amu.bestchoice.repository.ProjectRepository;
 import fr.amu.bestchoice.repository.StudentRepository;
+import fr.amu.bestchoice.service.interfaces.IMatchingResultService;
 import fr.amu.bestchoice.web.dto.matching.MatchingResultResponse;
 import fr.amu.bestchoice.web.exception.NotFoundException;
 import fr.amu.bestchoice.web.mapper.MatchingResultMapper;
@@ -25,7 +26,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class MatchingResultService {
+public class MatchingResultService implements IMatchingResultService {
 
     // ==================== DÉPENDANCES ====================
 
