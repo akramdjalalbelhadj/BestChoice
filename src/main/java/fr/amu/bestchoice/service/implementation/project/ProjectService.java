@@ -320,7 +320,8 @@ public class ProjectService implements IProjectService {
                 response.teacherId(),
                 response.teacherName(),
                 skillNames,
-                keywordLabels
+                keywordLabels,
+                studentEmails
 
         );
     }

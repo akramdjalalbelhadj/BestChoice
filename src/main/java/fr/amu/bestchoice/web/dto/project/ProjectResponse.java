@@ -21,5 +21,6 @@ public record ProjectResponse(
         String teacherName,
 
         Set<String> requiredSkills,
-        Set<String> keywords
+        Set<String> keywords,
+        Set<String> assignedStudentEmails
 ) {}

@@ -165,8 +165,8 @@ public interface ProjectMapper {
     // project.requiredSkills.stream().map(Skill::getName).collect(toSet())
 
     @Mapping(target = "keywords", ignore = true)
-    // Sera rempli dans le Service :
-    // project.keywords.stream().map(Keyword::getLabel).collect(toSet())
+
+    @Mapping(target = "assignedStudentEmails", ignore = true)
 
     ProjectResponse toResponse(Project entity);
 
