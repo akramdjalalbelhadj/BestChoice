@@ -35,7 +35,6 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    // ==================== DÉPENDANCES ====================
 
     /**
      * Service pour générer et valider les JWT.

@@ -1,7 +1,7 @@
 package fr.amu.bestchoice.web.controller.preference;
 
-import fr.amu.bestchoice.model.enums.PreferenceStatus;
-import fr.amu.bestchoice.service.preference.PreferenceService;
+
+import fr.amu.bestchoice.service.interfaces.IPreferenceService;
 import fr.amu.bestchoice.web.dto.preference.PreferenceCreateRequest;
 import fr.amu.bestchoice.web.dto.preference.PreferenceResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -37,7 +37,7 @@ import java.util.List;
 @Tag(name = "Préférences", description = "Gestion des choix des étudiants (1-10 projets par ordre de préférence)")
 public class PreferenceController {
 
-    private final PreferenceService preferenceService;
+    private final IPreferenceService preferenceService;
 
     // ==================== READ ====================
 

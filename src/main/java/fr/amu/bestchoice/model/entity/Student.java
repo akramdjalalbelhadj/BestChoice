@@ -13,11 +13,16 @@ import java.util.List;
 import java.util.Set;
 
 @Entity
-@Table( name = "students",
+@Table(name = "students",
         indexes = {
+                @Index(name = "idx_student_user", columnList = "user_id"),
                 @Index(name = "idx_student_program", columnList = "program"),
-                @Index(name = "idx_student_year", columnList = "study_year")})
-
+                @Index(name = "idx_student_assigned_project", columnList = "assigned_project_id")
+        },
+        uniqueConstraints = {
+                @UniqueConstraint(name = "uk_student_user", columnNames = "user_id")
+        }
+)
 
 @Getter
 @Setter
@@ -28,14 +33,11 @@ import java.util.Set;
 public class Student{
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    //Relation 1 : 1 avec User (meme ID)
-    @OneToOne(fetch = FetchType.LAZY)
-    //@MapsId signifie que L'id de Teacher est l'id de User (ID partagé)
-    @MapsId
-    // La colonne id est à la fois :PK de teacher et FK vers users
-    @JoinColumn(name = "id")
+    @OneToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "user_id", nullable = false, unique = true)
     private User user;
 
     /**
@@ -105,6 +107,7 @@ public class Student{
      * Indique si le profil est complet et prêt pour le matching
      */
     @Column(name = "profile_complete", nullable = false)
+    @Builder.Default
     private Boolean profileComplete = false;
 
     /**

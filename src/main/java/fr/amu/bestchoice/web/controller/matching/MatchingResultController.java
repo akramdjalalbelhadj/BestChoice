@@ -1,6 +1,7 @@
 package fr.amu.bestchoice.web.controller.matching;
 
-import fr.amu.bestchoice.service.matching.MatchingResultService;
+import fr.amu.bestchoice.service.implementation.matching.MatchingResultService;
+import fr.amu.bestchoice.service.interfaces.IMatchingResultService;
 import fr.amu.bestchoice.web.dto.matching.MatchingResultResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -36,7 +37,7 @@ import java.util.List;
 @Tag(name = "Matching", description = "Résultats de l'algorithme de matching (scores de compatibilité)")
 public class MatchingResultController {
 
-    private final MatchingResultService matchingResultService;
+    private final IMatchingResultService matchingResultService;
 
     // ==================== READ - STUDENT ====================
 

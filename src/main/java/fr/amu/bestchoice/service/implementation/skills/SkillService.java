@@ -1,7 +1,8 @@
-package fr.amu.bestchoice.service.skills;
+package fr.amu.bestchoice.service.implementation.skills;
 
 import fr.amu.bestchoice.model.entity.Skill;
 import fr.amu.bestchoice.repository.SkillRepository;
+import fr.amu.bestchoice.service.interfaces.ISkillService;
 import fr.amu.bestchoice.web.dto.skill.SkillCreateRequest;
 import fr.amu.bestchoice.web.dto.skill.SkillResponse;
 import fr.amu.bestchoice.web.dto.skill.SkillUpdateRequest;
@@ -10,47 +11,38 @@ import fr.amu.bestchoice.web.exception.NotFoundException;
 import fr.amu.bestchoice.web.mapper.SkillMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;              // ⚙️ AJOUT
+import org.springframework.data.domain.PageRequest;       // ⚙️ AJOUT
+import org.springframework.data.domain.Pageable;          // ⚙️ AJOUT
+import org.springframework.data.domain.Sort;              // ⚙️ AJOUT
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-/**
- * Service de gestion des compétences (Skills).
- *
- * Opérations disponibles :
- * - Créer une nouvelle compétence
- * - Modifier une compétence existante
- * - Récupérer une compétence par ID
- * - Récupérer toutes les compétences
- * - Récupérer les compétences actives uniquement
- * - Supprimer une compétence
- */
 @Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class SkillService {
-
+public class SkillService implements ISkillService {
 
     private final SkillRepository skillRepository;
     private final SkillMapper skillMapper;
 
-    /**
-     * Crée une nouvelle compétence.
-     */
+    // ==================== CREATE ====================
+
     @Transactional
     public SkillResponse create(SkillCreateRequest dto) {
         log.info("Début création compétence : name={}", dto.name());
 
-        // Vérifier qu'une compétence avec ce nom n'existe pas déjà
+        // Vérifier que le nom n'existe pas déjà
         if (skillRepository.existsByName(dto.name())) {
             log.warn("Tentative de création d'une compétence existante : name={}", dto.name());
             throw new BusinessException("Une compétence avec le nom '" + dto.name() + "' existe déjà");
         }
 
         Skill skill = skillMapper.toEntity(dto);
-        log.debug("Skill mappée : {}", skill);
+        log.debug("Skill mappé : name={}", skill.getName());
 
         Skill savedSkill = skillRepository.save(skill);
         log.info("Compétence créée avec succès : id={}, name={}", savedSkill.getId(), savedSkill.getName());
@@ -58,11 +50,8 @@ public class SkillService {
         return skillMapper.toResponse(savedSkill);
     }
 
+    // ==================== UPDATE ====================
 
-    /**
-     * Met à jour une compétence existante.
-     * Les champs null dans le DTO ne sont pas modifiés (stratégie IGNORE).
-     */
     @Transactional
     public SkillResponse update(Long id, SkillUpdateRequest dto) {
         log.info("Début mise à jour compétence : id={}", id);
@@ -75,39 +64,27 @@ public class SkillService {
 
         log.debug("Compétence trouvée : name={}", skill.getName());
 
-        // ===== VALIDATION MÉTIER =====
-
-        // Si le nom change, vérifier qu'il n'est pas déjà utilisé par une autre compétence
+        // Si le nom change, vérifier qu'il n'existe pas déjà
         if (dto.name() != null && !dto.name().equals(skill.getName())) {
             if (skillRepository.existsByName(dto.name())) {
-                log.warn("Tentative de renommer vers un nom existant : oldName={}, newName={}",
+                log.warn("Tentative de modifier vers un nom existant : oldName={}, newName={}",
                         skill.getName(), dto.name());
                 throw new BusinessException("Une compétence avec le nom '" + dto.name() + "' existe déjà");
             }
         }
 
-        // ===== MAPPING DTO → ENTITY =====
-
-        // Le mapper met à jour uniquement les champs non null
         skillMapper.updateEntityFromDto(dto, skill);
-        log.debug("Compétence après mise à jour : {}", skill);
+        log.debug("Compétence après mise à jour : name={}", skill.getName());
 
-        // ===== SAUVEGARDE =====
         Skill updatedSkill = skillRepository.save(skill);
         log.info("Compétence mise à jour avec succès : id={}, name={}", updatedSkill.getId(), updatedSkill.getName());
-
-        // ===== MAPPING ENTITY → DTO =====
 
         return skillMapper.toResponse(updatedSkill);
     }
 
+    // ==================== READ ====================
 
-
-    /**
-     * Récupère une compétence par son ID.
-     */
     public SkillResponse findById(Long id) {
-
         log.debug("Recherche compétence par ID : id={}", id);
 
         Skill skill = skillRepository.findById(id)
@@ -117,64 +94,62 @@ public class SkillService {
                 });
 
         log.debug("Compétence trouvée : name={}", skill.getName());
-
         return skillMapper.toResponse(skill);
     }
 
+    // ⚙️ NOUVELLE MÉTHODE PAGINÉE
     /**
-     * Récupère toutes les compétences.
+     * ⚙️ Récupère toutes les compétences avec pagination.
      */
+    public Page<SkillResponse> findAll(int page, int size, String sortBy, String sortDirection) {
+
+        log.debug("⚙️ Récupération compétences paginée : page={}, size={}, sortBy={}, sortDirection={}",
+                page, size, sortBy, sortDirection);
+
+        Pageable pageable = createPageable(page, size, sortBy, sortDirection);
+        Page<Skill> skillsPage = skillRepository.findAll(pageable);
+
+        log.info("⚙️ Page de compétences récupérée : page={}/{}, total={}",
+                skillsPage.getNumber() + 1, skillsPage.getTotalPages(), skillsPage.getTotalElements());
+
+        return skillsPage.map(skillMapper::toResponse);
+    }
+
+    // ANCIENNE MÉTHODE (rétrocompatibilité)
     public List<SkillResponse> findAll() {
-
         log.debug("Récupération de toutes les compétences");
-
         List<Skill> skills = skillRepository.findAll();
         log.info("Nombre de compétences trouvées : {}", skills.size());
         return skillMapper.toResponseList(skills);
     }
 
-    /**
-     * Récupère uniquement les compétences actives.
-     */
     public List<SkillResponse> findAllActive() {
-
         log.debug("Récupération des compétences actives uniquement");
-
         List<Skill> skills = skillRepository.findByActiveTrue();
         log.info("Nombre de compétences actives trouvées : {}", skills.size());
         return skillMapper.toResponseList(skills);
     }
 
+    // ==================== DELETE ====================
 
-    /**
-     * Supprime une compétence.
-     *
-     * IMPORTANT : Suppression physique (hard delete).
-     * Pour une suppression logique (soft delete), utiliser update avec active=false.
-     */
     @Transactional
     public void delete(Long id) {
-
         log.info("Début suppression compétence : id={}", id);
 
-        // Vérifier que la compétence existe
-        if (!skillRepository.existsById(id)) {
-            log.error("Tentative de suppression d'une compétence inexistante : id={}", id);
-            throw new NotFoundException("Compétence introuvable avec l'ID : " + id);
-        }
+        Skill skill = skillRepository.findById(id)
+                .orElseThrow(() -> {
+                    log.error("Compétence introuvable : id={}", id);
+                    return new NotFoundException("Compétence introuvable avec l'ID : " + id);
+                });
 
-        // Supprimer la compétence
-        skillRepository.deleteById(id);
-        log.info("Compétence supprimée avec succès : id={}", id);
+        skillRepository.delete(skill);
+        log.info("Compétence supprimée avec succès : id={}, name={}", id, skill.getName());
     }
 
-    /**
-     * Désactive une compétence (soft delete).
-     * La compétence reste en base mais n'est plus visible.
-     */
+    // ==================== ACTIVATION / DÉSACTIVATION ====================
+
     @Transactional
     public void deactivate(Long id) {
-
         log.info("Début désactivation compétence : id={}", id);
 
         Skill skill = skillRepository.findById(id)
@@ -183,10 +158,32 @@ public class SkillService {
                     return new NotFoundException("Compétence introuvable avec l'ID : " + id);
                 });
 
-        // Désactiver la compétence
+        if (!skill.getActive()) {
+            log.warn("Compétence déjà désactivée : id={}, name={}", id, skill.getName());
+            return;
+        }
+
         skill.setActive(false);
         skillRepository.save(skill);
-
         log.info("Compétence désactivée avec succès : id={}, name={}", id, skill.getName());
+    }
+
+    // ⚙️ MÉTHODE UTILITAIRE PRIVÉE
+    /**
+     * ⚙️ Crée un Pageable avec tri.
+     */
+    private Pageable createPageable(int page, int size, String sortBy, String sortDirection) {
+
+        if (sortBy == null || sortBy.isBlank()) {
+            sortBy = "name"; // ⚙️ Tri par défaut sur le nom pour les compétences
+        }
+
+        Sort.Direction direction = Sort.Direction.ASC;
+        if ("DESC".equalsIgnoreCase(sortDirection)) {
+            direction = Sort.Direction.DESC;
+        }
+
+        Sort sort = Sort.by(direction, sortBy);
+        return PageRequest.of(page, size, sort);
     }
 }

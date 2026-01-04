@@ -1,4 +1,4 @@
-package fr.amu.bestchoice.service.preference;
+package fr.amu.bestchoice.service.implementation.preference;
 
 import fr.amu.bestchoice.model.entity.Project;
 import fr.amu.bestchoice.model.entity.Student;
@@ -7,6 +7,7 @@ import fr.amu.bestchoice.model.enums.PreferenceStatus;
 import fr.amu.bestchoice.repository.ProjectRepository;
 import fr.amu.bestchoice.repository.StudentPreferenceRepository;
 import fr.amu.bestchoice.repository.StudentRepository;
+import fr.amu.bestchoice.service.interfaces.IPreferenceService;
 import fr.amu.bestchoice.web.dto.preference.PreferenceCreateRequest;
 import fr.amu.bestchoice.web.dto.preference.PreferenceResponse;
 import fr.amu.bestchoice.web.exception.BusinessException;
@@ -40,9 +41,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class PreferenceService {
-
-    // ==================== DÉPENDANCES ====================
+public class PreferenceService implements IPreferenceService {
 
     private final StudentPreferenceRepository preferenceRepository;
     private final StudentRepository studentRepository;
@@ -100,7 +99,7 @@ public class PreferenceService {
         }
 
         // 2. Vérifier que le projet n'est pas complet
-        if (project.getFull()) {
+        if (project.getComplet()) {
             log.warn("Tentative de sélection d'un projet complet : projectId={}, title={}",
                     dto.projectId(), project.getTitle());
             throw new BusinessException("Ce projet est déjà complet");

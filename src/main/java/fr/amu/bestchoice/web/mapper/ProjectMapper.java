@@ -54,7 +54,7 @@ public interface ProjectMapper {
     @Mapping(target = "active", constant = "true")
     // Nouveau projet = actif par défaut
 
-    @Mapping(target = "full", constant = "false")
+    @Mapping(target = "complet", constant = "false")
     // Nouveau projet = pas complet par défaut
 
     @Mapping(target = "createdAt", ignore = true)
@@ -116,7 +116,7 @@ public interface ProjectMapper {
     @Mapping(target = "targetProgram", ignore = true)
     // Pas dans ProjectUpdateRequest
 
-    @Mapping(target = "full", ignore = true)
+    @Mapping(target = "complet", ignore = true)
     // Sera calculé automatiquement dans le Service (quand maxStudents atteint)
 
     @Mapping(target = "createdAt", ignore = true)
@@ -165,8 +165,8 @@ public interface ProjectMapper {
     // project.requiredSkills.stream().map(Skill::getName).collect(toSet())
 
     @Mapping(target = "keywords", ignore = true)
-    // Sera rempli dans le Service :
-    // project.keywords.stream().map(Keyword::getLabel).collect(toSet())
+
+    @Mapping(target = "assignedStudentEmails", ignore = true)
 
     ProjectResponse toResponse(Project entity);
 

@@ -11,8 +11,7 @@ public enum WorkType  {
     VEILLE("Veille technologique"),
     CONCEPTION("Conception et modélisation"),
     DOCUMENTATION("Documentation technique"),
-    TEST("Tests et qualité logicielle"),
-    MIXTE("Travail mixte");
+    TEST("Tests et qualité logicielle");
 
     private final String description;
 

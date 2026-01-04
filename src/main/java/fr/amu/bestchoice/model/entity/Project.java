@@ -126,9 +126,9 @@ public class Project {
     /**
      * Indique si le projet est complet (plus de places disponibles)
      */
-    @Column(name = "full", nullable = false)
+    @Column(name = "complet", nullable = false)
     @Builder.Default
-    private Boolean full = false;
+    private Boolean complet = false;
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)

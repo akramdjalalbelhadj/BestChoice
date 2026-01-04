@@ -45,8 +45,6 @@ public interface TeacherRepository extends JpaRepository<Teacher, Long> {
 
     /**
      * Compte le nombre de projets d'un enseignant
-     * @param teacherId ID de l'enseignant
-     * @return Nombre de projets
      */
     @Query("SELECT COUNT(p) FROM Project p WHERE p.teacher.id = :teacherId")
     long countProjectsByTeacherId(@Param("teacherId") Long teacherId);

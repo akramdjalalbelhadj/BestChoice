@@ -119,4 +119,10 @@ public interface MatchingResultRepository extends JpaRepository<MatchingResult, 
      * Vérifie si un étudiant a des résultats de matching
      */
     boolean existsByStudentId(Long studentId);
+
+    List<MatchingResult> findBySessionId(String sessionId);
+
+
+    List<MatchingResult> findBySessionIdAndStudentIdOrderByGlobalScoreDesc(String sessionId, Long studentId);
 }
+

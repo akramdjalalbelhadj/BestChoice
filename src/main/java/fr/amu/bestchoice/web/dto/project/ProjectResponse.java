@@ -15,11 +15,12 @@ public record ProjectResponse(
 
         Integer minStudents,
         Integer maxStudents,
-        Boolean full,
+        Boolean complet,
 
         Long teacherId,
         String teacherName,
 
         Set<String> requiredSkills,
-        Set<String> keywords
+        Set<String> keywords,
+        Set<String> assignedStudentEmails
 ) {}
