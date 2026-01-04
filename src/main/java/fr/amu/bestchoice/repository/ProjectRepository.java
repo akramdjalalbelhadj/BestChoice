@@ -119,4 +119,7 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
     @Query("SELECT p FROM Project p WHERE p.credits BETWEEN :minCredits AND :maxCredits")
     List<Project> findByCreditsRange(@Param("minCredits") Integer minCredits, 
                                      @Param("maxCredits") Integer maxCredits);
+
+    List<Project> findAllByActiveTrue();
+
 }
