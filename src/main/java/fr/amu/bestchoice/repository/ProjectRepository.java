@@ -35,7 +35,7 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
     /**
      * Récupère les projets actifs et non complets
      */
-    @Query("SELECT p FROM Project p WHERE p.active = true AND p.full = false")
+    @Query("SELECT p FROM Project p WHERE p.active = true AND p.complet = false")
     List<Project> findAvailableProjects();
 
     /**
@@ -95,7 +95,7 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
     /**
      * Récupère les projets ayant encore des places disponibles
      */
-    @Query("SELECT p FROM Project p WHERE p.active = true AND p.full = false " +
+    @Query("SELECT p FROM Project p WHERE p.active = true AND p.complet = false " +
            "AND SIZE(p.assignedStudents) < p.maxStudents")
     List<Project> findProjectsWithAvailableSlots();
 
@@ -111,7 +111,7 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
     @Query("SELECT CASE WHEN COUNT(s) >= p.maxStudents THEN true ELSE false END " +
            "FROM Project p LEFT JOIN Student s ON s.assignedProject.id = p.id " +
            "WHERE p.id = :projectId GROUP BY p.id, p.maxStudents")
-    boolean isProjectFull(@Param("projectId") Long projectId);
+    boolean isProjectComplet(@Param("projectId") Long projectId);
 
     /**
      * Récupère les projets par nombre de crédits

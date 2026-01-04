@@ -39,8 +39,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class RegisterService implements IRegisterService {
 
-    // ==================== DÉPENDANCES ====================
-
     private final UserRepository userRepository;
     private final StudentRepository studentRepository;
     private final TeacherRepository teacherRepository;

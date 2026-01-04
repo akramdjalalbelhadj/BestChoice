@@ -87,9 +87,9 @@ public class ProjectService implements IProjectService {
             log.debug("Aucun mot-clé");
         }
 
-        // Calcul du champ full
-        boolean isFull = project.getAssignedStudents().size() >= project.getMaxStudents();
-        project.setFull(isFull);
+        // Calcul du champ complet
+        boolean isComplet = project.getAssignedStudents().size() >= project.getMaxStudents();
+        project.setComplet(isComplet);
 
         Project savedProject = projectRepository.save(project);
         log.info("Projet créé avec succès : id={}, title={}, active={}",
@@ -149,9 +149,9 @@ public class ProjectService implements IProjectService {
             }
         }
 
-        // Recalcul du champ full
-        boolean isFull = project.getAssignedStudents().size() >= project.getMaxStudents();
-        project.setFull(isFull);
+        // Recalcul du champ complet
+        boolean isComplet = project.getAssignedStudents().size() >= project.getMaxStudents();
+        project.setComplet(isComplet);
 
         Project updatedProject = projectRepository.save(project);
         log.info("Projet mis à jour avec succès : id={}, title={}", updatedProject.getId(), updatedProject.getTitle());
@@ -316,7 +316,7 @@ public class ProjectService implements IProjectService {
                 response.active(),
                 response.minStudents(),
                 response.maxStudents(),
-                response.full(),
+                response.complet(),
                 response.teacherId(),
                 response.teacherName(),
                 skillNames,

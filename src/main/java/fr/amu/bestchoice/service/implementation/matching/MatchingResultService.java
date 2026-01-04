@@ -28,8 +28,6 @@ import java.util.List;
 @Transactional(readOnly = true)
 public class MatchingResultService implements IMatchingResultService {
 
-    // ==================== DÉPENDANCES ====================
-
     private final MatchingResultRepository matchingResultRepository;
     private final StudentRepository studentRepository;
     private final ProjectRepository projectRepository;

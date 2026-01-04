@@ -43,8 +43,6 @@ import java.util.List;
 @Transactional(readOnly = true)
 public class PreferenceService implements IPreferenceService {
 
-
-
     private final StudentPreferenceRepository preferenceRepository;
     private final StudentRepository studentRepository;
     private final ProjectRepository projectRepository;
@@ -101,7 +99,7 @@ public class PreferenceService implements IPreferenceService {
         }
 
         // 2. Vérifier que le projet n'est pas complet
-        if (project.getFull()) {
+        if (project.getComplet()) {
             log.warn("Tentative de sélection d'un projet complet : projectId={}, title={}",
                     dto.projectId(), project.getTitle());
             throw new BusinessException("Ce projet est déjà complet");

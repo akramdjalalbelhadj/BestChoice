@@ -10,10 +10,15 @@ import java.util.List;
 
 
 @Entity
-@Table( name = "teachers",
+@Table(name = "teachers",
         indexes = {
-                @Index(name = "idx_teacher_department", columnList = "department")})
-
+                @Index(name = "idx_teacher_user", columnList = "user_id"),
+                @Index(name = "idx_teacher_department", columnList = "department")
+        },
+        uniqueConstraints = {
+                @UniqueConstraint(name = "uk_teacher_user", columnNames = "user_id")
+        }
+)
 
 @Getter
 @Setter
@@ -23,14 +28,11 @@ import java.util.List;
 public class Teacher{
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    //Relation 1 : 1 avec User (meme ID)
-    @OneToOne(fetch = FetchType.LAZY)
-    //@MapsId signifie que L'id de Teacher est l'id de User (ID partagé)
-    @MapsId
-    // La colonne id est à la fois :PK de teacher et FK vers users
-    @JoinColumn(name = "id")
+    @OneToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "user_id", nullable = false, unique = true)
     private User user;
 
     @Size(max = 100, message = "Le département ne doit pas dépasser 100 caractères")

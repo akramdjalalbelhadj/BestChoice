@@ -15,7 +15,7 @@ public record ProjectResponse(
 
         Integer minStudents,
         Integer maxStudents,
-        Boolean full,
+        Boolean complet,
 
         Long teacherId,
         String teacherName,
