@@ -41,7 +41,7 @@ export class AuthStore {
       email: res.email,
       firstName: res.firstName,
       lastName: res.lastName,
-      roles: res.roles
+      role: res.role
     };
     const next: AuthState = { user, token: res.accessToken, expiresAt };
     this.state.set(next);
