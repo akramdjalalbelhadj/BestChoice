@@ -46,5 +46,5 @@ public record RegisterRequest(
 
         // roles attribués (géré par le admin, pas par l'utilisateur)
         @NotNull(message = "Le rôle est obligatoire")
-        Set<Role> roles
+        Role role
 ) {}

@@ -56,7 +56,7 @@ public class RegisterService implements IRegisterService {
      */
     public RegisterResponse register(RegisterRequest dto) {
 
-        log.info("Début inscription utilisateur : email={}, roles={}", dto.email(), dto.roles());
+        log.info("Début inscription utilisateur : email={}, roles={}", dto.email(), dto.role());
 
         // ===== VALIDATION EMAIL =====
 
@@ -80,13 +80,13 @@ public class RegisterService implements IRegisterService {
         String hashedPassword = passwordEncoder.encode(dto.password());
         user.setPasswordHash(hashedPassword);
 
-        log.debug("User mappé : email={}, roles={}", user.getEmail(), user.getRoles());
+        log.debug("User mappé : email={}, roles={}", user.getEmail(), user.getRole());
 
         // Sauvegarder l'utilisateur
         User savedUser = userRepository.save(user);
 
         log.info("Utilisateur créé avec succès : id={}, email={}, roles={}",
-                savedUser.getId(), savedUser.getEmail(), savedUser.getRoles());
+                savedUser.getId(), savedUser.getEmail(), savedUser.getRole());
 
         // ===== CRÉATION PROFIL ASSOCIÉ =====
 
@@ -116,19 +116,17 @@ public class RegisterService implements IRegisterService {
     private void createAssociatedProfile(User user) {
 
         // Vérifier si l'utilisateur a le rôle ETUDIANT
-        if (user.getRoles().contains(Role.ETUDIANT)) {
+        if (user.getRole().equals(Role.ETUDIANT)) {
             createStudentProfile(user);
         }
 
         // Vérifier si l'utilisateur a le rôle ENSEIGNANT
-        if (user.getRoles().contains(Role.ENSEIGNANT)) {
+        if (user.getRole().equals(Role.ENSEIGNANT)) {
             createTeacherProfile(user);
         }
 
         // Si ADMIN uniquement, ne rien faire de plus
-        if (user.getRoles().contains(Role.ADMIN) &&
-                !user.getRoles().contains(Role.ETUDIANT) &&
-                !user.getRoles().contains(Role.ENSEIGNANT)) {
+        if (user.getRole().equals(Role.ADMIN) && !user.getRole().equals(Role.ENSEIGNANT)) {
             log.debug("Utilisateur ADMIN créé sans profil associé : userId={}", user.getId());
         }
     }

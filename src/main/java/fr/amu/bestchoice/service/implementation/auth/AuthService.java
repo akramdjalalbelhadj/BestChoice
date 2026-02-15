@@ -129,7 +129,7 @@ public class AuthService implements IAuthService {
                     user.getEmail(),            // Email
                     user.getFirstName(),        // Prénom
                     user.getLastName(),         // Nom
-                    user.getRoles(),            // Rôles (Set<Role>)
+                    user.getRole(),             // Rôle (Role)
                     3600000L                    // Expiration en ms (1 heure)
             );
 

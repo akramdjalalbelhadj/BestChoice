@@ -118,7 +118,7 @@ public class UserController {
     @PostMapping("/register")
     public ResponseEntity<RegisterResponse> registerUser(@Valid @RequestBody RegisterRequest request) {
         log.info("POST /api/users/register - Inscription d'un utilisateur : email={}, roles={}",
-                request.email(), request.roles());
+                request.email(), request.role());
         RegisterResponse registeredUser = registerService.register(request);
         log.info("POST /api/users/register - Utilisateur inscrit avec succès : id={}, email={}",
                 registeredUser.id(), registeredUser.email());

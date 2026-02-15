@@ -59,8 +59,8 @@ public interface UserMapper {
     // Le statut actif/inactif ne se change PAS ici (action admin séparée)
     @Mapping(target = "active", ignore = true)
 
-    // Les rôles ne se modifient PAS après création (sécurité)
-    @Mapping(target = "roles", ignore = true)
+    // Le rôle ne se modifie PAS après création (sécurité)
+    @Mapping(target = "role", ignore = true)
 
     // La date de création ne change JAMAIS
     @Mapping(target = "createdAt", ignore = true)

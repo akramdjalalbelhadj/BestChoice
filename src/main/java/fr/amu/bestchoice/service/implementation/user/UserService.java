@@ -57,7 +57,7 @@ public class UserService implements IUserService {
 
         User savedUser = userRepository.save(user);
         log.info("Utilisateur créé avec succès : id={}, email={}, roles={}",
-                savedUser.getId(), savedUser.getEmail(), savedUser.getRoles());
+                savedUser.getId(), savedUser.getEmail(), savedUser.getRole());
 
         return new RegisterResponse(
                 savedUser.getId(),

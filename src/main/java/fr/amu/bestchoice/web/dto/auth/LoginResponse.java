@@ -19,7 +19,7 @@ public record LoginResponse(
         String lastName,
 
         // Rôles de l'utilisateur (ETUDIANT, ENSEIGNANT, ADMIN)
-        Set<Role> roles,
+        Role role,
 
         // Durée de validité du token en millisecondes
         Long expiresIn
@@ -27,7 +27,7 @@ public record LoginResponse(
     /**
      * Constructeur avec tokenType par défaut "Bearer"
      */
-    public LoginResponse(String token, Long userId, String email, String firstName, String lastName, Set<Role> roles, Long expiresIn) {
-        this(token, "Bearer", userId, email, firstName, lastName, roles, expiresIn);
+    public LoginResponse(String token, Long userId, String email, String firstName, String lastName, Role role, Long expiresIn) {
+        this(token, "Bearer", userId, email, firstName, lastName, role, expiresIn);
     }
 }

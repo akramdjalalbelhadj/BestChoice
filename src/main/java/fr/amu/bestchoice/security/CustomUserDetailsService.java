@@ -11,6 +11,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -102,8 +103,9 @@ public class CustomUserDetailsService implements UserDetailsService {
      * @return Collection de GrantedAuthority (rôles avec préfixe "ROLE_")
      */
     private Collection<? extends GrantedAuthority> getAuthorities(User user) {
-        return user.getRoles().stream()
-                .map(role -> new SimpleGrantedAuthority("ROLE_" + role.name()))
-                .collect(Collectors.toList());
+        return List.of(
+                new SimpleGrantedAuthority("ROLE_" + user.getRole().name())
+        );
     }
+
 }

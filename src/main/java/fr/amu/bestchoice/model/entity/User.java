@@ -9,8 +9,6 @@ import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * Entité de base représentant un utilisateur de la plateforme Le Bon Choix
@@ -67,17 +65,11 @@ public class User {
     private LocalDateTime createdAt;
 
     /**
-     * Rôles de l'utilisateur (peut en avoir plusieurs)
+     * Rôle de l'utilisateur
      */
-    @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(
-            name = "user_roles",
-            joinColumns = @JoinColumn(name = "user_id")
-    )
     @Enumerated(EnumType.STRING)
-    @Column(name = "role")
-    @Builder.Default
-    private Set<Role> roles = new HashSet<>();
+    @Column(name = "role", nullable = false, length = 20)
+    private Role role;
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Student student;

@@ -233,7 +233,7 @@ public class DataLoader {
                 .lastName("BestChoice")
                 .studentNumber(null)
                 .active(true)
-                .roles(Set.of(Role.ADMIN))
+                .role(Role.ADMIN)
                 .build();
     }
 
@@ -246,7 +246,7 @@ public class DataLoader {
                 .firstName("Jean")
                 .lastName("Jean")
                 .active(true)
-                .roles(Set.of(Role.ENSEIGNANT))
+                .role(Role.ENSEIGNANT)
                 .build());
 
         teachers.add(User.builder()
@@ -255,7 +255,7 @@ public class DataLoader {
                 .firstName("Martin")
                 .lastName("Martin")
                 .active(true)
-                .roles(Set.of(Role.ENSEIGNANT))
+                .role(Role.ENSEIGNANT)
                 .build());
 
         teachers.add(User.builder()
@@ -264,7 +264,7 @@ public class DataLoader {
                 .firstName("Bernard")
                 .lastName("Bernard")
                 .active(true)
-                .roles(Set.of(Role.ENSEIGNANT))
+                .role(Role.ENSEIGNANT)
                 .build());
 
         teachers.add(User.builder()
@@ -273,7 +273,7 @@ public class DataLoader {
                 .firstName("Dubois")
                 .lastName("Dubois")
                 .active(true)
-                .roles(Set.of(Role.ENSEIGNANT))
+                .role(Role.ENSEIGNANT)
                 .build());
 
         return teachers;
@@ -289,7 +289,7 @@ public class DataLoader {
                 .lastName("BELHADJ")
                 .studentNumber("24025877")
                 .active(true)
-                .roles(Set.of(Role.ETUDIANT))
+                .role(Role.ETUDIANT)
                 .build());
 
         students.add(User.builder()
@@ -299,7 +299,7 @@ public class DataLoader {
                 .lastName("KARTOUT")
                 .studentNumber("22001235")
                 .active(true)
-                .roles(Set.of(Role.ETUDIANT))
+                .role(Role.ETUDIANT)
                 .build());
 
         students.add(User.builder()
@@ -309,7 +309,7 @@ public class DataLoader {
                 .lastName("Loukridi")
                 .studentNumber("22001236")
                 .active(true)
-                .roles(Set.of(Role.ETUDIANT))
+                .role(Role.ETUDIANT)
                 .build());
 
         students.add(User.builder()
@@ -319,7 +319,7 @@ public class DataLoader {
                 .lastName("Robert")
                 .studentNumber("22001237")
                 .active(true)
-                .roles(Set.of(Role.ETUDIANT))
+                .role(Role.ETUDIANT)
                 .build());
 
         students.add(User.builder()
@@ -329,7 +329,7 @@ public class DataLoader {
                 .lastName("Richard")
                 .studentNumber("22001238")
                 .active(true)
-                .roles(Set.of(Role.ETUDIANT))
+                .role(Role.ETUDIANT)
                 .build());
 
         students.add(User.builder()
@@ -339,7 +339,7 @@ public class DataLoader {
                 .lastName("Simon")
                 .studentNumber("22001239")
                 .active(true)
-                .roles(Set.of(Role.ETUDIANT))
+                .role(Role.ETUDIANT)
                 .build());
 
         students.add(User.builder()
@@ -349,7 +349,7 @@ public class DataLoader {
                 .lastName("Laurent")
                 .studentNumber("22001240")
                 .active(true)
-                .roles(Set.of(Role.ETUDIANT))
+                .role(Role.ETUDIANT)
                 .build());
 
         students.add(User.builder()
@@ -359,7 +359,7 @@ public class DataLoader {
                 .lastName("Michel")
                 .studentNumber("22001241")
                 .active(true)
-                .roles(Set.of(Role.ETUDIANT))
+                .role(Role.ETUDIANT)
                 .build());
 
         students.add(User.builder()
@@ -369,7 +369,7 @@ public class DataLoader {
                 .lastName("Garcia")
                 .studentNumber("22001242")
                 .active(true)
-                .roles(Set.of(Role.ETUDIANT))
+                .role(Role.ETUDIANT)
                 .build());
 
         students.add(User.builder()
@@ -379,7 +379,7 @@ public class DataLoader {
                 .lastName("Thomas")
                 .studentNumber("22001243")
                 .active(true)
-                .roles(Set.of(Role.ETUDIANT))
+                .role(Role.ETUDIANT)
                 .build());
 
         return students;
