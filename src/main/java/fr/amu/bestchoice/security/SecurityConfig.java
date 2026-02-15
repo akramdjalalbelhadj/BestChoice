@@ -74,7 +74,7 @@ public class SecurityConfig {
                 // ==================== CSRF ====================
                 // Désactiver CSRF car API REST stateless (pas de cookies de session)
                 .csrf(AbstractHttpConfigurer::disable)
-
+                .cors(cors -> {})
                 // ==================== AUTORISATION ====================
                 .authorizeHttpRequests(auth -> auth
                         // ===== ENDPOINTS PUBLICS (pas d'authentification requise) =====
@@ -91,6 +91,8 @@ public class SecurityConfig {
                                 "/swagger-ui/**",
                                 "/swagger-ui.html"
                         ).permitAll()
+
+                        .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()
 
                         // ===== ENDPOINTS PROTÉGÉS =====
 
@@ -169,4 +171,21 @@ public class SecurityConfig {
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
     }
+
+    @Bean
+    public org.springframework.web.cors.CorsConfigurationSource corsConfigurationSource() {
+        org.springframework.web.cors.CorsConfiguration config =
+                new org.springframework.web.cors.CorsConfiguration();
+
+        config.setAllowedOrigins(java.util.List.of("http://localhost:4200"));
+        config.setAllowedMethods(java.util.List.of("GET","POST","PUT","DELETE","OPTIONS"));
+        config.setAllowedHeaders(java.util.List.of("*"));
+
+        org.springframework.web.cors.UrlBasedCorsConfigurationSource source =
+                new org.springframework.web.cors.UrlBasedCorsConfigurationSource();
+
+        source.registerCorsConfiguration("/**", config);
+        return source;
+    }
+
 }

@@ -74,10 +74,17 @@ export class LoginPage {
     }).subscribe({
       next: (res) => {
         this.store.setFromLogin(res);
-        this.router.navigateByUrl('/');
+        this.router.navigateByUrl('/dashboard');
       },
       error: (err) => {
-        const msg = err?.error?.message ?? 'Connexion impossible.';
+        console.error('LOGIN ERROR FULL =', err);
+
+        const status = err?.status;
+        const msg =
+          err?.error?.message
+          ?? err?.message
+          ?? `Erreur login (status ${status ?? 'unknown'})`;
+
         this.error.set(msg);
         this.loading.set(false);
       },
