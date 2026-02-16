@@ -48,4 +48,6 @@ public interface TeacherRepository extends JpaRepository<Teacher, Long> {
      */
     @Query("SELECT COUNT(p) FROM Project p WHERE p.teacher.id = :teacherId")
     long countProjectsByTeacherId(@Param("teacherId") Long teacherId);
+
+    Optional<Teacher> findByUserId(Long userId);
 }

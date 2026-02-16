@@ -83,4 +83,6 @@ public interface IProjectService {
      * @param id L'ID du projet
      */
     void deactivate(Long id);
+
+    List<ProjectResponse> findByTeacherId(Long teacherId);
 }

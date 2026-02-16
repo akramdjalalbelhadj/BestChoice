@@ -24,7 +24,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/students")
 @RequiredArgsConstructor
-@PreAuthorize("hasRole('ADMIN')")
 @Tag(name = "Étudiants", description = "Étudiants")
 public class StudentController {
 
@@ -60,6 +59,16 @@ public class StudentController {
                 response.content().size(), response.pageNumber() + 1, response.totalPages());
 
         return ResponseEntity.ok(response);
+    }
+
+
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<StudentResponse> getStudentByUserId(@PathVariable Long userId) {
+        log.debug("GET /api/students/user/{} - Récupération du profil via userId", userId);
+
+        StudentResponse student = studentService.findByUserId(userId);
+
+        return ResponseEntity.ok(student);
     }
 
     @GetMapping

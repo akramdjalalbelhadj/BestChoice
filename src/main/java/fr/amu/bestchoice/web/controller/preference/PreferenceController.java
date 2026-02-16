@@ -33,7 +33,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/preferences")
 @RequiredArgsConstructor
-@PreAuthorize("hasRole('ADMIN')")
 @Tag(name = "Préférences", description = "Gestion des choix des étudiants (1-10 projets par ordre de préférence)")
 public class PreferenceController {
 

@@ -23,7 +23,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/keywords")
 @RequiredArgsConstructor
-@PreAuthorize("hasRole('ADMIN')")
 @Tag(name = "Mots-clés", description = "Mots-clés")
 public class KeywordController {
 

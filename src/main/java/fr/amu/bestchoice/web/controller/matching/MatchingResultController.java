@@ -33,7 +33,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/matching")
 @RequiredArgsConstructor
-@PreAuthorize("hasRole('ADMIN')")
 @Tag(name = "Matching", description = "Résultats de l'algorithme de matching (scores de compatibilité)")
 public class MatchingResultController {
 

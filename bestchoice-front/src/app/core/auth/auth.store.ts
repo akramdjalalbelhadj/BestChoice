@@ -1,5 +1,6 @@
 import { Injectable, computed, signal } from '@angular/core';
-import { LoginResponse } from '../models/auth.model';
+import { LoginResponse, Role } from '../models/auth.model';
+import { isJwtExpired } from '../utils/jwt.util';
 
 const LS_KEY = 'bestchoice_auth';
 
@@ -29,10 +30,36 @@ export class AuthStore {
 
   user = computed(() => this.state().user);
   token = computed(() => this.state().token);
+
+  role = computed<Role | null>(() => this.state().user?.role ?? null);
+
+  displayName = computed(() => {
+    const u = this.state().user;
+    return u ? `${u.firstName} ${u.lastName}` : null;
+  });
+
   isAuthenticated = computed(() => {
     const s = this.state();
-    return !!s.token && !!s.expiresAt && Date.now() < s.expiresAt;
+    if (!s.token || !s.expiresAt) return false;
+    if (Date.now() >= s.expiresAt) return false;
+    if (isJwtExpired(s.token)) return false;
+    return true;
   });
+
+  homeUrlForRole(role: Role | null): string {
+    switch (role) {
+      case 'ADMIN':
+        return '/app/admin';
+      case 'ENSEIGNANT':
+        return '/app/teacher';
+      case 'ETUDIANT':
+        return '/app/student';
+      default:
+        return '/dashboard'; // fallback
+    }
+  }
+
+  homeUrl = computed(() => this.homeUrlForRole(this.role()));
 
   setFromLogin(res: LoginResponse) {
     const expiresAt = Date.now() + res.expiresIn;
@@ -49,8 +76,7 @@ export class AuthStore {
   }
 
   logout() {
-    const next: AuthState = { user: null, token: null, expiresAt: null };
-    this.state.set(next);
+    this.state.set({ user: null, token: null, expiresAt: null });
     localStorage.removeItem(LS_KEY);
   }
 }

@@ -344,4 +344,11 @@ public class ProjectService implements IProjectService {
         Sort sort = Sort.by(direction, sortBy);
         return PageRequest.of(page, size, sort);
     }
+
+    public List<ProjectResponse> findByTeacherId(Long teacherId) {
+        log.debug("Récupération des projets pour le professeur ID : {}", teacherId);
+        return projectRepository.findByTeacherId(teacherId).stream()
+                .map(this::toProjectResponse)
+                .collect(Collectors.toList());
+    }
 }

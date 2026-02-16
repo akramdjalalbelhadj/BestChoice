@@ -23,7 +23,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/projects")
 @RequiredArgsConstructor
-@PreAuthorize("hasRole('ADMIN')")
 @Tag(name = "Projets", description = "Projets")
 public class ProjectController {
 
@@ -99,7 +98,6 @@ public class ProjectController {
     }
 
     // ==================== CREATE ====================
-
     @PostMapping("/teacher/{teacherId}")
     public ResponseEntity<ProjectResponse> createProject(
             @PathVariable Long teacherId,
@@ -146,5 +144,11 @@ public class ProjectController {
         projectService.activate(id);
         log.info("PATCH /api/projects/{}/activate - Projet activé avec succès", id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/teacher/{teacherId}")
+    public ResponseEntity<List<ProjectResponse>> getProjectsByTeacher(@PathVariable Long teacherId) {
+        List<ProjectResponse> projects = projectService.findByTeacherId(teacherId);
+        return ResponseEntity.ok(projects);
     }
 }

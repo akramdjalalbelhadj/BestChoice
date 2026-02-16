@@ -23,7 +23,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/skills")
 @RequiredArgsConstructor
-@PreAuthorize("hasRole('ADMIN')")
 @Tag(name = "Compétences", description = "Compétences")
 public class SkillController {
 

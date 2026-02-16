@@ -62,4 +62,12 @@ public interface IStudentService {
      * @return La liste des profils étudiants complets
      */
     List<StudentResponse> findAllComplete();
+
+    /**
+     * Récupère un profil étudiant par l'ID de l'utilisateur.
+     *
+     * @param userId L'ID de l'utilisateur
+     * @return Le profil étudiant
+     */
+    StudentResponse findByUserId(Long userId);
 }

@@ -26,8 +26,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
      * Recherche un utilisateur par email avec ses rôles chargés
      * Évite le N+1 problem grâce à JOIN FETCH
      */
-    @Query("SELECT u FROM User u LEFT JOIN FETCH u.role WHERE u.email = :email")
-    Optional<User> findByEmailWithRoles(@Param("email") String email);
 
     /**
      * Récupère tous les utilisateurs actifs
@@ -36,9 +34,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     /**
      * Récupère tous les utilisateurs ayant un rôle spécifique
-     */
-    @Query("SELECT u FROM User u JOIN u.role r WHERE r = :role")
-    List<User> findByRole(@Param("role") Role role);
+     **/
+    List<User> findByRole(Role role);
 
     /**
      * Recherche des utilisateurs par nom ou prénom (insensible à la casse)

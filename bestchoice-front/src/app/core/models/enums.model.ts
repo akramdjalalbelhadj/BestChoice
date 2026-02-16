@@ -1,0 +1,18 @@
+export enum Role {
+  STUDENT = 'ETUDIANT',
+  TEACHER = 'ENSEIGNANT',
+  ADMIN = 'ADMIN'
+}
+
+export enum WorkType {
+  DEVELOPPEMENT = 'DEVELOPPEMENT',
+  RECHERCHE = 'RECHERCHE',
+  ANALYSE = 'ANALYSE',
+  CONCEPTION = 'CONCEPTION'
+}
+
+export enum PreferenceStatus {
+  PENDING = 'PENDING',
+  ACCEPTED = 'ACCEPTED',
+  REJECTED = 'REJECTED'
+}

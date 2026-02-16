@@ -83,4 +83,6 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
      * Recherche des étudiants par formation et année
      */
     List<Student> findByProgramAndStudyYear(String program, Integer studyYear);
+
+    Optional<Student> findByUserId(Long id);
 }

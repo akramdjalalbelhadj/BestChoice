@@ -4,6 +4,7 @@ import fr.amu.bestchoice.security.jwt.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -74,7 +75,7 @@ public class SecurityConfig {
                 // ==================== CSRF ====================
                 // Désactiver CSRF car API REST stateless (pas de cookies de session)
                 .csrf(AbstractHttpConfigurer::disable)
-                .cors(cors -> {})
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 // ==================== AUTORISATION ====================
                 .authorizeHttpRequests(auth -> auth
                         // ===== ENDPOINTS PUBLICS (pas d'authentification requise) =====
@@ -92,12 +93,11 @@ public class SecurityConfig {
                                 "/swagger-ui.html"
                         ).permitAll()
 
+                        .requestMatchers("/api/matching/run", "/api/matching/recompute").hasAnyRole("ADMIN", "ENSEIGNANT")
+                        .requestMatchers(HttpMethod.GET, "/api/matching/**").hasAnyRole("ADMIN", "ENSEIGNANT", "ETUDIANT")
                         .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()
 
-                        // ===== ENDPOINTS PROTÉGÉS =====
-
-                        // TOUS les autres endpoints nécessitent le rôle ADMIN
-                        .anyRequest().hasRole("ADMIN")
+                        .anyRequest().authenticated()
                 )
 
                 // ==================== SESSION ====================
@@ -174,16 +174,18 @@ public class SecurityConfig {
 
     @Bean
     public org.springframework.web.cors.CorsConfigurationSource corsConfigurationSource() {
-        org.springframework.web.cors.CorsConfiguration config =
-                new org.springframework.web.cors.CorsConfiguration();
+        org.springframework.web.cors.CorsConfiguration config = new org.springframework.web.cors.CorsConfiguration();
 
         config.setAllowedOrigins(java.util.List.of("http://localhost:4200"));
-        config.setAllowedMethods(java.util.List.of("GET","POST","PUT","DELETE","OPTIONS"));
-        config.setAllowedHeaders(java.util.List.of("*"));
 
-        org.springframework.web.cors.UrlBasedCorsConfigurationSource source =
-                new org.springframework.web.cors.UrlBasedCorsConfigurationSource();
+        config.setAllowCredentials(true);
 
+        config.setAllowedMethods(java.util.List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
+        config.setAllowedHeaders(java.util.List.of("Authorization", "Content-Type", "X-Requested-With", "Accept", "Origin"));
+
+        config.setExposedHeaders(java.util.List.of("Authorization"));
+
+        org.springframework.web.cors.UrlBasedCorsConfigurationSource source = new org.springframework.web.cors.UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
         return source;
     }

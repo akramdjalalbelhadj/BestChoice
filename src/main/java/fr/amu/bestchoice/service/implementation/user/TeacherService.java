@@ -130,7 +130,7 @@ public class TeacherService implements ITeacherService {
 
     // ==================== MÉTHODES PRIVÉES ====================
 
-    private TeacherResponse toTeacherResponse(Teacher teacher) {
+    public TeacherResponse toTeacherResponse(Teacher teacher) {
         TeacherResponse response = teacherMapper.toResponse(teacher);
 
         Set<String> projectTitles = teacher.getProjects().stream()

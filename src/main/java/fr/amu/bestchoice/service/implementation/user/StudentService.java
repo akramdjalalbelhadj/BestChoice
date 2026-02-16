@@ -15,6 +15,7 @@ import fr.amu.bestchoice.web.dto.student.StudentUpdateRequest;
 import fr.amu.bestchoice.web.exception.BusinessException;
 import fr.amu.bestchoice.web.exception.NotFoundException;
 import fr.amu.bestchoice.web.mapper.StudentMapper;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -242,7 +243,13 @@ public class StudentService implements IStudentService {
         return isComplete;
     }
 
-    private StudentResponse toStudentResponse(Student student) {
+    public StudentResponse findByUserId(Long userId) {
+        return studentRepository.findByUserId(userId)
+                .map(this::toStudentResponse)
+                .orElseThrow(() -> new EntityNotFoundException("Profil étudiant non trouvé pour l'user " + userId));
+    }
+
+    public StudentResponse toStudentResponse(Student student) {
         StudentResponse response = studentMapper.toResponse(student);
 
         Set<String> skillNames = student.getSkills().stream()
@@ -288,4 +295,5 @@ public class StudentService implements IStudentService {
         Sort sort = Sort.by(direction, sortBy);
         return PageRequest.of(page, size, sort);
     }
+
 }
