@@ -13,12 +13,12 @@ import { finalize } from 'rxjs';
   template: `
     <div class="detail-container">
       <header class="detail-header">
-        <a routerLink="/app/teacher/dashboard" class="back-link">← Retour au dashboard</a>
+        <a routerLink="/app/teacher/dashboard" class="back-link">Retour au dashboard</a>
         <div class="header-main">
           <h1>{{ project()?.title || 'Chargement...' }}</h1>
           @if (project()) {
             <span class="badge-status" [class.active]="project()?.active">
-              {{ project()?.active ? 'PUBLIÉ' : 'BROUILLON' }}
+              {{ project()?.active ? 'Publié' : 'Brouillon' }}
             </span>
           }
         </div>
@@ -57,7 +57,7 @@ import { finalize } from 'rxjs';
           <div class="card-header">
             <h3>Candidats Recommandés</h3>
             <button class="btn-refresh" (click)="loadCandidates()" [disabled]="isLoadingMatches()">
-              {{ isLoadingMatches() ? 'Calcul...' : '🔄 Actualiser' }}
+              {{ isLoadingMatches() ? 'Calcul en cours...' : 'Actualiser' }}
             </button>
           </div>
 
@@ -90,30 +90,118 @@ import { finalize } from 'rxjs';
     </div>
   `,
   styles: [`
-    .detail-container { padding: 2rem; max-width: 1200px; margin: 0 auto; color: #fff; }
-    .detail-header { margin-bottom: 2rem; }
-    .header-main { display: flex; align-items: center; gap: 15px; margin-top: 10px; }
-    .back-link { color: #3b82f6; text-decoration: none; font-size: 0.9rem; }
+    :host { --bg: #f8f9fa; --card: #ffffff; --border: #e9ecef; --primary: #007bff; --danger: #dc3545; --text-muted: #6c757d; display: block; background: var(--bg); color: #212529; min-height: 100vh; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif; }
 
+    .detail-container { padding: 3rem 2rem; max-width: 1200px; margin: 0 auto; }
+
+    /* Header */
+    .detail-header { margin-bottom: 3rem; }
+    .back-link { color: var(--primary); text-decoration: none; font-size: 0.95rem; font-weight: 500; display: block; margin-bottom: 1.5rem; transition: all 0.3s ease; }
+    .back-link:hover { color: #0056cc; }
+    .header-main { display: flex; align-items: center; gap: 16px; }
+    h1 { font-size: 2.5rem; font-weight: 700; margin: 0; letter-spacing: -0.02em; color: #212529; }
+
+    /* Badges */
+    .badge-status { font-size: 0.75rem; font-weight: 700; padding: 7px 12px; border-radius: 8px; background: rgba(107, 114, 128, 0.1); color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; border: 1px solid rgba(107, 114, 128, 0.25); }
+    .badge-status.active { background: rgba(0, 123, 255, 0.1); color: var(--primary); border-color: var(--primary); }
+
+    /* Grid */
     .detail-grid { display: grid; grid-template-columns: 1fr 1.2fr; gap: 2rem; }
-    .card { background: #18181b; border: 1px solid #27272a; border-radius: 16px; padding: 2rem; }
+    @media (max-width: 900px) { .detail-grid { grid-template-columns: 1fr; } }
 
+    /* Cards */
+    .card { background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 2rem; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); }
+    .card h3 { font-size: 1.2rem; font-weight: 700; margin-bottom: 1.5rem; color: #212529; }
+    .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+
+    /* Stats */
     .stats-row { display: flex; gap: 40px; margin: 1.5rem 0; }
-    label { font-size: 0.7rem; color: #71717a; text-transform: uppercase; font-weight: 700; display: block; margin-bottom: 8px; }
-    .stat-val { font-size: 1.25rem; font-weight: 800; color: #3b82f6; }
+    .stat-item { display: flex; flex-direction: column; gap: 8px; }
+    label { font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px; }
+    .stat-val { font-size: 1.4rem; font-weight: 700; color: var(--primary); }
 
-    .tag-cloud { display: flex; flex-wrap: wrap; gap: 8px; }
-    .tag-skill { background: rgba(59, 130, 246, 0.1); color: #3b82f6; padding: 4px 10px; border-radius: 6px; font-size: 0.8rem; border: 1px solid rgba(59,130,246,0.2); }
+    /* Description Box */
+    .description-box { padding: 1.5rem; background: #f8f9fa; border-radius: 12px; border: 1px solid var(--border); }
+    .description-box p { color: #212529; line-height: 1.6; margin: 0.5rem 0 0 0; }
 
-    .candidate-item { display: flex; align-items: center; gap: 15px; padding: 12px; background: #09090b; border: 1px solid #27272a; border-radius: 12px; margin-bottom: 10px; }
-    .match-score { width: 42px; height: 42px; border: 2px solid #3b82f6; border-radius: 50%; display: grid; place-items: center; font-weight: 800; font-size: 0.75rem; color: #3b82f6; }
-    .cand-info { flex: 1; }
-    .cand-name { font-weight: 600; font-size: 0.9rem; }
-    .cand-details { display: flex; gap: 10px; font-size: 0.7rem; color: #71717a; }
+    /* Skills Box */
+    .skills-box { margin-top: 2rem; }
+    .tag-cloud { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px; }
+    .tag-skill { background: rgba(0, 123, 255, 0.08); color: var(--primary); padding: 8px 12px; border-radius: 8px; font-size: 0.85rem; border: 1px solid rgba(0, 123, 255, 0.25); font-weight: 600; }
 
-    .badge-status { font-size: 0.65rem; font-weight: 900; padding: 4px 10px; border-radius: 20px; background: #27272a; }
-    .badge-status.active { background: rgba(34, 197, 94, 0.15); color: #4ade80; }
-    .btn-view { background: #27272a; border: none; color: #fff; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 0.75rem; }
+    /* Candidates List */
+    .candidates-list { display: flex; flex-direction: column; gap: 12px; }
+    .candidate-item { display: flex; align-items: center; gap: 16px; padding: 16px; background: #f8f9fa; border: 1px solid var(--border); border-radius: 12px; transition: all 0.3s ease; }
+    .candidate-item:hover { background: #ffffff; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); }
+
+    .match-score { width: 48px; height: 48px; border: 2px solid var(--primary); border-radius: 50%; display: grid; place-items: center; font-weight: 700; font-size: 0.9rem; color: var(--primary); flex-shrink: 0; }
+    .cand-info { flex: 1; display: flex; flex-direction: column; gap: 6px; }
+    .cand-name { font-weight: 700; font-size: 0.95rem; color: #212529; }
+    .cand-details { display: flex; gap: 16px; font-size: 0.85rem; color: var(--text-muted); }
+
+    /* Buttons */
+    .btn-refresh {
+      background: rgba(0, 123, 255, 0.08);
+      border: 1.5px solid rgba(0, 123, 255, 0.25);
+      color: var(--primary);
+      padding: 10px 18px;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .btn-refresh:hover:not(:disabled) {
+      background: rgba(0, 123, 255, 0.12);
+      border-color: var(--primary);
+      transform: translateY(-2px);
+    }
+    .btn-refresh:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .btn-view {
+      background: #f8f9fa;
+      border: 1.5px solid var(--border);
+      color: var(--primary);
+      padding: 8px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+    .btn-view:hover {
+      background: #ffffff;
+      border-color: var(--primary);
+      transform: translateY(-2px);
+    }
+
+    .btn-primary-sm {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 2px 8px rgba(0, 123, 255, 0.15);
+    }
+    .btn-primary-sm:hover {
+      background: #0056cc;
+      box-shadow: 0 4px 12px rgba(0, 123, 255, 0.25);
+      transform: translateY(-2px);
+    }
+
+    /* Empty State */
+    .empty-matches { padding: 2rem; text-align: center; }
+    .empty-matches p { color: var(--text-muted); margin-bottom: 1rem; }
+
+    .skeleton-list { padding: 2rem; text-align: center; color: var(--text-muted); font-size: 0.95rem; }
+
     .mt-4 { margin-top: 1.5rem; }
   `]
 })

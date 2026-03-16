@@ -1,6 +1,5 @@
 import { Component, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { MatchingService } from '../../../core/services/matching.service';
 import { MatchingRunRequest } from '../../matching/models/matching.model';
