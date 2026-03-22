@@ -19,13 +19,6 @@ import { RouterLink } from '@angular/router';
       </div>
     </div>
   `,
-  styles: [`
-    .page{padding:16px}
-    .topbar{display:flex;align-items:center;justify-content:space-between;gap:12px}
-    .muted{opacity:.75}
-    .link{font-size:13px;opacity:.85}
-    .card{margin-top:12px;border:1px solid rgba(255,255,255,.12);border-radius:16px;padding:16px;background:rgba(255,255,255,.04)}
-    code{opacity:.9}
-  `]
+  styleUrl: './admin-users.page.scss'
 })
 export class AdminUsersPage {}

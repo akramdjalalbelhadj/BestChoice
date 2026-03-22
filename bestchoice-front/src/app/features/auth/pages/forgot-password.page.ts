@@ -28,18 +28,7 @@ import { AuthApi } from '../../../core/api/auth.api';
     </div>
   </div>
   `,
-  styles: [`
-    .page{min-height:100vh;display:grid;place-items:center;padding:24px}
-    .card{width:100%;max-width:420px;border:1px solid rgba(255,255,255,.12);border-radius:16px;padding:24px;background:rgba(255,255,255,.04)}
-    .muted{opacity:.75;margin:0 0 16px}
-    form{display:grid;gap:10px}
-    label{font-size:13px;opacity:.8}
-    input{padding:12px 12px;border-radius:12px;border:1px solid rgba(255,255,255,.12);background:rgba(0,0,0,.15);color:inherit;outline:none}
-    .btn{margin-top:6px;padding:12px 14px;border-radius:12px;border:0;background:#ffffff;color:#000;font-weight:600;cursor:pointer}
-    .btn:disabled{opacity:.5;cursor:not-allowed}
-    .error{color:#ff8a8a}
-    .success{color:#8affb1}
-  `]
+  styleUrl: './forgot-password.page.scss'
 })
 export class ForgotPasswordPage {
   private fb = inject(FormBuilder);

@@ -89,33 +89,7 @@ import { finalize } from 'rxjs';
       </div>
     </div>
   `,
-  styles: [`
-    .detail-container { padding: 2rem; max-width: 1200px; margin: 0 auto; color: #fff; }
-    .detail-header { margin-bottom: 2rem; }
-    .header-main { display: flex; align-items: center; gap: 15px; margin-top: 10px; }
-    .back-link { color: #3b82f6; text-decoration: none; font-size: 0.9rem; }
-
-    .detail-grid { display: grid; grid-template-columns: 1fr 1.2fr; gap: 2rem; }
-    .card { background: #18181b; border: 1px solid #27272a; border-radius: 16px; padding: 2rem; }
-
-    .stats-row { display: flex; gap: 40px; margin: 1.5rem 0; }
-    label { font-size: 0.7rem; color: #71717a; text-transform: uppercase; font-weight: 700; display: block; margin-bottom: 8px; }
-    .stat-val { font-size: 1.25rem; font-weight: 800; color: #3b82f6; }
-
-    .tag-cloud { display: flex; flex-wrap: wrap; gap: 8px; }
-    .tag-skill { background: rgba(59, 130, 246, 0.1); color: #3b82f6; padding: 4px 10px; border-radius: 6px; font-size: 0.8rem; border: 1px solid rgba(59,130,246,0.2); }
-
-    .candidate-item { display: flex; align-items: center; gap: 15px; padding: 12px; background: #09090b; border: 1px solid #27272a; border-radius: 12px; margin-bottom: 10px; }
-    .match-score { width: 42px; height: 42px; border: 2px solid #3b82f6; border-radius: 50%; display: grid; place-items: center; font-weight: 800; font-size: 0.75rem; color: #3b82f6; }
-    .cand-info { flex: 1; }
-    .cand-name { font-weight: 600; font-size: 0.9rem; }
-    .cand-details { display: flex; gap: 10px; font-size: 0.7rem; color: #71717a; }
-
-    .badge-status { font-size: 0.65rem; font-weight: 900; padding: 4px 10px; border-radius: 20px; background: #27272a; }
-    .badge-status.active { background: rgba(34, 197, 94, 0.15); color: #4ade80; }
-    .btn-view { background: #27272a; border: none; color: #fff; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 0.75rem; }
-    .mt-4 { margin-top: 1.5rem; }
-  `]
+  styleUrl: './project-detail.page.scss'
 })
 export class TeacherProjectDetailPage implements OnInit {
   private route = inject(ActivatedRoute);

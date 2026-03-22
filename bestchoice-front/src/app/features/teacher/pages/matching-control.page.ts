@@ -76,31 +76,7 @@ import { finalize } from 'rxjs';
       </div>
     </div>
   `,
-  styles: [`
-    :host { display: block; padding: 2rem; background: #09090b; min-height: 100vh; color: #fff; }
-    .page-header { margin-bottom: 2.5rem; }
-    h1 { font-size: 2rem; font-weight: 800; }
-
-    .control-grid { display: grid; grid-template-columns: 1.5fr 1fr; gap: 2rem; }
-    .card { background: #18181b; border: 1px solid #27272a; border-radius: 16px; padding: 2rem; }
-
-    .weight-row { margin-bottom: 2rem; }
-    .label-group { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-    .label-group label { font-size: 0.9rem; font-weight: 600; color: #a1a1aa; }
-    .value-badge { background: #3b82f6; color: #fff; padding: 4px 10px; border-radius: 6px; font-weight: 800; font-size: 0.85rem; }
-    .remainder { background: #27272a; color: #71717a; }
-
-    input[type="range"] { width: 100%; height: 6px; background: #27272a; border-radius: 3px; appearance: none; cursor: pointer; }
-    input[type="range"]::-webkit-slider-thumb { appearance: none; width: 18px; height: 18px; background: #3b82f6; border-radius: 50%; }
-
-    .btn-run { width: 100%; padding: 14px; background: #3b82f6; color: #fff; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; transition: 0.2s; }
-    .btn-run:hover { background: #2563eb; }
-    .btn-run:disabled { opacity: 0.5; cursor: not-allowed; }
-
-    .summary-item { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #27272a; font-size: 0.85rem; }
-    .summary-item label { color: #71717a; }
-    .info-text { font-size: 0.75rem; color: #71717a; font-style: italic; margin-top: 8px; }
-  `]
+  styleUrl: './matching-control.page.scss'
 })
 export class MatchingControlPage {
   private matchingService = inject(MatchingService);
