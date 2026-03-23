@@ -9,7 +9,7 @@ import { RouterLink } from '@angular/router';
     <div class="page">
       <div class="topbar">
         <h1>Utilisateurs</h1>
-        <a class="link" routerLink="/app/admin/dashboard">← Retour</a>
+        <a class="btn-retour" routerLink="/app/admin/dashboard">← Retour</a>
       </div>
 
       <div class="card">

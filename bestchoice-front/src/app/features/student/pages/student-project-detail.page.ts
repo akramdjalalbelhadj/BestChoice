@@ -7,11 +7,12 @@ import { AuthStore } from '../../../core/auth/auth.store';
 import { ProjectResponse } from '../../project/models/project.model';
 import { PreferenceCreateRequest } from '../models/preference.model';
 import { finalize } from 'rxjs';
+import { ThemeToggleComponent } from '../../../shared/theme-toggle.component';
 
 @Component({
   selector: 'app-student-project-detail',
   standalone: true,
-  imports: [CommonModule, RouterLink, RouterLinkActive, ReactiveFormsModule],
+  imports: [CommonModule, RouterLink, RouterLinkActive, ReactiveFormsModule, ThemeToggleComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="app-layout">
@@ -21,8 +22,10 @@ import { finalize } from 'rxjs';
           <a routerLink="/app/student/dashboard" routerLinkActive="active" class="menu-item">📊 Dashboard</a>
           <a routerLink="/app/student/projects" routerLinkActive="active" class="menu-item">🔍 Projets</a>
           <a routerLink="/app/student/preferences" routerLinkActive="active" class="menu-item">⭐ Mes Choix</a>
+          <a routerLink="/app/student/profile" routerLinkActive="active" class="menu-item">👤 Mon Profil</a>
         </nav>
         <footer class="sidebar-footer">
+          <app-theme-toggle />
           <button (click)="logout()" class="btn-logout">🚪 Déconnexion</button>
         </footer>
       </aside>
@@ -32,7 +35,7 @@ import { finalize } from 'rxjs';
           <div class="loading-state">Chargement du projet...</div>
         } @else if (project()) {
           <header class="detail-header">
-            <a routerLink="/app/student/projects" class="back-link">← Retour au catalogue</a>
+            <a routerLink="/app/student/projects" class="btn-retour">← Retour au catalogue</a>
             <div class="header-main">
               <h1>{{ project()?.title }}</h1>
               <span class="status-badge" [class.full]="project()?.complet">

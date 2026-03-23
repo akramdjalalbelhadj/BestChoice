@@ -15,7 +15,7 @@ import { finalize } from 'rxjs';
   template: `
     <div class="page-container">
       <header class="header">
-        <a routerLink="../" class="back-link">← Retour aux projets</a>
+        <a routerLink="../" class="btn-retour">← Retour aux projets</a>
         <h1>Publier une nouvelle offre</h1>
       </header>
 

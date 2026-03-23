@@ -6,11 +6,12 @@ import { AuthStore } from '../../../core/auth/auth.store';
 import { finalize } from 'rxjs';
 import { MatchingService } from '../../../core/services/matching.service';
 import { MatchingResultResponse } from '../../matching/models/matching.model';
+import { ThemeToggleComponent } from '../../../shared/theme-toggle.component';
 
 @Component({
   selector: 'app-teacher-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, ThemeToggleComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <main class="dashboard-container">
@@ -21,6 +22,8 @@ import { MatchingResultResponse } from '../../matching/models/matching.model';
         </div>
 
         <div class="header-actions">
+          <app-theme-toggle />
+
           <button class="btn-outline-primary" routerLink="../matching-control">
             <span class="icon">⚙️</span> Configurer Matching
           </button>
@@ -76,13 +79,13 @@ import { MatchingResultResponse } from '../../matching/models/matching.model';
                     <h4>{{ p.title }}</h4>
                     <p class="text-xs text-muted">
                       {{ p.workType }} •
-                      <strong>{{ p.assignedStudentEmails?.length || 0 }} / {{ p.maxStudents }}</strong> places
+                      <strong>{{ p.assignedStudentEmails.length }} / {{ p.maxStudents }}</strong> places
                     </p>
                   </div>
                   <div class="item-visual">
                     <div class="progress-track">
                       <div class="progress-fill"
-                           [style.width.%]="((p.assignedStudentEmails?.length || 0) / p.maxStudents) * 100">
+                           [style.width.%]="(p.assignedStudentEmails.length / p.maxStudents) * 100">
                       </div>
                     </div>
                   </div>

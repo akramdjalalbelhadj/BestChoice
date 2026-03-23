@@ -5,11 +5,12 @@ import { StudentService } from '../services/student.service';
 import { AuthStore } from '../../../core/auth/auth.store';
 import { PreferenceResponse } from '../models/preference.model';
 import { finalize } from 'rxjs';
+import { ThemeToggleComponent } from '../../../shared/theme-toggle.component';
 
 @Component({
   selector: 'app-student-preferences',
   standalone: true,
-  imports: [CommonModule, RouterLink, RouterLinkActive],
+  imports: [CommonModule, RouterLink, RouterLinkActive, ThemeToggleComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="app-layout">
@@ -19,15 +20,17 @@ import { finalize } from 'rxjs';
           <a routerLink="/app/student/dashboard" routerLinkActive="active" class="menu-item">📊 Dashboard</a>
           <a routerLink="/app/student/projects" routerLinkActive="active" class="menu-item">🔍 Projets</a>
           <a routerLink="/app/student/preferences" routerLinkActive="active" class="menu-item">⭐ Mes Choix</a>
+          <a routerLink="/app/student/profile" routerLinkActive="active" class="menu-item">👤 Mon Profil</a>
         </nav>
         <footer class="sidebar-footer">
+          <app-theme-toggle />
           <button (click)="logout()" class="btn-logout">🚪 Déconnexion</button>
         </footer>
       </aside>
 
       <main class="main-content">
         <header class="page-header">
-          <a routerLink="../dashboard" class="back-link">← Retour au Dashboard</a>
+          <a routerLink="../dashboard" class="btn-retour">← Retour au Dashboard</a>
           <h1>Mes Vœux Classés</h1>
           <p class="text-muted">Vous pouvez classer jusqu'à 10 projets par ordre de priorité.</p>
         </header>

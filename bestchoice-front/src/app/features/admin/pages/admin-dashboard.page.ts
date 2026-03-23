@@ -2,16 +2,22 @@ import { ChangeDetectionStrategy, Component, inject, computed } from '@angular/c
 import { RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { AuthStore } from '../../../core/auth/auth.store';
+import { ThemeToggleComponent } from '../../../shared/theme-toggle.component';
 
 @Component({
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, ThemeToggleComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="page">
       <header>
-        <h1>Admin</h1>
-        <p class="muted">Supervision (MVP)</p>
+        <div class="header-row">
+          <div>
+            <h1>Admin</h1>
+            <p class="muted">Supervision (MVP)</p>
+          </div>
+          <app-theme-toggle />
+        </div>
       </header>
 
       <div class="grid">

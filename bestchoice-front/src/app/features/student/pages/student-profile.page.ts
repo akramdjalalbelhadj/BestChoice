@@ -6,11 +6,12 @@ import { StudentService } from '../services/student.service';
 import { AuthStore } from '../../../core/auth/auth.store';
 import { WorkType } from '../../../core/models/enums.model';
 import { finalize } from 'rxjs';
+import { ThemeToggleComponent } from '../../../shared/theme-toggle.component';
 
 @Component({
   selector: 'app-student-profile',
   standalone: true,
-  imports: [CommonModule, RouterLink, FormsModule, ReactiveFormsModule],
+  imports: [CommonModule, RouterLink, FormsModule, ReactiveFormsModule, ThemeToggleComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="app-layout">
@@ -23,6 +24,7 @@ import { finalize } from 'rxjs';
           <a routerLink="/app/student/profile" class="menu-item active">👤 Mon Profil</a>
         </nav>
         <footer class="sidebar-footer">
+          <app-theme-toggle />
           <button (click)="logout()" class="btn-logout">🚪 Déconnexion</button>
         </footer>
       </aside>
@@ -30,7 +32,7 @@ import { finalize } from 'rxjs';
       <main class="main-content">
         <header class="profile-header">
           <div class="header-titles">
-            <a routerLink="../dashboard" class="back-link">← Retour au dashboard</a>
+            <a routerLink="../dashboard" class="btn-retour">← Retour au dashboard</a>
             <h1>Mon Profil Étudiant</h1>
           </div>
 

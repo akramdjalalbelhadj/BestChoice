@@ -13,7 +13,7 @@ import { finalize } from 'rxjs';
   template: `
     <div class="detail-container">
       <header class="detail-header">
-        <a routerLink="/app/teacher/dashboard" class="back-link">← Retour au dashboard</a>
+        <a routerLink="/app/teacher/dashboard" class="btn-retour">← Retour au dashboard</a>
         <div class="header-main">
           <h1>{{ project()?.title || 'Chargement...' }}</h1>
           @if (project()) {

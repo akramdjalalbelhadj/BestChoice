@@ -1,55 +1,81 @@
 :host {
   display: block;
+  background: var(--bc-bg);
+  min-height: 100vh;
+  padding: 2.5rem 2rem;
+  background-image: radial-gradient(ellipse 60% 50% at 50% -20%, rgba(129, 140, 248, 0.12) 0%, transparent 60%);
 }
 
 .page {
-  padding: 24px;
-  max-width: 1200px;
+  max-width: 1100px;
   margin: 0 auto;
 }
 
-.muted {
-  opacity: 0.7;
-  font-size: 14px;
+header { margin-bottom: 2rem; }
+
+.header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
 }
+
+header h1 {
+  font-size: 1.9rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  background: linear-gradient(135deg, var(--bc-text) 50%, var(--bc-primary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 4px;
+}
+
+.muted { color: var(--bc-text-2); font-size: 0.9rem; }
 
 .grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 16px;
-  margin-top: 24px;
+  gap: 1.25rem;
+  margin-top: 1.5rem;
 }
 
 .card {
   display: block;
-  padding: 20px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
+  padding: 1.75rem;
+  background: var(--bc-card);
+  border: 1px solid var(--bc-border);
+  border-radius: var(--bc-radius-xl);
   text-decoration: none;
   color: inherit;
-  transition: all 0.2s ease-in-out;
+  box-shadow: var(--bc-shadow-sm);
+  transition: all var(--bc-transition);
+
+  h3 {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--bc-text);
+    margin: 0 0 8px 0;
+  }
+
+  p { font-size: 0.875rem; color: var(--bc-text-2); }
 
   &:not(.disabled):hover {
-    background: rgba(255, 255, 255, 0.08);
-    border-color: rgba(255, 255, 255, 0.3);
+    background: var(--bc-card-hover);
+    border-color: var(--bc-primary-border);
     transform: translateY(-2px);
+    box-shadow: var(--bc-shadow-md), 0 0 20px rgba(129, 140, 248, 0.08);
   }
 
   &.disabled {
-    opacity: 0.5;
+    opacity: 0.4;
     cursor: not-allowed;
-  }
-
-  h3 {
-    margin: 0 0 8px 0;
-    font-size: 18px;
   }
 }
 
 .footer {
-  margin-top: 40px;
-  padding-top: 16px;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-  font-size: 13px;
+  margin-top: 3rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--bc-border);
+  font-size: 0.85rem;
+  color: var(--bc-text-2);
 }

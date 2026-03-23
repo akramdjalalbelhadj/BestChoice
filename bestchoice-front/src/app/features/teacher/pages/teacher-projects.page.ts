@@ -13,6 +13,7 @@ import { finalize } from 'rxjs';
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="page-container">
+      <a routerLink="/app/teacher/dashboard" class="btn-retour">← Tableau de bord</a>
       <header class="page-header">
         <div class="title-group">
           <h1>Mes Propositions</h1>
@@ -95,9 +96,9 @@ import { finalize } from 'rxjs';
                     </td>
                     <td class="text-right">
                       <div class="action-menu">
-                        <button class="action-btn" [routerLink]="['./edit', p.id]" title="Modifier">✏️</button>
+                        <button class="action-btn edit" [routerLink]="['./edit', p.id]" title="Modifier">✏️</button>
                         <button
-                          class="action-btn highlight"
+                          class="action-btn view"
                           [routerLink]="['/app/teacher/projects', p.id]"
                           title="Voir les candidats et détails">🧬</button>
                         <button class="action-btn danger" (click)="deactivate(p.id)" title="Retirer l'offre">🚫</button>

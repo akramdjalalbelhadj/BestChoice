@@ -2,6 +2,7 @@ import { Component, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import { MatchingService } from '../../../core/services/matching.service';
 import { MatchingRunRequest } from '../../matching/models/matching.model';
 import { finalize } from 'rxjs';
@@ -9,9 +10,10 @@ import { finalize } from 'rxjs';
 @Component({
   selector: 'app-matching-control',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterLink],
   template: `
     <div class="control-container">
+      <a routerLink="/app/teacher/dashboard" class="btn-retour">← Tableau de bord</a>
       <header class="page-header">
         <h1>Pilotage du Matching</h1>
         <p class="text-muted">Configurez l'importance relative des critères pour l'algorithme Hybride.</p>

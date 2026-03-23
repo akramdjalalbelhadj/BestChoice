@@ -5,11 +5,12 @@ import { FormsModule } from '@angular/forms';
 import { StudentService } from '../services/student.service';
 import { AuthStore } from '../../../core/auth/auth.store';
 import { finalize } from 'rxjs';
+import { ThemeToggleComponent } from '../../../shared/theme-toggle.component';
 
 @Component({
   selector: 'app-student-projects',
   standalone: true,
-  imports: [CommonModule, RouterLink, RouterLinkActive, FormsModule],
+  imports: [CommonModule, RouterLink, RouterLinkActive, FormsModule, ThemeToggleComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="app-layout">
@@ -19,8 +20,10 @@ import { finalize } from 'rxjs';
           <a routerLink="/app/student/dashboard" routerLinkActive="active" class="menu-item">📊 Dashboard</a>
           <a routerLink="/app/student/projects" routerLinkActive="active" class="menu-item">🔍 Projets</a>
           <a routerLink="/app/student/preferences" routerLinkActive="active" class="menu-item">⭐ Mes Choix</a>
+          <a routerLink="/app/student/profile" routerLinkActive="active" class="menu-item">👤 Mon Profil</a>
         </nav>
         <footer class="sidebar-footer">
+          <app-theme-toggle />
           <button (click)="logout()" class="btn-logout">🚪 Déconnexion</button>
         </footer>
       </aside>
@@ -28,7 +31,7 @@ import { finalize } from 'rxjs';
       <main class="main-content">
         <header class="page-header">
           <div class="title-area">
-            <a routerLink="../dashboard" class="back-link">← Retour au Dashboard</a>
+            <a routerLink="../dashboard" class="btn-retour">← Retour au Dashboard</a>
             <h1>Catalogue des Projets</h1>
           </div>
 

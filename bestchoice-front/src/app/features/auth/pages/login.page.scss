@@ -7,91 +7,128 @@
   display: grid;
   place-items: center;
   padding: 24px;
-  background: #000;
-  color: #fff;
+  background:
+    radial-gradient(ellipse 80% 60% at 50% -10%, rgba(129, 140, 248, 0.15) 0%, transparent 70%),
+    var(--bc-bg);
 }
 
 .card {
   width: 100%;
   max-width: 420px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 16px;
-  padding: 24px;
-  background: rgba(255, 255, 255, 0.04);
+  background: var(--bc-card);
+  border: 1px solid var(--bc-border);
+  border-radius: var(--bc-radius-xl);
+  padding: 2.5rem;
+  box-shadow: var(--bc-shadow-lg), var(--bc-shadow-glow);
+
+  h1 {
+    font-size: 1.75rem;
+    font-weight: 800;
+    margin-bottom: 6px;
+    background: linear-gradient(135deg, var(--bc-text) 40%, var(--bc-primary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
 }
 
 .muted {
-  opacity: 0.75;
-  margin: 0 0 16px;
-  font-size: 14px;
+  color: var(--bc-text-2);
+  margin: 0 0 1.5rem;
+  font-size: 0.9rem;
 }
 
 form {
   display: grid;
-  gap: 12px;
+  gap: 16px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
 
 label {
-  font-size: 13px;
-  opacity: 0.8;
-  font-weight: 500;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--bc-text-2);
+  letter-spacing: 0.02em;
 }
 
 input {
-  padding: 12px;
-  border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  background: rgba(0, 0, 0, 0.2);
-  color: inherit;
+  padding: 12px 14px;
+  border-radius: var(--bc-radius-md);
+  border: 1px solid var(--bc-border);
+  background: var(--bc-input);
+  color: var(--bc-text);
+  font-size: 0.95rem;
+  font-family: inherit;
   outline: none;
-  transition: border-color 0.2s;
+  transition: border-color var(--bc-transition), box-shadow var(--bc-transition);
+
+  &::placeholder { color: var(--bc-text-3); }
 
   &:focus {
-    border-color: rgba(255, 255, 255, 0.5);
+    border-color: var(--bc-primary);
+    box-shadow: 0 0 0 3px var(--bc-primary-dim);
   }
 }
 
 .btn {
   margin-top: 8px;
-  padding: 14px;
-  border-radius: 12px;
-  border: 0;
-  background: #fff;
-  color: #000;
-  font-weight: 600;
+  padding: 13px;
+  border-radius: var(--bc-radius-md);
+  border: none;
+  background: var(--bc-primary-grad);
+  color: #fff;
+  font-size: 0.95rem;
+  font-weight: 700;
   cursor: pointer;
-  transition: opacity 0.2s;
+  font-family: inherit;
+  box-shadow: 0 4px 14px rgba(129, 140, 248, 0.3);
+  transition: all var(--bc-transition);
+
+  &:hover:not(:disabled) {
+    opacity: 0.92;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(129, 140, 248, 0.4);
+  }
 
   &:disabled {
-    opacity: 0.5;
+    opacity: 0.45;
     cursor: not-allowed;
   }
 }
 
 .error {
-  color: #ff8a8a;
-  background: rgba(255, 138, 138, 0.1);
-  padding: 10px;
-  border-radius: 8px;
-  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--bc-danger);
+  background: var(--bc-danger-dim);
+  border: 1px solid var(--bc-danger-border);
+  padding: 10px 14px;
+  border-radius: var(--bc-radius-md);
+  font-size: 0.875rem;
 }
 
 .links {
-  margin-top: 20px;
-  font-size: 13px;
+  margin-top: 1.5rem;
+  font-size: 0.85rem;
   display: flex;
   gap: 10px;
   align-items: center;
   justify-content: center;
+  color: var(--bc-text-3);
 
   a {
-    color: inherit;
-    text-decoration: none;
-    opacity: 0.8;
+    color: var(--bc-primary);
+    font-weight: 500;
+    transition: opacity var(--bc-transition);
 
-    &:hover {
-      opacity: 1;
-      text-decoration: underline;
-    }
+    &:hover { opacity: 0.8; }
   }
+
+  span { opacity: 0.4; }
 }

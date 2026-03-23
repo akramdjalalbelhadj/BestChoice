@@ -4,11 +4,12 @@ import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthStore } from '../../../core/auth/auth.store';
 import { StudentService } from '../services/student.service';
 import { finalize } from 'rxjs';
+import { ThemeToggleComponent } from '../../../shared/theme-toggle.component';
 
 @Component({
   selector: 'app-student-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterLink, RouterLinkActive],
+  imports: [CommonModule, RouterLink, RouterLinkActive, ThemeToggleComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="app-layout">
@@ -34,6 +35,7 @@ import { finalize } from 'rxjs';
         </nav>
 
         <footer class="sidebar-footer">
+          <app-theme-toggle />
           <button (click)="logout()" class="btn-logout">
             <span class="icon">🚪</span> Déconnexion
           </button>

@@ -1,31 +1,32 @@
-.page {
-  padding: 16px;
-}
+:host { display: block; background: var(--bc-bg); color: var(--bc-text); min-height: 100vh; }
 
+.page { padding: 2.5rem; max-width: 1100px; margin: 0 auto; }
+
+// --- Topbar ---
 .topbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 12px; margin-bottom: 2rem;
 }
 
-.muted {
-  opacity: 0.75;
-}
+h1 { font-size: 1.75rem; font-weight: 800; letter-spacing: -0.02em; color: var(--bc-text); }
+
+.muted { color: var(--bc-text-3); font-size: 0.875rem; }
 
 .link {
-  font-size: 13px;
-  opacity: 0.85;
+  color: var(--bc-primary); font-size: 0.82rem;
+  font-weight: 500; text-decoration: none; opacity: 0.9;
+  &:hover { opacity: 1; }
 }
 
+// --- Card / Table ---
 .card {
-  margin-top: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 16px;
-  padding: 16px;
-  background: rgba(255, 255, 255, 0.04);
+  background: var(--bc-card); border: 1px solid var(--bc-border);
+  border-radius: var(--bc-radius-xl); padding: 1.5rem;
+  box-shadow: var(--bc-shadow-sm); margin-top: 0;
 }
 
 code {
-  opacity: 0.9;
+  background: var(--bc-input); border: 1px solid var(--bc-border);
+  padding: 2px 8px; border-radius: var(--bc-radius-sm);
+  font-size: 0.82rem; color: var(--bc-primary); opacity: 1;
 }
