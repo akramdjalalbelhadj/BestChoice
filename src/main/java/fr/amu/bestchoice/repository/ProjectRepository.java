@@ -43,8 +43,7 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
      * @param workType Type de travail
      * @return Liste des projets de ce type
      */
-    List<Project> findByWorkType(WorkType workType);
-
+    List<Project> findByWorkTypesContaining(WorkType workType);
     /**
      * Récupère les projets par enseignant
      */

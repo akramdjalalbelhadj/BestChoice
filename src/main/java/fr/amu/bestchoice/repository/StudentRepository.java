@@ -48,7 +48,7 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
     /**
      * Récupère les étudiants par type de travail préféré
      */
-    List<Student> findByPreferredWorkType(WorkType workType);
+    List<Student> findByPreferredWorkTypesContaining(WorkType workType);
 
     /**
      * Récupère les étudiants possédant une compétence spécifique

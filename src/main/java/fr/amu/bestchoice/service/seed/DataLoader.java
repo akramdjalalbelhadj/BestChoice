@@ -98,26 +98,41 @@ public class DataLoader {
 
     private List<Subject> createSubjects(List<Teacher> teachers) {
         List<Subject> subjects = new ArrayList<>();
-        // Jean est l'index 0, Martin l'index 1, Bernard l'index 2
         Teacher jean = teachers.get(0);
         Teacher martin = teachers.get(1);
         Teacher bernard = teachers.get(2);
 
         for (int i = 1; i <= 10; i++) {
+            // AJOUT DU CHAMP workTypes ICI ⬇️
             subjects.add(Subject.builder()
                     .title("Option IA : Module " + i + " (Jean)")
-                    .description("Cours optionnel de spécialisation en Intelligence Artificielle.")
-                    .credits(3).maxStudents(15).active(true).teacher(jean).build());
+                    .description("Cours optionnel IA.")
+                    .credits(3)
+                    .maxStudents(15)
+                    .active(true)
+                    .teacher(jean)
+                    .workTypes(Set.of(WorkType.RECHERCHE))
+                    .build());
 
             subjects.add(Subject.builder()
                     .title("Option Web : Architecture " + i + " (Martin)")
-                    .description("Cours optionnel sur les architectures web modernes.")
-                    .credits(3).maxStudents(20).active(true).teacher(martin).build());
+                    .description("Cours optionnel Web.")
+                    .credits(3)
+                    .maxStudents(20)
+                    .active(true)
+                    .teacher(martin)
+                    .workTypes(Set.of(WorkType.DEVELOPPEMENT))
+                    .build());
 
             subjects.add(Subject.builder()
-                    .title("Option Sécurité : Cryptographie " + i + " (Bernard)")
-                    .description("Cours optionnel sur les systèmes de sécurité avancés.")
-                    .credits(3).maxStudents(12).active(true).teacher(bernard).build());
+                    .title("Option Sécurité : Crypto " + i + " (Bernard)")
+                    .description("Cours optionnel Sécurité.")
+                    .credits(3)
+                    .maxStudents(12)
+                    .active(true)
+                    .teacher(bernard)
+                    .workTypes(Set.of(WorkType.ANALYSE))
+                    .build());
         }
         return subjects;
     }
