@@ -4,11 +4,12 @@ import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthStore } from '../../../core/auth/auth.store';
 import { StudentService } from '../services/student.service';
 import { finalize } from 'rxjs';
+import { ThemeToggleComponent } from '../../../shared/theme-toggle.component';
 
 @Component({
   selector: 'app-student-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterLink, RouterLinkActive],
+  imports: [CommonModule, RouterLink, RouterLinkActive, ThemeToggleComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="app-layout">
@@ -34,6 +35,7 @@ import { finalize } from 'rxjs';
         </nav>
 
         <footer class="sidebar-footer">
+          <app-theme-toggle />
           <button (click)="logout()" class="btn-logout">
             <span class="icon">🚪</span> Déconnexion
           </button>
@@ -122,31 +124,7 @@ import { finalize } from 'rxjs';
       </main>
     </div>
   `,
-  styles: [`
-    :host { --bg: #09090b; --sidebar: #111113; --card: #18181b; --border: #27272a; --primary: #3b82f6; --text-dim: #71717a; display: block; height: 100vh; background: var(--bg); color: #fff; font-family: 'Inter', sans-serif; }
-    .app-layout { display: flex; height: 100vh; }
-    .sidebar { width: 250px; background: var(--sidebar); border-right: 1px solid var(--border); display: flex; flex-direction: column; padding: 1.5rem; }
-    .nav-links { flex: 1; display: flex; flex-direction: column; gap: 4px; margin-top: 2rem; }
-    .menu-item { display: flex; align-items: center; gap: 10px; padding: 10px 12px; text-decoration: none; color: var(--text-dim); border-radius: 8px; transition: 0.2s; font-size: 0.9rem; }
-    .menu-item:hover, .menu-item.active { background: #27272a; color: white; }
-    .menu-item.active { color: var(--primary); background: rgba(59, 130, 246, 0.1); }
-    .btn-logout { width: 100%; padding: 10px; background: transparent; border: 1px solid var(--border); color: #ef4444; border-radius: 8px; cursor: pointer; text-align: left; font-weight: 600; display: flex; align-items: center; gap: 10px; }
-    .main-content { flex: 1; display: flex; flex-direction: column; }
-    .top-nav { height: 80px; padding: 0 2rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
-    .dashboard-scroll { flex: 1; overflow-y: auto; padding: 2rem; }
-    .surgical-container { max-width: 900px; margin: 0 auto; display: grid; gap: 1.5rem; }
-    .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; }
-    .progress-container { display: flex; align-items: center; gap: 15px; margin: 1rem 0; }
-    .progress-bar { flex: 1; height: 8px; background: #27272a; border-radius: 4px; overflow: hidden; }
-    .progress-fill { height: 100%; background: var(--primary); transition: 1s ease-out; }
-    .percentage-text { font-weight: 800; color: var(--primary); width: 45px; }
-    .match-list { display: grid; gap: 10px; margin-top: 1rem; }
-    .match-item { display: flex; align-items: center; gap: 15px; padding: 12px; background: #09090b; border: 1px solid var(--border); border-radius: 10px; }
-    .score-pill { width: 50px; height: 50px; border: 2px solid var(--primary); border-radius: 50%; display: grid; place-items: center; font-size: 0.8rem; font-weight: 800; color: var(--primary); }
-    .score-breakdown { display: flex; gap: 12px; margin-top: 4px; }
-    .score-breakdown span { font-size: 0.7rem; color: var(--text-dim); background: #18181b; padding: 2px 6px; border-radius: 4px; }
-    .btn-sm { padding: 6px 12px; background: var(--border); border: none; color: #fff; border-radius: 6px; cursor: pointer; margin-left: auto; }
-  `]
+  styleUrl: './student-dashboard.page.scss'
 })
 export class StudentDashboardPage implements OnInit {
   protected readonly auth = inject(AuthStore);

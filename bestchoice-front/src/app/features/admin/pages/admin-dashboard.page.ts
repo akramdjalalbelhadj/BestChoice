@@ -2,16 +2,22 @@ import { ChangeDetectionStrategy, Component, inject, computed } from '@angular/c
 import { RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { AuthStore } from '../../../core/auth/auth.store';
+import { ThemeToggleComponent } from '../../../shared/theme-toggle.component';
 
 @Component({
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, ThemeToggleComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="page">
       <header>
-        <h1>Admin</h1>
-        <p class="muted">Supervision (MVP)</p>
+        <div class="header-row">
+          <div>
+            <h1>Admin</h1>
+            <p class="muted">Supervision (MVP)</p>
+          </div>
+          <app-theme-toggle />
+        </div>
       </header>
 
       <div class="grid">
@@ -31,45 +37,7 @@ import { AuthStore } from '../../../core/auth/auth.store';
       </footer>
     </div>
   `,
-  styles: [`
-    :host { display: block; }
-    .page { padding: 24px; max-width: 1200px; margin: 0 auto; }
-    .muted { opacity: 0.7; font-size: 14px; }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 16px;
-      margin-top: 24px;
-    }
-
-    .card {
-      display: block;
-      padding: 20px;
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 12px;
-      text-decoration: none;
-      color: inherit;
-      transition: all 0.2s ease-in-out;
-    }
-
-    .card:not(.disabled):hover {
-      background: rgba(255, 255, 255, 0.08);
-      border-color: rgba(255, 255, 255, 0.3);
-      transform: translateY(-2px);
-    }
-
-    .card.disabled { opacity: 0.5; cursor: not-allowed; }
-    .card h3 { margin: 0 0 8px 0; font-size: 18px; }
-
-    .footer {
-      margin-top: 40px;
-      padding-top: 16px;
-      border-top: 1px solid rgba(255, 255, 255, 0.1);
-      font-size: 13px;
-    }
-  `]
+  styleUrl: './admin-dashboard.page.scss'
 })
 export class AdminDashboardPage {
   private readonly auth = inject(AuthStore);

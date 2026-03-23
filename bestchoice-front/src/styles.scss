@@ -1,37 +1,256 @@
-
-// Include theming for Angular Material with `mat.theme()`.
-// This Sass mixin will define CSS variables that are used for styling Angular Material
-// components according to the Material 3 design spec.
-// Learn more about theming and how to use it for your application's
-// custom components at https://material.angular.dev/guide/theming
 @use '@angular/material' as mat;
 
+// ============================================================
+// LUMINA ACADEMIA — Design System Global
+// ============================================================
+
+// --- Design Tokens (CSS Custom Properties) ---
+:root {
+  // Backgrounds
+  --bc-bg:           #0d0f1e;   // Page background — bleu nuit chaud
+  --bc-surface:      #131629;   // Sidebar, surfaces élevées
+  --bc-card:         #1a1e38;   // Cards
+  --bc-card-hover:   #202442;   // Cards au survol
+  --bc-input:        #111328;   // Fond des inputs
+
+  // Borders
+  --bc-border:       #252a4a;   // Bordure subtile
+  --bc-border-2:     #343a64;   // Bordure plus visible
+
+  // Primary — Lavande indigo douce
+  --bc-primary:         #818cf8;
+  --bc-primary-hover:   #6d76f0;
+  --bc-primary-dim:     rgba(129, 140, 248, 0.12);
+  --bc-primary-border:  rgba(129, 140, 248, 0.3);
+  --bc-primary-grad:    linear-gradient(135deg, #818cf8 0%, #a78bfa 100%);
+
+  // Success — Émeraude douce
+  --bc-success:         #34d399;
+  --bc-success-dim:     rgba(52, 211, 153, 0.1);
+  --bc-success-border:  rgba(52, 211, 153, 0.3);
+
+  // Danger — Rouge doux
+  --bc-danger:          #f87171;
+  --bc-danger-dim:      rgba(248, 113, 113, 0.1);
+  --bc-danger-border:   rgba(248, 113, 113, 0.3);
+
+  // Warning — Ambre chaud
+  --bc-warn:            #fb923c;
+  --bc-warn-dim:        rgba(251, 146, 60, 0.1);
+
+  // Action buttons — inspiré CRUD Admin Panel
+  --bc-action-view:          #4a9fd8;
+  --bc-action-view-dim:      rgba(74, 159, 216, 0.12);
+  --bc-action-view-border:   rgba(74, 159, 216, 0.3);
+
+  --bc-action-edit:          #e67e22;
+  --bc-action-edit-dim:      rgba(230, 126, 34, 0.12);
+  --bc-action-edit-border:   rgba(230, 126, 34, 0.3);
+
+  --bc-action-delete:        #e74c3c;
+  --bc-action-delete-dim:    rgba(231, 76, 60, 0.12);
+  --bc-action-delete-border: rgba(231, 76, 60, 0.3);
+
+  // Text
+  --bc-text:     #e4e7f5;   // Texte principal — blanc chaud
+  --bc-text-2:   #9ba3cc;   // Texte secondaire — lavande gris
+  --bc-text-3:   #616a9a;   // Texte atténué
+
+  // Sidebar
+  --bc-sidebar:  #0f1228;
+
+  // Shadows
+  --bc-shadow-sm:  0 1px 3px rgba(0, 0, 0, 0.4), 0 1px 2px rgba(0, 0, 0, 0.3);
+  --bc-shadow-md:  0 4px 16px rgba(0, 0, 0, 0.4), 0 2px 6px rgba(0, 0, 0, 0.3);
+  --bc-shadow-lg:  0 10px 40px rgba(0, 0, 0, 0.5), 0 4px 12px rgba(0, 0, 0, 0.4);
+  --bc-shadow-glow: 0 0 40px rgba(129, 140, 248, 0.08);
+
+  // Spacing & Radii
+  --bc-radius-sm:   6px;
+  --bc-radius-md:   10px;
+  --bc-radius-lg:   14px;
+  --bc-radius-xl:   18px;
+  --bc-radius-full: 9999px;
+
+  // Transitions
+  --bc-transition: 0.18s ease;
+
+  // Top nav (glassmorphism)
+  --bc-topnav-bg:     rgba(13, 15, 30, 0.72);
+  --bc-topnav-border: rgba(255, 255, 255, 0.06);
+}
+
+// ============================================================
+// LIGHT MODE — Palette claire et colorée
+// ============================================================
+[data-theme="light"] {
+  color-scheme: light;
+
+  // Backgrounds
+  --bc-bg:          #f0f2ff;
+  --bc-surface:     #e8eaff;
+  --bc-card:        #ffffff;
+  --bc-card-hover:  #f5f7ff;
+  --bc-input:       #f8f9fe;
+
+  // Borders
+  --bc-border:      #e2e4f5;
+  --bc-border-2:    #cdd0e8;
+
+  // Sidebar
+  --bc-sidebar:     #ffffff;
+
+  // Text
+  --bc-text:        #1e1f2e;
+  --bc-text-2:      #4a5080;
+  --bc-text-3:      #8891c0;
+
+  // Top nav — blanc nacré en mode clair
+  --bc-topnav-bg:     rgba(255, 255, 255, 0.9);
+  --bc-topnav-border: rgba(129, 140, 248, 0.12);
+
+  // Shadows (plus légères sur fond clair)
+  --bc-shadow-sm:  0 1px 4px rgba(99, 102, 241, 0.07), 0 1px 2px rgba(0,0,0,0.04);
+  --bc-shadow-md:  0 4px 18px rgba(99, 102, 241, 0.09), 0 2px 6px rgba(0,0,0,0.05);
+  --bc-shadow-lg:  0 10px 40px rgba(99, 102, 241, 0.12), 0 4px 12px rgba(0,0,0,0.07);
+  --bc-shadow-glow: 0 0 40px rgba(129, 140, 248, 0.18);
+
+  // Primary — same violet (fonctionne sur blanc aussi)
+  --bc-primary-dim:    rgba(129, 140, 248, 0.1);
+  --bc-primary-border: rgba(129, 140, 248, 0.25);
+
+  // Success / Danger / Warn — légèrement saturés pour le clair
+  --bc-success-dim:    rgba(52, 211, 153, 0.12);
+  --bc-danger-dim:     rgba(248, 113, 113, 0.12);
+  --bc-warn-dim:       rgba(251, 146, 60, 0.12);
+
+  // Action buttons — plus vivides en mode clair
+  --bc-action-view-dim:      rgba(74, 159, 216, 0.1);
+  --bc-action-edit-dim:      rgba(230, 126, 34, 0.1);
+  --bc-action-delete-dim:    rgba(231, 76, 60, 0.1);
+}
+
+// --- Angular Material Theme ---
 html {
   height: 100%;
   @include mat.theme((
     color: (
-      primary: mat.$azure-palette,
-      tertiary: mat.$blue-palette,
+      primary: mat.$violet-palette,
+      tertiary: mat.$cyan-palette,
     ),
-    typography: Roboto,
+    typography: Inter,
     density: 0,
   ));
 }
 
+// --- Global Reset & Base ---
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
 body {
-  // Default the application to a light color theme. This can be changed to
-  // `dark` to enable the dark color theme, or to `light dark` to defer to the
-  // user's system settings.
-  color-scheme: light;
-
-  // Set a default background, font and text colors for the application using
-  // Angular Material's system-level CSS variables. Learn more about these
-  // variables at https://material.angular.dev/guide/system-variables
-  background-color: var(--mat-sys-surface);
-  color: var(--mat-sys-on-surface);
-  font: var(--mat-sys-body-medium);
-
-  // Reset the user agent margin.
   margin: 0;
   height: 100%;
+  background-color: var(--bc-bg);
+  color: var(--bc-text);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 15px;
+  line-height: 1.6;
+  color-scheme: dark;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+// --- Global Typography ---
+h1, h2, h3, h4, h5, h6 {
+  color: var(--bc-text);
+  line-height: 1.3;
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+
+p { margin: 0; color: var(--bc-text-2); }
+a { color: var(--bc-primary); text-decoration: none; }
+
+// --- Bouton Retour Global ---
+.btn-retour {
+  display: inline-flex; align-items: center; gap: 6px;
+  color: var(--bc-text-2); background: var(--bc-card);
+  border: 1px solid var(--bc-border-2);
+  padding: 7px 16px; border-radius: var(--bc-radius-md);
+  font-size: 0.82rem; font-weight: 600; text-decoration: none;
+  transition: all var(--bc-transition); margin-bottom: 1.25rem;
+  &:hover { background: var(--bc-card-hover); color: var(--bc-text); border-color: var(--bc-primary-border); }
+}
+
+// --- Utility classes ---
+.text-muted    { color: var(--bc-text-2); }
+.text-xs       { font-size: 0.75rem; }
+.text-sm       { font-size: 0.85rem; }
+.mb-4          { margin-bottom: 1.5rem; }
+.mt-4          { margin-top: 1.5rem; }
+
+// --- Custom Scrollbar ---
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: var(--bc-border-2);
+  border-radius: var(--bc-radius-full);
+  &:hover { background: var(--bc-text-3); }
+}
+
+// --- Global Card Style ---
+.bc-card {
+  background: var(--bc-card);
+  border: 1px solid var(--bc-border);
+  border-radius: var(--bc-radius-xl);
+  box-shadow: var(--bc-shadow-sm);
+}
+
+// --- Global Button Styles ---
+.bc-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border-radius: var(--bc-radius-md);
+  border: none;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--bc-transition);
+  font-family: inherit;
+
+  &-primary {
+    background: var(--bc-primary-grad);
+    color: #fff;
+    box-shadow: 0 4px 14px rgba(129, 140, 248, 0.3);
+    &:hover { opacity: 0.9; transform: translateY(-1px); box-shadow: 0 6px 20px rgba(129, 140, 248, 0.4); }
+    &:disabled { opacity: 0.45; cursor: not-allowed; transform: none; box-shadow: none; }
+  }
+
+  &-ghost {
+    background: transparent;
+    border: 1px solid var(--bc-border-2);
+    color: var(--bc-text-2);
+    &:hover { background: var(--bc-card-hover); color: var(--bc-text); }
+  }
+}
+
+// --- Skeleton Loading ---
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--bc-card) 25%,
+    var(--bc-surface) 50%,
+    var(--bc-card) 75%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.6s ease infinite;
+  border-radius: var(--bc-radius-md);
+}
+
+@keyframes skeleton-loading {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
 }
