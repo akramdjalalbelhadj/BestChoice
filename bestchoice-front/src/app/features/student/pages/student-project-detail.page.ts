@@ -7,11 +7,12 @@ import { AuthStore } from '../../../core/auth/auth.store';
 import { ProjectResponse } from '../../project/models/project.model';
 import { PreferenceCreateRequest } from '../models/preference.model';
 import { finalize } from 'rxjs';
+import { ThemeToggleComponent } from '../../../shared/theme-toggle.component';
 
 @Component({
   selector: 'app-student-project-detail',
   standalone: true,
-  imports: [CommonModule, RouterLink, RouterLinkActive, ReactiveFormsModule],
+  imports: [CommonModule, RouterLink, RouterLinkActive, ReactiveFormsModule, ThemeToggleComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="app-layout">
@@ -21,8 +22,10 @@ import { finalize } from 'rxjs';
           <a routerLink="/app/student/dashboard" routerLinkActive="active" class="menu-item">📊 Dashboard</a>
           <a routerLink="/app/student/projects" routerLinkActive="active" class="menu-item">🔍 Projets</a>
           <a routerLink="/app/student/preferences" routerLinkActive="active" class="menu-item">⭐ Mes Choix</a>
+          <a routerLink="/app/student/profile" routerLinkActive="active" class="menu-item">👤 Mon Profil</a>
         </nav>
         <footer class="sidebar-footer">
+          <app-theme-toggle />
           <button (click)="logout()" class="btn-logout">🚪 Déconnexion</button>
         </footer>
       </aside>
@@ -32,7 +35,7 @@ import { finalize } from 'rxjs';
           <div class="loading-state">Chargement du projet...</div>
         } @else if (project()) {
           <header class="detail-header">
-            <a routerLink="/app/student/projects" class="back-link">← Retour au catalogue</a>
+            <a routerLink="/app/student/projects" class="btn-retour">← Retour au catalogue</a>
             <div class="header-main">
               <h1>{{ project()?.title }}</h1>
               <span class="status-badge" [class.full]="project()?.complet">
@@ -106,41 +109,7 @@ import { finalize } from 'rxjs';
       </main>
     </div>
   `,
-  styles: [`
-    .app-layout { display: flex; height: 100vh; background: #09090b; color: #fff; }
-    .sidebar { width: 250px; background: #111113; border-right: 1px solid #27272a; padding: 1.5rem; display: flex; flex-direction: column; }
-    .main-content { flex: 1; padding: 2.5rem; overflow-y: auto; }
-
-    .detail-header { margin-bottom: 2rem; }
-    .header-main { display: flex; justify-content: space-between; align-items: center; margin-top: 1rem; }
-    h1 { font-size: 2rem; font-weight: 800; margin: 0; }
-    .back-link { color: #3b82f6; text-decoration: none; font-size: 0.9rem; }
-
-    .detail-grid { display: grid; grid-template-columns: 1.8fr 1fr; gap: 2rem; }
-    .card { background: #18181b; border: 1px solid #27272a; border-radius: 16px; padding: 1.5rem; margin-bottom: 1.5rem; }
-
-    .meta-tags { display: flex; gap: 20px; margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid #27272a; }
-    .tag-cloud { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
-    .skill-tag { background: rgba(59, 130, 246, 0.1); color: #3b82f6; padding: 4px 12px; border-radius: 6px; font-size: 0.8rem; font-weight: 600; }
-    .keyword-tag { color: #71717a; font-size: 0.85rem; }
-
-    .field { margin-bottom: 1.25rem; display: flex; flex-direction: column; gap: 8px; }
-    label { font-size: 0.85rem; color: #a1a1aa; font-weight: 600; }
-    input, textarea { background: #09090b; border: 1px solid #27272a; border-radius: 8px; padding: 10px; color: #fff; outline: none; }
-    input:focus { border-color: #3b82f6; }
-
-    .btn-primary { background: #3b82f6; color: #fff; border: none; padding: 12px; border-radius: 8px; font-weight: 700; cursor: pointer; }
-    .btn-primary:disabled { opacity: 0.5; }
-    .w-full { width: 100%; }
-
-    .teacher-info { display: flex; align-items: center; gap: 12px; margin-top: 10px; }
-    .avatar-sm { width: 32px; height: 32px; background: #27272a; border-radius: 50%; display: grid; place-items: center; font-size: 0.8rem; font-weight: 700; }
-    .status-badge { padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; background: rgba(34, 197, 94, 0.1); color: #4ade80; }
-    .status-badge.full { background: rgba(239, 68, 68, 0.1); color: #f87171; }
-
-    .btn-logout { width: 100%; padding: 10px; background: transparent; border: 1px solid #27272a; color: #ef4444; border-radius: 8px; cursor: pointer; text-align: left; }
-    .mt-4 { margin-top: 1.5rem; }
-  `]
+  styleUrl: './student-project-detail.page.scss'
 })
 export class StudentProjectDetailPage implements OnInit {
   private route = inject(ActivatedRoute);

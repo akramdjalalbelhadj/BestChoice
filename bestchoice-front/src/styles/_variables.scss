@@ -1,0 +1,53 @@
+// =============================================================
+// Design Tokens — BestChoice Dark Theme
+// Importer avec : @use 'styles/variables' as *;
+// =============================================================
+
+// --- Couleurs de fond ---
+$color-bg:        #09090b;
+$color-sidebar:   #111113;
+$color-card:      #18181b;
+$color-border:    #27272a;
+$color-surface-2: #1c1c1f;
+
+// --- Couleurs d'accentuation ---
+$color-primary:   #3b82f6;
+$color-primary-hover: #2563eb;
+$color-primary-subtle: rgba(59, 130, 246, 0.1);
+$color-primary-border: rgba(59, 130, 246, 0.2);
+
+// --- Couleurs sémantiques ---
+$color-success:   #22c55e;
+$color-success-light: #4ade80;
+$color-success-subtle: rgba(34, 197, 94, 0.1);
+
+$color-danger:    #ef4444;
+$color-danger-subtle: rgba(239, 68, 68, 0.1);
+$color-error-text: #ff8a8a;
+$color-success-text: #8affb1;
+
+// --- Texte ---
+$color-text:      #ffffff;
+$color-text-muted: #71717a;
+$color-text-dim:  #a1a1aa;
+$color-text-soft: #e4e4e7;
+
+// --- Tailles typographiques ---
+$font-size-xs:  0.65rem;
+$font-size-sm:  0.75rem;
+$font-size-base: 0.9rem;
+$font-size-md:  1rem;
+$font-size-lg:  1.1rem;
+$font-size-xl:  1.75rem;
+$font-size-2xl: 2rem;
+$font-size-3xl: 2.25rem;
+
+// --- Border-radius ---
+$radius-sm:   6px;
+$radius-md:   8px;
+$radius-lg:   12px;
+$radius-xl:   16px;
+$radius-full: 9999px;
+
+// --- Espacements courants ---
+$sidebar-width: 250px;
