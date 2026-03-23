@@ -1,9 +1,7 @@
 package fr.amu.bestchoice.web.controller.matching;
 
 import fr.amu.bestchoice.service.implementation.algorithmes.MatchingContextService;
-import fr.amu.bestchoice.web.dto.matching.MatchingRunRequest;
 import fr.amu.bestchoice.web.dto.matching.MatchingRunResponse;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,19 +13,18 @@ public class MatchingController {
 
     private final MatchingContextService matchingContextService;
 
-    @PostMapping("/run")
-    public ResponseEntity<MatchingRunResponse> run(@Valid @RequestBody MatchingRunRequest request) {
-        var result = matchingContextService.run(request);          // MatchingRunResult
-        var response = MatchingRunResponse.from(result);           // MatchingRunResponse
-        return ResponseEntity.ok(response);
-    }
+    /**
+     * Lance le matching pour une campagne.
+     * Route : POST /api/matching/campaign/5/run
+     */
+    @PostMapping("/campaign/{campaignId}/run")
+    public ResponseEntity<MatchingRunResponse> run(@PathVariable Long campaignId) {
+        // Le service s'occupe de tout : charger la campagne, wipe, calculer, sauvegarder.
+        var result = matchingContextService.run(campaignId);
 
-    @PostMapping("/recompute")
-    public ResponseEntity<MatchingRunResponse> recompute(@Valid @RequestBody MatchingRunRequest request) {
-        MatchingRunRequest forced = request.withRecompute(true);
+        // On transforme le résultat technique en réponse API
+        var response = MatchingRunResponse.from(result);
 
-        var result = matchingContextService.run(forced);           // MatchingRunResult
-        var response = MatchingRunResponse.from(result);           // MatchingRunResponse
         return ResponseEntity.ok(response);
     }
 }

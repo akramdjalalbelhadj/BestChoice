@@ -19,7 +19,7 @@ public record StudentResponse(
 
         // infos académiques
         Integer studyYear,
-        WorkType preferredWorkType,
+        Set<WorkType> preferredWorkTypes,
 
         Set<String> skill,
         Set<String> interestKeyword,

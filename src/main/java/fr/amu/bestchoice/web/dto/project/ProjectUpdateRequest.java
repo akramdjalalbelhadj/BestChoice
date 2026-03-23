@@ -9,7 +9,7 @@ import java.util.Set;
 public record ProjectUpdateRequest(
         @Size(max = 150) String title,
         @Size(max = 3000) String description,
-        WorkType workType,
+        Set<WorkType> workTypes,
         Boolean remotePossible,
         Integer minStudents,
         Integer maxStudents,

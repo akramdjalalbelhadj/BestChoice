@@ -7,33 +7,38 @@ import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
-
 import java.time.LocalDateTime;
 
-/**
- * Entité représentant la préférence d'un étudiant pour un projet.
- * Permet à l'étudiant de classer ses choix selon ses priorités.
-
- */
 @Entity
-@Table( name = "student_preferences",
+@Table(
+        name = "student_preferences",
         uniqueConstraints = {
                 @UniqueConstraint(
-                        columnNames = {"student_id", "project_id"}, name = "uk_student_preference_project"),
+                        columnNames = {"matching_campaign_id", "student_id", "project_id"},
+                        name = "uk_preference_campaign_student_project"
+                ),
                 @UniqueConstraint(
-                        columnNames = {"student_id", "rank"}, name = "uk_student_preference_rank")
+                        columnNames = {"matching_campaign_id", "student_id", "subject_id"},
+                        name = "uk_preference_campaign_student_subject"
+                ),
+                @UniqueConstraint(
+                        columnNames = {"matching_campaign_id", "student_id", "rank"},
+                        name = "uk_preference_campaign_student_rank"
+                )
         },
         indexes = {
+                @Index(name = "idx_preference_campaign", columnList = "matching_campaign_id"),
                 @Index(name = "idx_preference_student", columnList = "student_id"),
                 @Index(name = "idx_preference_project", columnList = "project_id"),
+                @Index(name = "idx_preference_subject", columnList = "subject_id"),
                 @Index(name = "idx_preference_rank", columnList = "rank")
-        })
+        }
+)
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-
 public class StudentPreference {
 
     @Id
@@ -41,7 +46,7 @@ public class StudentPreference {
     private Long id;
 
     /**
-     * Rang de préférence (1 = premier choix, 2 = deuxième choix ... etc)
+     * Rang de préférence (1 = premier choix, 2 = deuxième choix, ...)
      */
     @Min(value = 1, message = "Le rang doit être au minimum 1")
     @Column(name = "rank", nullable = false)
@@ -74,6 +79,13 @@ public class StudentPreference {
     private LocalDateTime createdAt;
 
     /**
+     * Campagne de matching concernée
+     */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "matching_campaign_id", nullable = false)
+    private MatchingCampaign matchingCampaign;
+
+    /**
      * Étudiant ayant exprimé cette préférence
      */
     @ManyToOne(fetch = FetchType.LAZY)
@@ -82,10 +94,17 @@ public class StudentPreference {
 
     /**
      * Projet concerné par cette préférence
+     * Utilisé uniquement si la campagne est de type PROJECT
      */
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "project_id", nullable = false)
+    @JoinColumn(name = "project_id")
     private Project project;
 
-
+    /**
+     * Matière / option concernée par cette préférence
+     * Utilisé uniquement si la campagne est de type SUBJECT
+     */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "subject_id")
+    private Subject subject;
 }

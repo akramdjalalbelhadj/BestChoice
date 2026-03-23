@@ -7,7 +7,9 @@ import java.time.LocalDateTime;
 public record PreferenceResponse(
         Long id,
         Long studentId,
+        Long campaignId,
         Long projectId,
+        Long subjectId,
         Integer rank,
         PreferenceStatus status,
         LocalDateTime createdAt

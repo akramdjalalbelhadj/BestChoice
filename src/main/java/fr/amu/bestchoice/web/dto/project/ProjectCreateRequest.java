@@ -15,8 +15,8 @@ public record ProjectCreateRequest(
         @Size(max = 3000, message = "La description ne doit pas dépasser 3000 caractères")
         String description,
 
-        @NotNull(message = "Le type de travail est obligatoire")
-        WorkType workType,
+        @NotEmpty(message = "Au moins un type de travail est obligatoire")
+        Set<WorkType> workTypes,
 
         Boolean remotePossible,
 

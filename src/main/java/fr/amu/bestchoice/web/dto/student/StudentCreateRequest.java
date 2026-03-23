@@ -19,7 +19,7 @@ public record StudentCreateRequest(
         @Size(max = 100, message = "Le parcours ne doit pas dépasser 100 caractères")
         String track,
 
-        WorkType preferredWorkType,
+        Set<WorkType> preferredWorkTypes,
 
         Set<String> skill,
 

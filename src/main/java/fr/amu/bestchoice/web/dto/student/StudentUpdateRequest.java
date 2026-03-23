@@ -25,8 +25,7 @@ public record StudentUpdateRequest(
         @Max(value = 8, message = "Le niveau d'étude doit être au maximum 8")
         Integer studyYear,
 
-        // Type de travail préféré (optionnel)
-        WorkType preferredWorkType,
+        Set<WorkType> preferredWorkTypes,
 
 
         Set<String> skill,

@@ -9,7 +9,7 @@ public record ProjectResponse(
         Long id,
         String title,
         String description,
-        WorkType workType,
+        Set<WorkType> workTypes,
         Boolean remotePossible,
         Boolean active,
 

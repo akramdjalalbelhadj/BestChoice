@@ -233,7 +233,7 @@ public class StudentService implements IStudentService {
         boolean hasStudyYear = student.getStudyYear() != null;
         boolean hasSkills = student.getSkills() != null && !student.getSkills().isEmpty();
         boolean hasInterests = student.getInterests() != null && !student.getInterests().isEmpty();
-        boolean hasPreferredWorkType = student.getPreferredWorkType() != null;
+        boolean hasPreferredWorkType = student.getPreferredWorkTypes() != null;
 
         boolean isComplete = hasProgram && hasStudyYear && hasSkills && hasInterests && hasPreferredWorkType;
 
@@ -268,7 +268,7 @@ public class StudentService implements IStudentService {
                 response.lastName(),
                 response.studentNumber(),
                 response.studyYear(),
-                response.preferredWorkType(),
+                response.preferredWorkTypes(),
                 skillNames,
                 interestLabels,
                 response.githubUrl(),

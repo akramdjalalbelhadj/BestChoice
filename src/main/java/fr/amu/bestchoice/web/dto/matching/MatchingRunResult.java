@@ -9,15 +9,11 @@ import java.util.List;
  * Résultat du run de matching côté service.
  */
 public record MatchingRunResult(
-        String sessionId,
+        Long campaignId,
         MatchingAlgorithmType algorithmUsed,
         int studentsProcessed,
-        int projectsConsidered,
-        int resultsComputed,
-        int resultsSaved,
-        boolean recompute,
+        int resultsStored,
         Instant startedAt,
-        Instant finishedAt,
-        List<String> warnings
+        Instant finishedAt
 ) {
 }

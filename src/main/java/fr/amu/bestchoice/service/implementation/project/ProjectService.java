@@ -311,7 +311,7 @@ public class ProjectService implements IProjectService {
                 response.id(),
                 response.title(),
                 response.description(),
-                response.workType(),
+                response.workTypes(),
                 response.remotePossible(),
                 response.active(),
                 response.minStudents(),

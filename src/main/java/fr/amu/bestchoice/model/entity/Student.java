@@ -75,9 +75,13 @@ public class Student{
     /**
      * Type de travail préféré par l'étudiant
      */
+    @ElementCollection(targetClass = WorkType.class, fetch = FetchType.LAZY)
+    @CollectionTable(name = "student_preferred_work_types",
+            joinColumns = @JoinColumn(name = "student_id"))
     @Enumerated(EnumType.STRING)
-    @Column(name = "preferred_work_type", length = 30)
-    private WorkType preferredWorkType;
+    @Column(name = "work_type")
+    @Builder.Default
+    private Set<WorkType> preferredWorkTypes = new HashSet<>();
 
     /**
      * Domaine professionnel visé par l'étudiant

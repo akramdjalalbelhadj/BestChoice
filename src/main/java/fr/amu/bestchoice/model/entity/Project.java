@@ -54,10 +54,13 @@ public class Project {
     /**
      * Type de travail principal requis
      */
-    @NotNull(message = "Le type de travail est obligatoire")
+    @ElementCollection(targetClass = WorkType.class, fetch = FetchType.LAZY)
+    @CollectionTable(name = "project_work_types", joinColumns = @JoinColumn(name = "project_id"))
     @Enumerated(EnumType.STRING)
-    @Column(name = "work_type", nullable = false, length = 20)
-    private WorkType workType;
+    @Column(name = "work_type")
+    @NotEmpty(message = "Au moins un type de travail est obligatoire")
+    @Builder.Default
+    private Set<WorkType> workTypes = new HashSet<>();
 
     /**
      * Nombre de crédits ECTS associés

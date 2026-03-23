@@ -39,6 +39,10 @@ public interface MatchingResultMapper {
     @Mapping(target = "projectId", source = "project.id")
     // On extrait l'ID depuis matchingResult.project.id
 
+    @Mapping(target = "campaignId", source = "matchingCampaign.id")
+
+    // On indique à MapStruct d'extraire l'ID du sujet (matière)
+    @Mapping(target = "subjectId", source = "subject.id")
     MatchingResultResponse toResponse(MatchingResult entity);
     // Les champs id, sessionId, globalScore, skillsScore, interestsScore, calculationDate
     // sont mappés automatiquement car même nom dans Entity et DTO

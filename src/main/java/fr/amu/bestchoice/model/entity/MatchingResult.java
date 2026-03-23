@@ -1,5 +1,6 @@
 package fr.amu.bestchoice.model.entity;
 
+import fr.amu.bestchoice.service.implementation.algorithmes.MatchingAlgorithmType;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;
@@ -9,28 +10,25 @@ import org.hibernate.annotations.CreationTimestamp;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-/**
- * Entité représentant le résultat du matching entre un étudiant et un projet.
- *
- * Stocke les scores calculés par l'algorithme de Weighted Matching :
- * - Score global de compatibilité
- * - Scores partiels par critère (compétences, intérêts, type de travail)
- * - Détails de calcul pour la transparence
- */
 @Entity
 @Table(
         name = "matching_results",
         uniqueConstraints = {
                 @UniqueConstraint(
-                        columnNames = {"student_id", "project_id", "matching_session_id"},
-                        name = "uk_result_student_project_session"
+                        columnNames = {"matching_campaign_id", "student_id", "project_id"},
+                        name = "uk_result_campaign_student_project"
+                ),
+                @UniqueConstraint(
+                        columnNames = {"matching_campaign_id", "student_id", "subject_id"},
+                        name = "uk_result_campaign_student_subject"
                 )
         },
         indexes = {
+                @Index(name = "idx_result_campaign", columnList = "matching_campaign_id"),
                 @Index(name = "idx_result_student", columnList = "student_id"),
                 @Index(name = "idx_result_project", columnList = "project_id"),
-                @Index(name = "idx_result_global_score", columnList = "global_score"),
-                @Index(name = "idx_result_session", columnList = "matching_session_id")
+                @Index(name = "idx_result_subject", columnList = "subject_id"),
+                @Index(name = "idx_result_global_score", columnList = "global_score")
         }
 )
 @Getter
@@ -38,18 +36,11 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-
 public class MatchingResult {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    /**
-     * Identifiant de la session de matching (pour regrouper les résultats)
-     */
-    @Column(name = "matching_session_id", nullable = false, length = 50)
-    private String sessionId;
 
     /**
      * Score global de compatibilité (0.0 à 1.0)
@@ -68,7 +59,7 @@ public class MatchingResult {
     private BigDecimal skillsScore;
 
     /**
-     * Score partiel pour les intérêts/mots-clés (0.0 à 1.0)
+     * Score partiel pour les intérêts / mots-clés (0.0 à 1.0)
      */
     @DecimalMin(value = "0.0", message = "Le score doit être au minimum 0")
     @DecimalMax(value = "1.0", message = "Le score doit être au maximum 1")
@@ -76,7 +67,7 @@ public class MatchingResult {
     private BigDecimal interestsScore;
 
     /**
-     * Score partiel pour le type de travail (0.0 ou 1.0)
+     * Score partiel pour le type de travail (0.0 à 1.0)
      */
     @DecimalMin(value = "0.0", message = "Le score doit être au minimum 0")
     @DecimalMax(value = "1.0", message = "Le score doit être au maximum 1")
@@ -102,46 +93,42 @@ public class MatchingResult {
     private BigDecimal workTypeWeight;
 
     /**
-     * Nombre de compétences matchées / nombre total de prérequis
+     * Détail du score compétences
+     * Ex: 2/4 compétences requises matchées
      */
     @Column(name = "skills_details", length = 500)
     private String skillsDetails;
 
     /**
-     * Nombre d'intérêts matchés / nombre total de mots-clés
+     * Détail du score intérêts / mots-clés
+     * Ex: 3/5 mots-clés matchés
      */
     @Column(name = "interests_details", length = 500)
     private String interestsDetails;
 
     /**
-     * Rang du projet dans les recommandations pour cet étudiant
+     * Rang de recommandation pour cet étudiant dans cette campagne
      */
     @Column(name = "recommendation_rank")
     private Integer recommendationRank;
 
     /**
-     * Indique si ce résultat répond au seuil minimum de pertinence
-     */
-    @Column(name = "above_threshold", nullable = false)
-    @Builder.Default
-    private Boolean aboveThreshold = true;
-
-    /**
-     * Seuil minimum utilisé lors du calcul
-     */
-    @Column(name = "threshold_used", precision = 4, scale = 2)
-    private BigDecimal thresholdUsed;
-
-    /**
      * Algorithme utilisé pour ce calcul
      */
-    @Column(name = "algorithm_used", length = 50)
-    @Builder.Default
-    private String algorithmUsed = "WEIGHTED_MATCHING";
+    @Enumerated(EnumType.STRING)
+    @Column(name = "algorithm_used", nullable = false, length = 30)
+    private MatchingAlgorithmType algorithmUsed;
 
     @CreationTimestamp
     @Column(name = "calculation_date", nullable = false, updatable = false)
     private LocalDateTime calculationDate;
+
+    /**
+     * Campagne de matching concernée
+     */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "matching_campaign_id", nullable = false)
+    private MatchingCampaign matchingCampaign;
 
     /**
      * Étudiant concerné par ce résultat
@@ -152,10 +139,17 @@ public class MatchingResult {
 
     /**
      * Projet concerné par ce résultat
+     * Utilisé uniquement si la campagne est de type PROJECT
      */
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "project_id", nullable = false)
+    @JoinColumn(name = "project_id")
     private Project project;
 
-
+    /**
+     * Matière / option concernée par ce résultat
+     * Utilisé uniquement si la campagne est de type SUBJECT
+     */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "subject_id")
+    private Subject subject;
 }
