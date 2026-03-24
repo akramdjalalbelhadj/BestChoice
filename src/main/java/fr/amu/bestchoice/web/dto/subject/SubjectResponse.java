@@ -1,31 +1,24 @@
-package fr.amu.bestchoice.web.dto.project;
+package fr.amu.bestchoice.web.dto.subject;
 
 import fr.amu.bestchoice.model.enums.WorkType;
 
-import java.time.LocalDate;
 import java.util.Set;
 
-public record ProjectResponse(
+public record SubjectResponse(
+
         Long id,
         String title,
         String description,
+        String objectives,
         Set<WorkType> workTypes,
-        Boolean remotePossible,
-        Boolean active,
-
-        Integer minStudents,
         Integer maxStudents,
-        Boolean complet,
-
+        Integer minStudents,
         Integer credits,
         Integer semester,
         String academicYear,
-        String targetProgram,
-
+        Boolean active,
         Long teacherId,
         String teacherName,
-
         Set<String> requiredSkills,
-        Set<String> keywords,
-        Set<String> assignedStudentEmails
+        Set<String> keywords
 ) {}

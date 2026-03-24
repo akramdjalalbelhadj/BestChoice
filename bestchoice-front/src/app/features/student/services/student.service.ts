@@ -5,17 +5,20 @@ import { ProjectResponse } from '../../project/models/project.model';
 import { StudentResponse, StudentUpdateRequest } from '../models/student.model';
 import { MatchingResultResponse } from '../../matching/models/matching.model';
 import { PreferenceCreateRequest, PreferenceResponse } from '../models/preference.model';
-import { tap } from 'rxjs';
+import {Observable, tap} from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class StudentService {
   private http = inject(HttpClient);
-  private readonly API = `${environment.apiBaseUrl}/api`;
+  private readonly API = `${environment.apiBaseUrl}/api/students`;
 
-  // Signals réactifs pour le Dashboard et les Projets
   studentProfile = signal<StudentResponse | null>(null);
   availableProjects = signal<ProjectResponse[]>([]);
   topMatches = signal<MatchingResultResponse[]>([]);
+
+  getAllStudents(): Observable<StudentResponse[]> {
+    return this.http.get<StudentResponse[]>(this.API);
+  }
 
   /** Récupère le profil complet de l'étudiant */
   loadProfile(userId: number) {

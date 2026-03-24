@@ -60,13 +60,6 @@ import { ThemeToggleComponent } from '../../../shared/theme-toggle.component';
                   <h2>{{ profile()?.firstName }} {{ profile()?.lastName }}</h2>
                   <p class="text-muted">{{ profile()?.email }}</p>
                 </div>
-              </div>
-
-              <div class="info-list" [formGroup]="profileForm">
-                <div class="info-item">
-                  <label>Formation (Fixe)</label>
-                  <span class="static-val">{{ profile()?.program }}</span>
-                </div>
 
                 <div class="info-item">
                   <label>Année d'étude (Master)</label>
@@ -80,7 +73,7 @@ import { ThemeToggleComponent } from '../../../shared/theme-toggle.component';
                 <div class="info-item">
                   <label>Type de travail préféré</label>
                   @if (!isEditing()) {
-                    <span class="work-type-badge">{{ profile()?.preferredWorkType }}</span>
+                    <span class="work-type-badge">{{ profile()?.preferredWorkTypes }}</span>
                   } @else {
                     <select formControlName="preferredWorkType">
                       @for (type of workTypes; track type) {
@@ -193,7 +186,7 @@ export class StudentProfilePage implements OnInit {
 
   profileForm = this.fb.group({
     studyYear: [1, [Validators.required, Validators.min(1), Validators.max(8)]],
-    preferredWorkType: [WorkType.DEVELOPPEMENT],
+    preferredWorkTypes: [[] as WorkType[]],
     githubUrl: [''],
     linkedinUrl: ['']
   });
@@ -229,7 +222,7 @@ export class StudentProfilePage implements OnInit {
     if (p) {
       this.profileForm.patchValue({
         studyYear: p.studyYear,
-        preferredWorkType: p.preferredWorkType,
+        preferredWorkTypes: p.preferredWorkTypes,
         githubUrl: p.githubUrl,
         linkedinUrl: p.linkedinUrl
       });
@@ -264,7 +257,7 @@ export class StudentProfilePage implements OnInit {
 
       const request = {
         studyYear: Number(this.profileForm.value.studyYear),
-        preferredWorkType: this.profileForm.value.preferredWorkType,
+        preferredWorkType: this.profileForm.value.preferredWorkTypes,
         skill: this.editedSkills(),
         interestKeyword: this.editedInterests(),
         githubUrl: this.profileForm.value.githubUrl || '',

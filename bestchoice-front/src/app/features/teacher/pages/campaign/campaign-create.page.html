@@ -1,0 +1,148 @@
+<div class="dashboard-wrapper">
+  <header class="dash-header">
+    <div class="header-left">
+      <a routerLink="/app/teacher/dashboard" class="back-link">← Retour Dashboard</a>
+      <h1>Nouvelle Campagne</h1>
+      <p class="subtitle">Paramétrez votre session de matching et sélectionnez les participants.</p>
+    </div>
+    <div class="header-right">
+      <button type="button" class="btn-secondary-action" routerLink="/app/teacher/dashboard">Annuler</button>
+      <button type="button" class="btn-primary"
+              [disabled]="isSubmitting() || form.invalid || selectedStudentIds().length === 0 || selectedItemIds().length === 0"
+              (click)="onSubmit()">
+        @if (isSubmitting()) { <span class="spinner"></span> }
+        Publier la campagne
+      </button>
+    </div>
+  </header>
+
+  <form [formGroup]="form" class="main-grid">
+    <div class="config-col">
+      <section class="content-card">
+        <div class="card-header"><h3>Configuration Générale</h3></div>
+        <div class="form-body">
+          <div class="field">
+            <label>Nom de la campagne</label>
+            <input type="text" class="input" formControlName="name" placeholder="Ex: Master Informatique">
+          </div>
+
+          <div class="row">
+            <div class="field">
+              <label>Année</label>
+              <input type="text" class="input" formControlName="academicYear">
+            </div>
+            <div class="field">
+              <label>Semestre</label>
+              <select class="input" formControlName="semester">
+                <option [value]="1">S1</option>
+                <option [value]="2">S2</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>Type de ressources</label>
+            <select class="input" formControlName="campaignType" (change)="onTypeChange()">
+              @for (t of campaignTypes; track t.value) {
+                <option [value]="t.value">{{ t.label }}</option>
+              }
+            </select>
+          </div>
+
+          <div class="field">
+            <label>Moteur d'algorithme</label>
+            <div class="algo-grid">
+              @for (algo of algorithmTypes; track algo) {
+                <button type="button" class="algo-btn"
+                        [class.active]="form.get('algorithmType')?.value === algo"
+                        (click)="form.get('algorithmType')?.setValue(algo)">
+                  {{ algo }}
+                </button>
+              }
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="content-card highlight-card">
+        <div class="card-header">
+          <h3>Pondération des critères</h3>
+          <span class="total-badge">Total: 100%</span>
+        </div>
+
+        <div class="weights-area">
+          <div class="weight-item">
+            <div class="w-label"><span>Compétences</span> <strong>{{ form.get('skillsWeight')?.value }}%</strong></div>
+            <input type="range" class="range-input" min="0" max="100" [value]="form.get('skillsWeight')?.value" (input)="updateWeight('skillsWeight', $event)">
+          </div>
+
+          <div class="weight-item">
+            <div class="w-label"><span>Intérêts</span> <strong>{{ form.get('interestsWeight')?.value }}%</strong></div>
+            <input type="range" class="range-input" min="0" max="100" [value]="form.get('interestsWeight')?.value" (input)="updateWeight('interestsWeight', $event)">
+          </div>
+
+          <div class="weight-item">
+            <div class="w-label"><span>Type de travail</span> <strong>{{ form.get('workTypeWeight')?.value }}%</strong></div>
+            <input type="range" class="range-input" min="0" max="100" [value]="form.get('workTypeWeight')?.value" (input)="updateWeight('workTypeWeight', $event)">
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <div class="selection-col">
+      <section class="content-card">
+        <div class="card-header">
+          <div class="header-title">
+            <h3>Étudiants</h3>
+            <span class="count-pill">{{ selectedStudentIds().length }}</span>
+          </div>
+          <button type="button" class="btn-link" (click)="selectAllStudents()">Tout cocher</button>
+        </div>
+        <div class="picker-list">
+          @for (s of availableStudents(); track s.id) {
+            <div class="picker-item" [class.selected]="selectedStudentIds().includes(s.id)" (click)="toggleStudent(s.id)">
+              <div class="custom-checkbox" [class.checked]="selectedStudentIds().includes(s.id)"></div>
+              <div class="item-text">
+                <span class="main-text">{{ s.firstName }} {{ s.lastName }}</span>
+                <span class="sub-text">{{ s.email }}</span>
+              </div>
+            </div>
+          }
+        </div>
+      </section>
+
+      <section class="content-card">
+        <div class="card-header">
+          <div class="header-title">
+            <h3>{{ isProjectType() ? 'Projets' : 'Matières' }}</h3>
+            <span class="count-pill">{{ selectedItemIds().length }}</span>
+          </div>
+        </div>
+
+        <div class="picker-list">
+          @if (isProjectType()) {
+            @for (p of availableProjects(); track p.id) {
+              <div class="picker-item" [class.selected]="selectedItemIds().includes(p.id)" (click)="toggleItem(p.id)">
+                <div class="custom-checkbox" [class.checked]="selectedItemIds().includes(p.id)"></div>
+                <div class="item-text">
+                  <span class="main-text">{{ p.title }}</span>
+                  <span class="sub-text">Capacité: {{ p.maxStudents }} places</span>
+                </div>
+              </div>
+            }
+          } @else {
+            @for (sb of availableSubjects(); track sb.id) {
+              <div class="picker-item" [class.selected]="selectedItemIds().includes(sb.id)" (click)="toggleItem(sb.id)">
+                <div class="custom-checkbox" [class.checked]="selectedItemIds().includes(sb.id)"></div>
+                <div class="item-text">
+                  <span class="main-text">{{ sb.title }}</span>
+                  <span class="sub-text">{{ sb.credits }} ECTS • S{{ sb.semester }}</span>
+                </div>
+              </div>
+            }
+          }
+        </div>
+      </section>
+    </div>
+  </form>
+</div>

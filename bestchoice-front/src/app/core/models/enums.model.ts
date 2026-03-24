@@ -16,3 +16,18 @@ export enum PreferenceStatus {
   ACCEPTED = 'ACCEPTED',
   REJECTED = 'REJECTED'
 }
+
+/**
+ * Types d'algorithmes supportés par le moteur de matching.
+ * Doit correspondre à MatchingAlgorithmType.java
+ */
+export enum MatchingAlgorithmType {
+  /** Algorithme de Gale-Shapley (Mariages stables) */
+  STABLE = 'STABLE',
+
+  /** Calcul basé uniquement sur les scores de similarité (Pondéré) */
+  WEIGHTED = 'WEIGHTED',
+
+  /** Combinaison des deux approches */
+  HYBRID = 'HYBRID'
+}

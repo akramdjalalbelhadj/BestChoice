@@ -50,7 +50,7 @@ import { ThemeToggleComponent } from '../../../shared/theme-toggle.component';
               @for (project of filteredProjects(); track project.id) {
                 <article class="project-card">
                   <div class="card-content">
-                    <span class="work-type">{{ project.workType }}</span>
+                    <span class="work-type">{{ project.workTypes[0] }}</span>
                     <h3>{{ project.title }}</h3>
                     <p class="teacher">Professeur ID: {{ project.teacherId }}</p>
 

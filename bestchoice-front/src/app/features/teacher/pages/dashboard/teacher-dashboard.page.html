@@ -1,0 +1,133 @@
+<div class="dashboard-wrapper">
+  <header class="dash-header">
+    <div class="header-left">
+      <h1>Tableau de bord</h1>
+      <p class="subtitle">Bienvenue, Professeur. Voici un aperçu de vos enseignements et matchings.</p>
+    </div>
+    <div class="header-right">
+      <button class="btn-secondary-action" routerLink="../matching-control">
+        Piloter le matching
+      </button>
+      <button class="btn-primary" routerLink="../campaigns/create">
+        Créer une campagne
+      </button>
+    </div>
+  </header>
+
+  <section class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-label">Capacité d'accueil</div>
+      <div class="stat-value">{{ totalCapacity() }}</div>
+      <div class="stat-unit">places disponibles</div>
+    </div>
+
+    <div class="stat-card highlight">
+      <div class="stat-label">Taux de remplissage</div>
+      <div class="stat-value">{{ globalOccupancyRate() }}%</div>
+      <div class="progress-bar">
+        <div class="fill" [style.width.%]="globalOccupancyRate()"></div>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-label">Campagnes actives</div>
+      <div class="stat-value">{{ activeCampaignsCount() }}</div>
+      <div class="stat-unit">sessions de matching</div>
+    </div>
+  </section>
+
+  <div class="main-grid">
+    <section class="content-card">
+      <div class="card-header">
+        <div>
+          <h3>Projets récents</h3>
+          <p class="card-description">Dernières offres publiées</p>
+        </div>
+        <a routerLink="../projects" class="btn-link">Voir tous</a>
+      </div>
+
+      <div class="preview-list">
+        @for (p of projects().slice(0, 3); track p.id) {
+          <div class="preview-item">
+            <div class="item-main">
+              <span class="title">{{ p.title }}</span>
+              <span class="subtitle">{{ p.workTypes?.join(', ') || 'Type non spécifié' }}</span>
+            </div>
+            <span class="badge" [class.published]="p.active">
+              {{ p.active ? 'Public' : 'Brouillon' }}
+            </span>
+          </div>
+        } @empty {
+          <div class="empty-state">
+            <p>Aucun projet créé pour le moment</p>
+            <button class="btn-text" routerLink="../projects/create">Publier un projet</button>
+          </div>
+        }
+      </div>
+    </section>
+
+    <section class="content-card">
+      <div class="card-header">
+        <div>
+          <h3>Matières optionnelles</h3>
+          <p class="card-description">Cours et séminaires</p>
+        </div>
+        <a routerLink="../subjects" class="btn-link">Voir tous</a>
+      </div>
+
+      <div class="preview-list">
+        @for (s of subjects().slice(0, 3); track s.id) {
+          <div class="preview-item">
+            <div class="item-main">
+              <span class="title">{{ s.title }}</span>
+              <span class="subtitle">{{ s.credits }} ECTS • Semestre {{ s.semester }}</span>
+            </div>
+            <div class="capacity-tag">{{ s.maxStudents }} places</div>
+          </div>
+        } @empty {
+          <div class="empty-state">
+            <p>Aucune matière enregistrée</p>
+          </div>
+        }
+      </div>
+    </section>
+
+    <section class="content-card wide">
+      <div class="card-header">
+        <div>
+          <h3>Suivi des matchings</h3>
+          <p class="card-description">État de vos campagnes d'appariement</p>
+        </div>
+        <a routerLink="../campaigns" class="btn-link">Toutes les campagnes</a>
+      </div>
+
+      <div class="campaign-strip">
+        @for (c of campaigns().slice(0, 2); track c.id) {
+          <div class="campaign-mini-card">
+            <div class="c-header">
+              <strong class="c-name">{{ c.name }}</strong>
+              <span class="c-algorithm">Algo: {{ c.algorithmType }}</span>
+            </div>
+            <div class="c-stats">
+              <div class="stat-item">
+                <span class="stat-label-mini">Étudiants</span>
+                <span class="stat-value-mini">{{ c.studentsCount }}</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-label-mini">Items</span>
+                <span class="stat-value-mini">{{ c.itemsCount }}</span>
+              </div>
+            </div>
+            <button class="btn-secondary" [routerLink]="['../matching-control']" [queryParams]="{campaignId: c.id}">
+              Piloter
+            </button>
+          </div>
+        } @empty {
+          <div class="empty-campaign">
+            <p>Lancez votre première campagne pour voir les statistiques de matching.</p>
+          </div>
+        }
+      </div>
+    </section>
+  </div>
+</div>

@@ -55,7 +55,7 @@ export class AuthStore {
       case 'ETUDIANT':
         return '/app/student';
       default:
-        return '/dashboard'; // fallback
+        return '/dashboard';
     }
   }
 

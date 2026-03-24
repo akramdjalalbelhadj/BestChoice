@@ -1,0 +1,106 @@
+<div class="page-container">
+  <header class="page-header">
+    <div class="left">
+      <a routerLink="../" class="back-link">Retour au dashboard</a>
+      <h1>Mes Propositions</h1>
+      <p class="subtitle">Vous avez <strong>{{ projects().length }}</strong> projets enregistrés cette année.</p>
+    </div>
+    <button class="btn-create" routerLink="./create">Publier un projet</button>
+  </header>
+
+  <div class="toolbar">
+    <div class="search-wrapper">
+      <input
+        type="text"
+        [(ngModel)]="searchQuery"
+        placeholder="Rechercher par titre, techno, mot-clé..."
+      />
+    </div>
+  </div>
+
+  <div class="table-container">
+    <table class="data-table">
+      <thead>
+      <tr>
+        <th>Projet & Thématiques</th>
+        <th>Infos Académiques</th>
+        <th>Technos</th>
+        <th>Occupation</th>
+        <th>Visibilité</th>
+        <th class="actions-head">Actions</th>
+      </tr>
+      </thead>
+      <tbody>
+        @if (isLoading()) {
+          @for (i of [1,2,3]; track i) {
+            <tr class="skeleton-row">
+              <td colspan="6"><div class="skeleton-bar"></div></td>
+            </tr>
+          }
+        } @else {
+          @for (p of filteredProjects(); track p.id) {
+            <tr>
+              <td class="col-main">
+                <span class="p-title">{{ p.title }}</span>
+                <div class="p-keywords">
+                  @for (k of p.keywords; track k) {
+                    <span class="k-tag">#{{ k }}</span>
+                  }
+                </div>
+              </td>
+              <td class="col-info">
+                <div class="type-stack">
+                  @for (type of p.workTypes; track type) {
+                    <span class="type-badge">{{ type }}</span>
+                  }
+                </div>
+                <div class="academic-detail">S{{ p.semester }} • {{ p.credits }} ECTS</div>
+              </td>
+              <td class="col-skills">
+                <div class="skill-bubbles">
+                  @for (s of p.requiredSkills.slice(0, 3); track s) {
+                    <span class="s-bubble">{{ s }}</span>
+                  }
+                  @if (p.requiredSkills.length > 3) {
+                    <span class="s-more">+{{ p.requiredSkills.length - 3 }}</span>
+                  }
+                </div>
+              </td>
+              <td class="col-capacity">
+                <div class="occupancy-info">
+                  <span>{{ p.assignedStudentEmails.length }} / {{ p.maxStudents }}</span>
+                  <div class="progress-bg">
+                    <div class="progress-bar"
+                         [style.width.%]="(p.assignedStudentEmails.length / p.maxStudents) * 100"
+                         [class.full]="p.complet">
+                    </div>
+                  </div>
+                </div>
+              </td>
+              <td class="col-status">
+                <button (click)="toggleStatus(p)" class="status-btn" [class.is-active]="p.active">
+                  {{ p.active ? 'Public' : 'Brouillon' }}
+                </button>
+              </td>
+              <td class="col-actions">
+                <div class="btn-group">
+                  <button class="action-btn edit" [routerLink]="['./edit', p.id]" title="Éditer">Éditer</button>
+                  <button class="action-btn view" [routerLink]="['/app/teacher/projects', p.id]" title="Candidats">Candidats</button>
+                  <button class="action-btn delete" (click)="deleteProject(p.id)" title="Supprimer">Supprimer</button>
+                </div>
+              </td>
+            </tr>
+          } @empty {
+            <tr class="empty-row">
+              <td colspan="6">
+                <div class="empty-state">
+                  <p>Aucun projet ne correspond à votre recherche.</p>
+                </div>
+              </td>
+            </tr>
+          }
+        }
+      </tbody>
+    </table>
+  </div>
+</div>

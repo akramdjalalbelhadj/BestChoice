@@ -46,7 +46,7 @@ import { ThemeToggleComponent } from '../../../shared/theme-toggle.component';
         <header class="top-nav">
           <div class="header-titles">
             <h1>Tableau de bord</h1>
-            <p class="text-muted">{{ profile()?.program || 'Profil à compléter' }} • Master {{ profile()?.studyYear }}</p>
+            <p class="text-muted">{{ 'Profil à compléter' }} • Master {{ profile()?.studyYear }}</p>
           </div>
 
           <div class="user-control">
@@ -140,10 +140,9 @@ export class StudentDashboardPage implements OnInit {
     const p = this.profile();
     if (!p) return 0;
     let score = 0;
-    if (p.program) score += 25;
     if (p.studyYear) score += 25;
     if (p.skill?.length) score += 25;
-    if (p.preferredWorkType) score += 25;
+    if (p.preferredWorkTypes) score += 25;
     return score;
   });
 

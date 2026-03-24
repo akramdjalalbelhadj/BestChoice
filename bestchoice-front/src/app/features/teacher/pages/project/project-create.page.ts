@@ -2,9 +2,9 @@ import { Component, inject, signal, ChangeDetectionStrategy } from '@angular/cor
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
-import { TeacherService } from '../services/teacher.service';
-import { AuthStore } from '../../../core/auth/auth.store';
-import { WorkType } from '../../../core/models/enums.model';
+import { TeacherService } from '../../services/teacher.service';
+import { AuthStore } from '../../../../core/auth/auth.store';
+import { WorkType } from '../../../../core/models/enums.model';
 import { finalize } from 'rxjs';
 
 @Component({
@@ -22,29 +22,35 @@ import { finalize } from 'rxjs';
       <form [formGroup]="form" (ngSubmit)="onSubmit()" class="create-card">
         <div class="form-section">
           <h3>Description du projet</h3>
-
           <div class="field">
             <label for="title">Titre du projet</label>
-            <input id="title" type="text" formControlName="title" placeholder="Ex: Développement d'une IA de recommandation" />
-            @if (form.get('title')?.touched && form.get('title')?.invalid) {
-              <small class="error">Le titre est requis (max 150 car.).</small>
-            }
+            <input id="title" type="text" formControlName="title" placeholder="Ex: IA de recommandation" />
           </div>
 
           <div class="field">
             <label for="description">Description détaillée</label>
-            <textarea id="description" formControlName="description" rows="5" placeholder="Décrivez les enjeux et le contexte..."></textarea>
+            <textarea id="description" formControlName="description" rows="4"></textarea>
           </div>
         </div>
 
         <div class="form-grid">
           <div class="field">
-            <label for="workType">Type de travail</label>
-            <select id="workType" formControlName="workType">
-              @for (type of workTypes; track type) {
-                <option [value]="type">{{ type }}</option>
+            <label>Types de travail (multi-sélection)</label>
+            <div class="checkbox-group">
+              @for (type of workTypesList; track type) {
+                <label class="check-label">
+                  <input
+                    type="checkbox"
+                    [value]="type"
+                    [checked]="form.get('workTypes')?.value?.includes(type)"
+                    (change)="onWorkTypeToggle(type, $event)">
+                  {{ type }}
+                </label>
               }
-            </select>
+            </div>
+            @if (form.get('workTypes')?.invalid && form.get('workTypes')?.touched) {
+              <small class="error">Sélectionnez au moins un type.</small>
+            }
           </div>
 
           <div class="field checkbox-field">
@@ -56,24 +62,40 @@ import { finalize } from 'rxjs';
           </div>
         </div>
 
-        <div class="form-grid">
+        <div class="form-grid tertiary">
           <div class="field">
-            <label for="minStudents">Min. Étudiants</label>
-            <input id="minStudents" type="number" formControlName="minStudents" />
+            <label>Crédits ECTS</label>
+            <input type="number" formControlName="credits" />
           </div>
           <div class="field">
-            <label for="maxStudents">Max. Étudiants</label>
-            <input id="maxStudents" type="number" formControlName="maxStudents" />
+            <label>Semestre</label>
+            <select formControlName="semester">
+              <option [value]="1">Semestre 1</option>
+              <option [value]="2">Semestre 2</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Année Universitaire</label>
+            <input type="text" formControlName="academicYear" placeholder="2024-2025" />
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <div class="field">
+            <label>Min. Étudiants</label>
+            <input type="number" formControlName="minStudents" />
+          </div>
+          <div class="field">
+            <label>Max. Étudiants</label>
+            <input type="number" formControlName="maxStudents" />
           </div>
         </div>
 
         <div class="form-section">
           <h3>Compétences & Mots-clés</h3>
-          <p class="text-muted">Séparez les éléments par une virgule.</p>
-
           <div class="field">
-            <label>Compétences requises (ex: Java, Angular, SQL)</label>
-            <input type="text" #skillInput (keyup.enter)="addSkill(skillInput)" placeholder="Ajouter une compétence..." />
+            <label>Compétences requises (Entrée pour ajouter)</label>
+            <input type="text" #skillInput (keyup.enter)="addSkill(skillInput)" placeholder="Java, Angular..." />
             <div class="tag-list">
               @for (s of requiredSkills(); track s) {
                 <span class="tag">{{ s }} <button type="button" (click)="removeSkill(s)">×</button></span>
@@ -82,8 +104,8 @@ import { finalize } from 'rxjs';
           </div>
 
           <div class="field">
-            <label>Mots-clés (ex: IA, Web, Big Data)</label>
-            <input type="text" #keyInput (keyup.enter)="addKeyword(keyInput)" placeholder="Ajouter un mot-clé..." />
+            <label>Mots-clés</label>
+            <input type="text" #keyInput (keyup.enter)="addKeyword(keyInput)" />
             <div class="tag-list">
               @for (k of keywords(); track k) {
                 <span class="tag secondary">{{ k }} <button type="button" (click)="removeKeyword(k)">×</button></span>
@@ -112,19 +134,31 @@ export class ProjectCreatePage {
   isSubmitting = signal(false);
   requiredSkills = signal<string[]>([]);
   keywords = signal<string[]>([]);
-
-  workTypes = Object.values(WorkType);
+  workTypesList = Object.values(WorkType) as WorkType[];
 
   form = this.fb.group({
     title: ['', [Validators.required, Validators.maxLength(150)]],
     description: ['', [Validators.required, Validators.maxLength(3000)]],
-    workType: [WorkType.DEVELOPPEMENT, Validators.required],
+    workTypes: [[] as WorkType[], [Validators.required, Validators.minLength(1)]],
     remotePossible: [false],
     minStudents: [1, [Validators.required, Validators.min(1)]],
-    maxStudents: [1, [Validators.required, Validators.min(1)]]
+    maxStudents: [2, [Validators.required, Validators.min(1)]],
+    credits: [6, [Validators.required]],
+    semester: [1, [Validators.required]],
+    academicYear: ['2024-2025', [Validators.required]],
+    targetProgram: ['Master Informatique']
   });
 
-  // Gestion des Skills (Set<String> au backend)
+  onWorkTypeToggle(type: WorkType, event: any) {
+    const checked = event.target.checked;
+    const current = this.form.get('workTypes')?.value || [];
+    if (checked) {
+      this.form.patchValue({ workTypes: [...current, type] });
+    } else {
+      this.form.patchValue({ workTypes: current.filter(t => t !== type) });
+    }
+  }
+
   addSkill(input: HTMLInputElement) {
     const val = input.value.trim();
     if (val && !this.requiredSkills().includes(val)) {
@@ -137,7 +171,6 @@ export class ProjectCreatePage {
     this.requiredSkills.update(s => s.filter(x => x !== val));
   }
 
-  // Gestion des Keywords
   addKeyword(input: HTMLInputElement) {
     const val = input.value.trim();
     if (val && !this.keywords().includes(val)) {
@@ -152,24 +185,18 @@ export class ProjectCreatePage {
 
   onSubmit() {
     if (this.form.invalid) return;
-
     const user = this.auth.user();
     if (!user?.userId) return;
 
     this.isSubmitting.set(true);
-
-    // Construction du payload
     const request = {
       ...this.form.getRawValue(),
       requiredSkill: this.requiredSkills(),
       keyword: this.keywords()
-    } as any;
+    };
 
-    this.teacherService.createProject(user.userId, request)
+    this.teacherService.createProject(user.userId, request as any)
       .pipe(finalize(() => this.isSubmitting.set(false)))
-      .subscribe({
-        next: () => this.router.navigate(['/app/teacher/projects']),
-        error: (err) => console.error('Erreur lors de la création', err)
-      });
+      .subscribe(() => this.router.navigate(['/app/teacher/dashboard']));
   }
 }

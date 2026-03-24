@@ -26,6 +26,21 @@ public record ProjectCreateRequest(
         @Min(value = 1, message = "Le nombre maximum d'étudiants doit être au moins 1")
         Integer maxStudents,
 
+        @Min(1)
+        @Max(30)
+        Integer credits,
+
+        @Min(1)
+        @Max(2)
+        Integer semester,
+
+        @Size(max = 9)
+        String academicYear,
+
+        @Size(max = 100)
+        String targetProgram,
+
         Set<String> requiredSkill,
+
         Set<String> keyword
 ) {}

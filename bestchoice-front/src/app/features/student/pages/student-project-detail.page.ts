@@ -51,7 +51,7 @@ import { ThemeToggleComponent } from '../../../shared/theme-toggle.component';
                 <p>{{ project()?.description }}</p>
 
                 <div class="meta-tags">
-                  <div class="meta-item"><strong>Type :</strong> {{ project()?.workType }}</div>
+                  <div><strong>Type :</strong> {{ project()?.workTypes?.join(', ') }}</div>
                   <div class="meta-item"><strong>Capacité :</strong> {{ project()?.maxStudents }} étudiants</div>
                   <div class="meta-item"><strong>Télétravail :</strong> {{ project()?.remotePossible ? 'Oui' : 'Non' }}</div>
                 </div>

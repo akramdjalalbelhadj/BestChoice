@@ -7,10 +7,10 @@ export interface StudentResponse {
   firstName: string;
   lastName: string;
   studentNumber: string;
-  program: string;
+
   studyYear: number;
-  track: string;
-  preferredWorkType: WorkType;
+  preferredWorkTypes: WorkType[];
+
   skill: string[];
   interestKeyword: string[];
   githubUrl: string;

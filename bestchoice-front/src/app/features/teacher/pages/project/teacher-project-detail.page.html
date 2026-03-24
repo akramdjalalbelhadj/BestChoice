@@ -1,0 +1,132 @@
+<div class="page-layout">
+  <nav class="top-nav">
+    <a routerLink="/app/teacher/projects" class="back-link">
+      <span class="icon">←</span> Mes Projets
+    </a>
+    <div class="actions">
+      <button class="btn-secondary" [routerLink]="['/app/teacher/projects/edit', project()?.id]">Modifier l'offre</button>
+    </div>
+  </nav>
+
+  @if (isLoading()) {
+    <div class="loading-overlay">
+      <div class="spinner"></div>
+      <p>Chargement des données...</p>
+    </div>
+  } @else {
+    <main class="content-grid">
+
+      <section class="project-info">
+        <header class="info-header">
+          <span class="category-tag">Projet Master</span>
+          <h1>{{ project()?.title }}</h1>
+          <div class="meta-badges">
+            <span class="badge semester">Semestre {{ project()?.semester }}</span>
+            <span class="badge ects">{{ project()?.credits }} ECTS</span>
+            <span class="badge status" [class.active]="project()?.active">
+              {{ project()?.active ? 'Public' : 'Brouillon' }}
+            </span>
+          </div>
+        </header>
+
+        <div class="info-card">
+          <div class="card-group">
+            <label>Description du projet</label>
+            <p class="description">{{ project()?.description }}</p>
+          </div>
+
+          <div class="card-group">
+            <label>Types de travail</label>
+            <div class="tag-cloud">
+              @for (type of project()?.workTypes; track type) {
+                <span class="work-type-tag">{{ type }}</span>
+              }
+            </div>
+          </div>
+
+          <div class="card-group">
+            <label>Compétences clés recherchées</label>
+            <div class="skill-cloud">
+              @for (skill of project()?.requiredSkills; track skill) {
+                <span class="skill-tag">{{ skill }}</span>
+              }
+            </div>
+          </div>
+
+          <div class="card-footer-stats">
+            <div class="stat">
+              <span class="label">Capacité</span>
+              <span class="value">{{ project()?.maxStudents }} places</span>
+            </div>
+            <div class="stat">
+              <span class="label">Télétravail</span>
+              <span class="value">{{ project()?.remotePossible ? 'Oui' : 'Non' }}</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="matching-results">
+        <div class="section-header">
+          <h2>Candidats Recommandés</h2>
+          <button class="refresh-btn" (click)="loadCandidates()" [disabled]="isLoadingMatches()">
+            {{ isLoadingMatches() ? 'Calcul...' : 'Actualiser' }}
+          </button>
+        </div>
+
+        <div class="results-container">
+          @if (isLoadingMatches()) {
+            <div class="skeleton-loader">
+              <div class="skeleton-item" *ngFor="let i of [1,2,3]"></div>
+            </div>
+          } @else {
+            @for (candidate of candidates(); track candidate.id) {
+              <div class="candidate-card">
+                <div class="score-section" [ngClass]="getScoreClass(candidate.globalScore)">
+                  <span class="score-pct">{{ (candidate.globalScore * 100).toFixed(0) }}%</span>
+                  <span class="score-label">Match</span>
+                </div>
+
+                <div class="candidate-info">
+                  <div class="info-top">
+                    <span class="student-name">Étudiant #{{ candidate.studentId }}</span>
+                    <span class="campaign-ref">Campagne ID: {{ candidate.campaignId }}</span>
+                  </div>
+
+                  <div class="score-breakdown">
+                    <div class="sub-score">
+                      <label>Skills</label>
+                      <div class="mini-progress">
+                        <div class="bar" [style.width.%]="candidate.skillsScore * 100"></div>
+                      </div>
+                    </div>
+                    <div class="sub-score">
+                      <label>Intérêts</label>
+                      <div class="mini-progress">
+                        <div class="bar" [style.width.%]="candidate.interestsScore * 100"></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="card-actions">
+                  <button class="btn-icon-only" [routerLink]="['/app/teacher/students', candidate.studentId]" title="Voir profil">
+                    👤
+                  </button>
+                </div>
+              </div>
+            } @empty {
+              <div class="empty-results">
+                <div class="empty-icon">🧬</div>
+                <h3>Aucun résultat disponible</h3>
+                <p>Lancez une campagne de matching globale pour obtenir des recommandations.</p>
+                <button class="btn-primary" routerLink="/app/teacher/matching-control">Configurer le matching</button>
+              </div>
+            }
+          }
+        </div>
+      </section>
+
+    </main>
+  }
+</div>
