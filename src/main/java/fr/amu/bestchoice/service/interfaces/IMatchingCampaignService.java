@@ -9,6 +9,7 @@ public interface IMatchingCampaignService {
     MatchingCampaignResponse create(MatchingCampaignRequest request);
     MatchingCampaignResponse findById(Long id);
     List<MatchingCampaignResponse> findByTeacherId(Long teacherId);
+    List<MatchingCampaignResponse> findByStudentId(Long studentId);
     void addStudentsToCampaign(Long campaignId, List<Long> studentIds);
     void addItemsToCampaign(Long campaignId, List<Long> itemIds);
     void delete(Long id);

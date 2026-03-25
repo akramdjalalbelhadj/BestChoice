@@ -27,4 +27,7 @@ public interface MatchingCampaignRepository extends JpaRepository<MatchingCampai
      *Renvoie une Liste de MatchingCampaign associées à un enseignant donné.
      */
     List<MatchingCampaign> findByTeacherId(Long teacherId);
+
+    @Query("SELECT c FROM MatchingCampaign c JOIN c.students s WHERE s.id = :studentId")
+    List<MatchingCampaign> findAllByStudentIdInTable(@Param("studentId") Long studentId);
 }
