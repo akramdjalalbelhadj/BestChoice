@@ -126,4 +126,33 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
      */
     @Query("SELECT p FROM Project p JOIN p.matchingCampaigns c WHERE c.id = :campaignId")
     List<Project> findByCampaignId(@Param("campaignId") Long campaignId);
+
+    // ── Méthodes de statistiques (AdminStatsService) ──────────────────────────
+
+    /** Nombre de projets actifs */
+    long countByActiveTrue();
+
+    /** Nombre de projets complets */
+    long countByCompletTrue();
+
+    /** Capacité totale (somme des maxStudents) */
+    @Query("SELECT COALESCE(SUM(p.maxStudents), 0) FROM Project p")
+    Long sumMaxStudents();
+
+    /** Répartition par type de travail : [WorkType, count] */
+    @Query("SELECT wt, COUNT(p) FROM Project p JOIN p.workTypes wt GROUP BY wt")
+    List<Object[]> countByWorkType();
+
+    /** Répartition par semestre : [semester, count] */
+    @Query("SELECT p.semester, COUNT(p) FROM Project p " +
+           "WHERE p.semester IS NOT NULL GROUP BY p.semester ORDER BY p.semester")
+    List<Object[]> countBySemester();
+
+    /** Top enseignants par nombre de projets : [firstName, lastName, count] */
+    @Query("SELECT p.teacher.user.firstName, p.teacher.user.lastName, COUNT(p) " +
+           "FROM Project p " +
+           "WHERE p.teacher IS NOT NULL AND p.teacher.user IS NOT NULL " +
+           "GROUP BY p.teacher.user.id, p.teacher.user.firstName, p.teacher.user.lastName " +
+           "ORDER BY COUNT(p) DESC")
+    List<Object[]> countByTeacherStats();
 }

@@ -146,6 +146,17 @@ public class ProjectController {
         return ResponseEntity.noContent().build();
     }
 
+    // ==================== SUPPRESSION ====================
+
+    @Operation(summary = "Supprimer définitivement un projet")
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteProject(@PathVariable Long id) {
+        log.info("DELETE /api/projects/{} - Suppression du projet", id);
+        projectService.delete(id);
+        log.info("DELETE /api/projects/{} - Projet supprimé avec succès", id);
+        return ResponseEntity.noContent().build();
+    }
+
     @GetMapping("/teacher/{teacherId}")
     public ResponseEntity<List<ProjectResponse>> getProjectsByTeacher(@PathVariable Long teacherId) {
         List<ProjectResponse> projects = projectService.findByTeacherId(teacherId);

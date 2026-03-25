@@ -84,6 +84,9 @@ public interface IProjectService {
      */
     void deactivate(Long id);
 
+    /** Supprime définitivement un projet */
+    void delete(Long id);
+
     List<ProjectResponse> findByTeacherId(Long teacherId);
     List<ProjectResponse> findByCampaignId(Long teacherId);
 }

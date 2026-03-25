@@ -50,7 +50,7 @@ class ProjectControllerTest {
 
     @Test
     void getAllProjects_ShouldReturnList() throws Exception {
-        ProjectResponse project = new ProjectResponse(1L, "Title", "Desc", Set.of(WorkType.DEVELOPPEMENT), true, true, 1, 4, false, 1L, "Teacher", Collections.emptySet(), Collections.emptySet(), Collections.emptySet());
+        ProjectResponse project = new ProjectResponse(1L, "Title", "Desc", Set.of(WorkType.DEVELOPPEMENT), true, true, 1, 4, false, null, null, null, null, 1L, "Teacher", Collections.emptySet(), Collections.emptySet(), Collections.emptySet());
         when(projectService.findAll()).thenReturn(List.of(project));
 
         mockMvc.perform(get("/api/projects"))
@@ -60,7 +60,7 @@ class ProjectControllerTest {
 
     @Test
     void getAllProjectsPaginated_ShouldReturnPage() throws Exception {
-        ProjectResponse project = new ProjectResponse(1L, "Title", "Desc", Set.of(WorkType.DEVELOPPEMENT), true, true, 1, 4, false, 1L, "Teacher", Collections.emptySet(), Collections.emptySet(), Collections.emptySet());
+        ProjectResponse project = new ProjectResponse(1L, "Title", "Desc", Set.of(WorkType.DEVELOPPEMENT), true, true, 1, 4, false, null, null, null, null, 1L, "Teacher", Collections.emptySet(), Collections.emptySet(), Collections.emptySet());
         Page<ProjectResponse> page = new PageImpl<>(List.of(project));
         when(projectService.findAll(anyInt(), anyInt(), any(), any())).thenReturn(page);
 
@@ -71,7 +71,7 @@ class ProjectControllerTest {
 
     @Test
     void getProjectById_ShouldReturnProject() throws Exception {
-        ProjectResponse project = new ProjectResponse(1L, "Title", "Desc", Set.of(WorkType.DEVELOPPEMENT), true, true, 1, 4, false, 1L, "Teacher", Collections.emptySet(), Collections.emptySet(), Collections.emptySet());
+        ProjectResponse project = new ProjectResponse(1L, "Title", "Desc", Set.of(WorkType.DEVELOPPEMENT), true, true, 1, 4, false, null, null, null, null, 1L, "Teacher", Collections.emptySet(), Collections.emptySet(), Collections.emptySet());
         when(projectService.findById(1L)).thenReturn(project);
 
         mockMvc.perform(get("/api/projects/1"))
@@ -81,8 +81,8 @@ class ProjectControllerTest {
 
     @Test
     void createProject_ShouldReturnCreated() throws Exception {
-        ProjectCreateRequest request = new ProjectCreateRequest("Title", "Desc", Set.of(WorkType.DEVELOPPEMENT), true, 1, 4, Collections.emptySet(), Collections.emptySet());
-        ProjectResponse response = new ProjectResponse(1L, "Title", "Desc", Set.of(WorkType.DEVELOPPEMENT), true, true, 1, 4, false, 1L, "Teacher", Collections.emptySet(), Collections.emptySet(), Collections.emptySet());
+        ProjectCreateRequest request = new ProjectCreateRequest("Title", "Desc", Set.of(WorkType.DEVELOPPEMENT), true, 1, 4, null, null, null, null, Collections.emptySet(), Collections.emptySet());
+        ProjectResponse response = new ProjectResponse(1L, "Title", "Desc", Set.of(WorkType.DEVELOPPEMENT), true, true, 1, 4, false, null, null, null, null, 1L, "Teacher", Collections.emptySet(), Collections.emptySet(), Collections.emptySet());
         when(projectService.create(eq(1L), any())).thenReturn(response);
 
         mockMvc.perform(post("/api/projects/teacher/1")
@@ -96,7 +96,7 @@ class ProjectControllerTest {
     @Test
     void updateProject_ShouldReturnOk() throws Exception {
         ProjectUpdateRequest request = new ProjectUpdateRequest("New Title", null, null, null, null, null, null, null, null);
-        ProjectResponse response = new ProjectResponse(1L, "New Title", "Desc", Set.of(WorkType.DEVELOPPEMENT), true, true, 1, 4, false, 1L, "Teacher", Collections.emptySet(), Collections.emptySet(), Collections.emptySet());
+        ProjectResponse response = new ProjectResponse(1L, "New Title", "Desc", Set.of(WorkType.DEVELOPPEMENT), true, true, 1, 4, false, null, null, null, null, 1L, "Teacher", Collections.emptySet(), Collections.emptySet(), Collections.emptySet());
         when(projectService.update(eq(1L), any())).thenReturn(response);
 
         mockMvc.perform(put("/api/projects/1")
@@ -123,7 +123,7 @@ class ProjectControllerTest {
 
     @Test
     void getProjectsByTeacher_ShouldReturnList() throws Exception {
-        ProjectResponse project = new ProjectResponse(1L, "Title", "Desc", Set.of(WorkType.DEVELOPPEMENT), true, true, 1, 4, false, 1L, "Teacher", Collections.emptySet(), Collections.emptySet(), Collections.emptySet());
+        ProjectResponse project = new ProjectResponse(1L, "Title", "Desc", Set.of(WorkType.DEVELOPPEMENT), true, true, 1, 4, false, null, null, null, null, 1L, "Teacher", Collections.emptySet(), Collections.emptySet(), Collections.emptySet());
         when(projectService.findByTeacherId(1L)).thenReturn(List.of(project));
 
         mockMvc.perform(get("/api/projects/teacher/1"))

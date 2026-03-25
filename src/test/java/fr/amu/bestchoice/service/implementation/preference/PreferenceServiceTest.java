@@ -72,7 +72,7 @@ class PreferenceServiceTest {
         preference.setRank(1);
         preference.setStatus(PreferenceStatus.PENDING);
 
-        createRequest = new PreferenceCreateRequest(1L, 1L, 1, "Motivation", "Comment");
+        createRequest = new PreferenceCreateRequest(1L, 1L, 1L, null, 1, "Motivation", "Comment");
         preferenceResponse = new PreferenceResponse(1L, 1L, 1L, 1L, null, 1, PreferenceStatus.PENDING, LocalDateTime.now());
     }
 

@@ -1,92 +1,18 @@
-version: '3.8'
-
 services:
-  # Backend - Spring Boot
   backend:
     build:
-      context: .
+      context: ./
       dockerfile: Dockerfile.backend
-    container_name: bestchoice-backend
     ports:
-      - "8080:8080"
+      - "8081:8081"
     environment:
       - SPRING_PROFILES_ACTIVE=docker
-      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/bestchoice
-      - SPRING_DATASOURCE_USERNAME=root
-      - SPRING_DATASOURCE_PASSWORD=root
-      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
-      - SPRING_JPA_SHOW_SQL=false
-      - SPRING_JPA_PROPERTIES_HIBERNATE_FORMAT_SQL=true
-    depends_on:
-      mysql:
-        condition: service_healthy
-    volumes:
-      - ./src:/app/src
-      - /app/target
-    networks:
-      - bestchoice-network
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/actuator/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 40s
 
-  # Frontend - Angular + Nginx
   frontend:
     build:
-      context: .
+      context: ./bestchoice-front
       dockerfile: Dockerfile.frontend
-    container_name: bestchoice-frontend
     ports:
       - "80:80"
     depends_on:
-      backend:
-        condition: service_healthy
-    volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf:ro
-      - ./bestchoice-front/src:/app/src:ro
-    networks:
-      - bestchoice-network
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost/"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 10s
-
-  # Base de données MySQL
-  mysql:
-    image: mysql:8.0
-    container_name: bestchoice-mysql
-    environment:
-      - MYSQL_ROOT_PASSWORD=root
-      - MYSQL_DATABASE=bestchoice
-      - MYSQL_USER=bestchoice
-      - MYSQL_PASSWORD=bestchoice
-      - MYSQL_ROOT_HOST=%
-    ports:
-      - "3306:3306"
-    volumes:
-      - mysql-data:/var/lib/mysql
-      - ./init-db.sql:/docker-entrypoint-initdb.d/init.sql:ro
-    networks:
-      - bestchoice-network
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    command: --default-authentication-plugin=mysql_native_password --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
-
-networks:
-  bestchoice-network:
-    driver: bridge
-
-volumes:
-  mysql-data:
-    driver: local
-
+      - backend

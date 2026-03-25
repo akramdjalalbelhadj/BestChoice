@@ -1,6 +1,6 @@
 import { Component, inject, OnInit, signal, computed, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterLink } from '@angular/router';
+import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { FormsModule, ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { StudentService } from '../../services/student.service';
 import { AuthStore } from '../../../../core/auth/auth.store';
@@ -11,29 +11,57 @@ import { ThemeToggleComponent } from '../../../../shared/theme-toggle.component'
 @Component({
   selector: 'app-student-profile',
   standalone: true,
-  imports: [CommonModule, RouterLink, FormsModule, ReactiveFormsModule, ThemeToggleComponent],
+  imports: [CommonModule, RouterLink, RouterLinkActive, FormsModule, ReactiveFormsModule, ThemeToggleComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="app-layout">
       <aside class="sidebar">
-        <div class="brand">BC</div>
+        <div class="brand">
+          <div class="logo-box">BC</div>
+          <span class="brand-name">Le Bon Choix</span>
+        </div>
         <nav class="nav-links">
-          <a routerLink="/app/student/dashboard" class="menu-item">📊 Dashboard</a>
-          <a routerLink="/app/student/projects" class="menu-item">🔍 Projets</a>
-          <a routerLink="/app/student/preferences" class="menu-item">⭐ Mes Choix</a>
-          <a routerLink="/app/student/profile" class="menu-item active">👤 Mon Profil</a>
+          <a routerLink="/app/student/dashboard" routerLinkActive="active"
+             [routerLinkActiveOptions]="{exact:true}" class="menu-item">
+            <span class="icon">📊</span> Dashboard
+          </a>
+          <a routerLink="/app/student/campaigns" routerLinkActive="active" class="menu-item">
+            <span class="icon">🔍</span> Mes Campagnes
+          </a>
+          <a routerLink="/app/student/preferences" routerLinkActive="active" class="menu-item">
+            <span class="icon">⭐</span> Mes Vœux
+          </a>
+          <a routerLink="/app/student/profile" routerLinkActive="active" class="menu-item">
+            <span class="icon">👤</span> Mon Profil
+          </a>
         </nav>
         <footer class="sidebar-footer">
           <app-theme-toggle />
-          <button (click)="logout()" class="btn-logout">🚪 Déconnexion</button>
+          <button (click)="logout()" class="btn-logout">
+            <span class="icon">🚪</span> Déconnexion
+          </button>
         </footer>
       </aside>
 
       <main class="main-content">
-        <header class="profile-header">
+        <header class="top-nav">
           <div class="header-titles">
-            <a routerLink="../dashboard" class="btn-retour">← Retour au dashboard</a>
-            <h1>Mon Profil Étudiant</h1>
+            <h1>Mon Profil</h1>
+          </div>
+          <div class="user-control">
+            <div class="user-text">
+              <span class="user-name">{{ auth.displayName() }}</span>
+              <span class="user-role">Étudiant</span>
+            </div>
+            <div class="avatar">{{ initials() }}</div>
+          </div>
+        </header>
+
+        <div class="page-scroll">
+        <div class="page-header">
+          <div class="page-titles">
+            <h2>Mon Profil Étudiant</h2>
+            <p>Gérez vos compétences, centres d'intérêt et informations académiques.</p>
           </div>
 
           @if (!isEditing()) {
@@ -46,7 +74,7 @@ import { ThemeToggleComponent } from '../../../../shared/theme-toggle.component'
               </button>
             </div>
           }
-        </header>
+        </div>
 
         @if (isLoading()) {
           <div class="loading-state">Chargement de vos données...</div>
@@ -149,6 +177,7 @@ import { ThemeToggleComponent } from '../../../../shared/theme-toggle.component'
             </section>
           </div>
         }
+        </div><!-- end page-scroll -->
       </main>
     </div>
   `,

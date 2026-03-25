@@ -1,58 +1,108 @@
-<div class="dashboard-wrapper">
-  <header class="dash-header">
-    <div class="header-left">
-      <a routerLink="/app/student/dashboard" class="back-link">← Retour Dashboard</a>
-      <h1>Mes Campagnes de Matching</h1>
-      <p class="subtitle">Retrouvez ici les sessions de sélection auxquelles vous participez.</p>
+<div class="app-layout">
+
+  <!-- ── Sidebar ──────────────────────────────────────────────────────────── -->
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="logo-box">BC</div>
+      <span class="brand-name">Le Bon Choix</span>
     </div>
-  </header>
 
-  @if (isLoading()) {
-    <div class="skeleton-container">
-      <div class="skeleton-card"></div>
-      <div class="skeleton-card"></div>
-    </div>
-  } @else {
-    <div class="campaign-grid">
-      @for (c of campaigns(); track c.id) {
-        <div class="campaign-card">
-          <div class="card-badge" [class.project]="c.campaignType === 'PROJECT'">
-            {{ c.campaignType === 'PROJECT' ? '🚀 Projets (PFE)' : '📚 Matières Optionnelles' }}
-          </div>
+    <nav class="nav-links">
+      <a routerLink="/app/student/dashboard" routerLinkActive="active"
+         [routerLinkActiveOptions]="{exact:true}" class="menu-item">
+        <span class="icon">📊</span> Dashboard
+      </a>
+      <a routerLink="/app/student/campaigns" routerLinkActive="active" class="menu-item">
+        <span class="icon">🔍</span> Mes Campagnes
+      </a>
+      <a routerLink="/app/student/preferences" routerLinkActive="active" class="menu-item">
+        <span class="icon">⭐</span> Mes Vœux
+      </a>
+      <a routerLink="/app/student/profile" routerLinkActive="active" class="menu-item">
+        <span class="icon">👤</span> Mon Profil
+      </a>
+    </nav>
 
-          <div class="card-content">
-            <h3 class="name">{{ c.name }}</h3>
-            <p class="description">{{ c.description || 'Aucune description spécifiée pour cette campagne.' }}</p>
+    <footer class="sidebar-footer">
+      <app-theme-toggle />
+      <button (click)="logout()" class="btn-logout">
+        <span class="icon">🚪</span> Déconnexion
+      </button>
+    </footer>
+  </aside>
 
-            <div class="meta-info">
-              <div class="info-item">
-                <span class="label">Période Académique</span>
-                <span class="value">{{ c.academicYear }} • Semestre {{ c.semester }}</span>
-              </div>
-              <div class="info-item">
-                <span class="label">Responsable</span>
-                <span class="value">{{ c.teacherName }}</span>
-              </div>
-              <div class="info-item">
-                <span class="label">Offres à pourvoir</span>
-                <span class="value">{{ c.itemsCount }}</span>
-              </div>
-            </div>
-          </div>
-
-            <footer class="card-footer">
-                <button class="btn-primary" [routerLink]="['/app/student/items', c.id]">
-                    Explorer l'offre
-                </button>
-            </footer>
+  <!-- ── Main ─────────────────────────────────────────────────────────────── -->
+  <main class="main-content">
+    <header class="top-nav">
+      <div class="header-titles">
+        <h1>Mes Campagnes</h1>
+      </div>
+      <div class="user-control">
+        <div class="user-text">
+          <span class="user-name">{{ auth.displayName() }}</span>
+          <span class="user-role">Étudiant</span>
         </div>
-      } @empty {
-        <div class="empty-state">
-          <div class="icon">📁</div>
-          <p>Vous n'êtes inscrit dans aucune campagne de matching pour le moment.</p>
-          <small>Si vous pensez qu'il s'agit d'une erreur, contactez votre scolarité.</small>
+        <div class="avatar">{{ initials() }}</div>
+      </div>
+    </header>
+
+    <div class="page-scroll">
+
+      <div class="page-header">
+        <div class="page-titles">
+          <h2>Mes Campagnes de Matching</h2>
+          <p>Retrouvez ici les sessions de sélection auxquelles vous participez.</p>
+        </div>
+      </div>
+
+      @if (isLoading()) {
+        <div class="skeleton-container">
+          <div class="skeleton-bar" style="height:200px; margin-bottom:1rem;"></div>
+          <div class="skeleton-bar" style="height:200px;"></div>
+        </div>
+      } @else {
+        <div class="campaign-grid">
+          @for (c of campaigns(); track c.id) {
+            <div class="campaign-card">
+              <div class="card-type-banner" [class.project]="c.campaignType === 'PROJECT'">
+                {{ c.campaignType === 'PROJECT' ? '🚀 Projets (PFE)' : '📚 Matières Optionnelles' }}
+              </div>
+
+              <div class="card-body">
+                <h3 class="card-name">{{ c.name }}</h3>
+                <p class="card-desc">{{ c.description || 'Aucune description pour cette campagne.' }}</p>
+
+                <div class="card-meta">
+                  <div class="meta-row">
+                    <span class="meta-label">Période</span>
+                    <span class="meta-value">{{ c.academicYear }} • Sem. {{ c.semester }}</span>
+                  </div>
+                  <div class="meta-row">
+                    <span class="meta-label">Responsable</span>
+                    <span class="meta-value">{{ c.teacherName }}</span>
+                  </div>
+                  <div class="meta-row">
+                    <span class="meta-label">Offres</span>
+                    <span class="meta-value">{{ c.itemsCount }} disponibles</span>
+                  </div>
+                </div>
+              </div>
+
+              <footer class="card-footer">
+                <button class="btn-primary" [routerLink]="['/app/student/items', c.id]">
+                  Explorer l'offre →
+                </button>
+              </footer>
+            </div>
+          } @empty {
+            <div class="empty-placeholder">
+              <div class="icon">📁</div>
+              <h3>Aucune campagne</h3>
+              <p>Vous n'êtes inscrit dans aucune campagne de matching pour le moment.</p>
+            </div>
+          }
         </div>
       }
     </div>
-  }
+  </main>
 </div>

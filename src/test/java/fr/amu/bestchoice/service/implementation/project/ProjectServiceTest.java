@@ -67,11 +67,11 @@ class ProjectServiceTest {
         project.setComplet(false);
 
         createRequest = new ProjectCreateRequest(
-                "Titre", "Description", Set.of(WorkType.DEVELOPPEMENT), true, 1, 2, Set.of("Java"), Set.of("Web")
+                "Titre", "Description", Set.of(WorkType.DEVELOPPEMENT), true, 1, 2, null, null, null, null, Set.of("Java"), Set.of("Web")
         );
 
         projectResponse = new ProjectResponse(
-                1L, "Titre", "Description", Set.of(WorkType.DEVELOPPEMENT), true, true, 1, 2, false, 1L, "Teacher", Set.of("Java"), Set.of("Web"), new HashSet<>()
+                1L, "Titre", "Description", Set.of(WorkType.DEVELOPPEMENT), true, true, 1, 2, false, null, null, null, null, 1L, "Teacher", Set.of("Java"), Set.of("Web"), new HashSet<>()
         );
     }
 

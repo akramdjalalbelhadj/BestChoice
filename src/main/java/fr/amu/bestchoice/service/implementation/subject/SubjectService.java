@@ -44,10 +44,10 @@ public class SubjectService {
     public SubjectResponse create(Long teacherId, SubjectCreateRequest dto) {
         log.info("Début création matière : teacherId={}, title={}", teacherId, dto.title());
 
-        Teacher teacher = teacherRepository.findById(teacherId)
+        Teacher teacher = teacherRepository.findByUserId(teacherId)
                 .orElseThrow(() -> {
-                    log.error("Enseignant introuvable : teacherId={}", teacherId);
-                    return new NotFoundException("Enseignant introuvable avec l'ID : " + teacherId);
+                    log.error("Enseignant introuvable pour userId={}", teacherId);
+                    return new NotFoundException("Enseignant introuvable pour l'utilisateur ID : " + teacherId);
                 });
 
         // Validation métier : Capacité
@@ -137,6 +137,20 @@ public class SubjectService {
         Subject subject = subjectRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Matière introuvable"));
         subject.setActive(false);
+    }
+
+    // ==================== SUPPRESSION ====================
+
+    @Transactional
+    public void delete(Long id) {
+        log.info("Suppression matière : id={}", id);
+        Subject subject = subjectRepository.findById(id)
+                .orElseThrow(() -> {
+                    log.error("Matière introuvable : id={}", id);
+                    return new NotFoundException("Matière introuvable avec l'ID : " + id);
+                });
+        subjectRepository.delete(subject);
+        log.info("Matière supprimée avec succès : id={}", id);
     }
 
     // ==================== MÉTHODES PRIVÉES (LOGIQUE MÉTIER) ====================

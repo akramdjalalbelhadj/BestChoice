@@ -73,7 +73,7 @@ export class TeacherService {
   }
 
   deleteProject(id: number) {
-    return this.projectService.deactivate(id).pipe(
+    return this.projectService.delete(id).pipe(
       tap(() => this._projects.update(all => all.filter(p => p.id !== id)))
     );
   }
@@ -96,7 +96,7 @@ export class TeacherService {
   }
 
   deleteSubject(id: number) {
-    return this.subjectService.deactivate(id).pipe(
+    return this.subjectService.delete(id).pipe(
       tap(() => this._subjects.update(all => all.filter(s => s.id !== id)))
     );
   }
@@ -112,7 +112,9 @@ export class TeacherService {
   }
 
   deleteCampaign(id: number) {
-    return this.campaignService.delete(id);
+    return this.campaignService.delete(id).pipe(
+      tap(() => this._campaigns.update(all => all.filter(c => c.id !== id)))
+    );
   }
 
   /**

@@ -68,4 +68,8 @@ export class ProjectService {
   deactivate(id: number): Observable<void> {
     return this.http.patch<void>(`${this.apiUrl}/${id}/deactivate`, {});
   }
+
+  delete(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  }
 }

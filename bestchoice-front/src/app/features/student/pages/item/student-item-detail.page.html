@@ -1,90 +1,136 @@
 <div class="app-layout">
+
+  <!-- ── Sidebar ──────────────────────────────────────────────────────────── -->
   <aside class="sidebar">
+    <div class="brand">
+      <div class="logo-box">BC</div>
+      <span class="brand-name">Le Bon Choix</span>
+    </div>
+
+    <nav class="nav-links">
+      <a routerLink="/app/student/dashboard" routerLinkActive="active"
+         [routerLinkActiveOptions]="{exact:true}" class="menu-item">
+        <span class="icon">📊</span> Dashboard
+      </a>
+      <a routerLink="/app/student/campaigns" routerLinkActive="active" class="menu-item">
+        <span class="icon">🔍</span> Mes Campagnes
+      </a>
+      <a routerLink="/app/student/preferences" routerLinkActive="active" class="menu-item">
+        <span class="icon">⭐</span> Mes Vœux
+      </a>
+      <a routerLink="/app/student/profile" routerLinkActive="active" class="menu-item">
+        <span class="icon">👤</span> Mon Profil
+      </a>
+    </nav>
+
+    <footer class="sidebar-footer">
+      <app-theme-toggle />
+      <button (click)="logout()" class="btn-logout">
+        <span class="icon">🚪</span> Déconnexion
+      </button>
+    </footer>
   </aside>
 
+  <!-- ── Main ─────────────────────────────────────────────────────────────── -->
   <main class="main-content">
-    @if (isLoading()) {
-      <div class="loading-state">
-        <span class="spinner"></span>
-        Chargement des opportunités...
+    <header class="top-nav">
+      <div class="header-titles">
+        <h1>{{ campaign()?.name || 'Détail campagne' }}</h1>
       </div>
-    } @else if (campaign()) {
-      <header class="detail-header">
-        <div class="header-top">
-          <a routerLink="/app/student/campaigns" class="back-link">← Retour aux campagnes</a>
+      <div class="user-control">
+        <div class="user-text">
+          <span class="user-name">{{ auth.displayName() }}</span>
+          <span class="user-role">Étudiant</span>
+        </div>
+        <div class="avatar">{{ initials() }}</div>
+      </div>
+    </header>
 
-          @if (isStableAlgorithm()) {
-              <button class="btn-preference-ranking"
+    <div class="page-scroll">
+      @if (isLoading()) {
+        <div class="loading-state">
+          <span class="spinner"></span>
+          Chargement des opportunités...
+        </div>
+      } @else if (campaign()) {
+
+        <div class="page-header">
+          <div class="page-titles">
+            <a routerLink="/app/student/campaigns" class="btn-retour">← Retour aux campagnes</a>
+            <h2>{{ campaign()?.name }}</h2>
+            <p>
+              <strong>{{ items().length }}</strong>
+              {{ isProjectCampaign() ? ' projets innovants' : ' matières' }} disponibles
+            </p>
+          </div>
+          <div class="page-actions">
+            <span class="algo-badge" [class.stable]="isStableAlgorithm()">
+              Algo : {{ campaign()?.algorithmType }}
+            </span>
+            @if (isStableAlgorithm()) {
+              <button class="btn-primary"
                       [routerLink]="['/app/student/preferences']"
                       [queryParams]="{ campaignId: campaign()?.id }">
-                  <span class="icon"></span> Classer mes vœux
+                ⭐ Classer mes vœux
               </button>
+            }
+          </div>
+        </div>
+
+        <div class="items-grid">
+          @for (it of items(); track it.id) {
+            <div class="item-card">
+              <div class="item-header">
+                <h3>{{ it.title }}</h3>
+                <span class="id-badge">#{{ it.id }}</span>
+              </div>
+
+              <p class="item-desc">
+                {{ it.description | slice:0:140 }}{{ it.description?.length > 140 ? '...' : '' }}
+              </p>
+
+              <div class="item-meta">
+                <div class="meta">
+                  <span class="label">Places</span>
+                  <span class="val">{{ it.maxStudents }}</span>
+                </div>
+                <div class="meta">
+                  <span class="label">ECTS</span>
+                  <span class="val">{{ it.credits }}</span>
+                </div>
+                @if (isProjectCampaign()) {
+                  <div class="meta">
+                    <span class="label">Remote</span>
+                    <span class="val">{{ it.remotePossible ? 'Oui' : 'Non' }}</span>
+                  </div>
+                }
+              </div>
+
+              <div class="tag-row">
+                @for (skill of it.requiredSkills?.slice(0, 3); track skill) {
+                  <span class="skill-pill">{{ skill }}</span>
+                }
+              </div>
+
+              <div class="item-footer">
+                <button class="btn-ghost" style="width:100%; justify-content:center;"
+                        [routerLink]="isProjectCampaign()
+                          ? ['/app/student/projects', it.id]
+                          : ['/app/student/subjects', it.id]"
+                        [queryParams]="{ campaignId: campaign()?.id }">
+                  Explorer l'offre
+                </button>
+              </div>
+            </div>
+          } @empty {
+            <div class="empty-placeholder">
+              <div class="icon">🔍</div>
+              <h3>Aucune offre rattachée</h3>
+              <p>Revenez plus tard ou contactez votre responsable.</p>
+            </div>
           }
         </div>
-
-        <div class="header-main">
-          <h1>{{ campaign()?.name }}</h1>
-          <div class="header-info">
-            <p class="subtitle">
-              <strong>{{ items().length }}</strong> {{ isProjectCampaign() ? 'projets innovants' : 'matières' }} disponibles
-            </p>
-            <span class="algo-badge" [class.hybrid]="isStableAlgorithm()">
-        Mode : {{ campaign()?.algorithmType }}
-      </span>
-          </div>
-        </div>
-      </header>
-
-      <div class="items-grid">
-        @for (it of items(); track it.id) {
-          <div class="item-card">
-            <div class="item-header">
-              <h3>{{ it.title }}</h3>
-              <span class="id-badge">#{{ it.id }}</span>
-            </div>
-
-            <p class="item-desc">
-              {{ it.description | slice:0:140 }}{{ it.description?.length > 140 ? '...' : '' }}
-            </p>
-
-            <div class="item-meta">
-              <div class="meta">
-                <span class="label">Places</span>
-                <span class="val">{{ it.maxStudents }} places</span>
-              </div>
-              <div class="meta">
-                <span class="label">Volume</span>
-                <span class="val">{{ it.credits }} ECTS</span>
-              </div>
-              @if (isProjectCampaign()) {
-                <div class="meta">
-                  <span class="label">Remote</span>
-                  <span class="val">{{ it.remotePossible ? 'Oui' : 'Non' }}</span>
-                </div>
-              }
-            </div>
-
-            <div class="tag-row">
-              @for (skill of it.requiredSkills?.slice(0,3); track skill) {
-                <span class="mini-tag">{{ skill }}</span>
-              }
-            </div>
-
-            <div class="item-footer">
-              <button class="btn-action"
-                      [routerLink]="isProjectCampaign() ? ['/app/student/projects', it.id] : ['/app/student/subjects', it.id]"
-                      [queryParams]="{ campaignId: campaign()?.id }">
-                Explorer l'offre
-              </button>
-            </div>
-          </div>
-        } @empty {
-          <div class="empty-state">
-            <p>Aucune offre n'est encore rattachée à cette campagne.</p>
-            <small>Revenez un peu plus tard ou contactez votre responsable.</small>
-          </div>
-        }
-      </div>
-    }
+      }
+    </div>
   </main>
 </div>

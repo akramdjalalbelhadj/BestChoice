@@ -77,7 +77,7 @@ class PreferenceControllerTest {
 
     @Test
     void createPreference_ShouldReturnCreated() throws Exception {
-        PreferenceCreateRequest request = new PreferenceCreateRequest(1L, 1L, 1, "Motivation", "Comment");
+        PreferenceCreateRequest request = new PreferenceCreateRequest(1L, 1L, 1L, null, 1, "Motivation", "Comment");
         PreferenceResponse response = new PreferenceResponse(1L, 1L, 1L, 1L, null, 1, PreferenceStatus.PENDING, LocalDateTime.now());
         when(preferenceService.create(any())).thenReturn(response);
 

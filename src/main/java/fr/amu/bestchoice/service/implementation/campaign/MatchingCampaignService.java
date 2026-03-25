@@ -108,7 +108,28 @@ public class MatchingCampaignService implements IMatchingCampaignService
     }
 
     @Override
+    @Transactional
     public void delete(Long id) {
+        if (!campaignRepository.existsById(id)) {
+            throw new NotFoundException("Campagne introuvable avec l'ID : " + id);
+        }
+
+        // 1. Supprimer les préférences étudiants liées (FK non nullable)
+        campaignRepository.deleteStudentPreferencesByCampaignId(id);
+
+        // 2. Supprimer les résultats de matching liés (FK non nullable)
+        campaignRepository.deleteMatchingResultsByCampaignId(id);
+
+        // 3. Nettoyer les tables de jointure côté Project / Subject (bidirectionnel)
+        campaignRepository.deleteFromProjectMatchingCampaigns(id);
+        campaignRepository.deleteFromSubjectMatchingCampaigns(id);
+
+        // 4. Nettoyer les tables de jointure côté MatchingCampaign
+        campaignRepository.deleteFromMatchingCampaignStudents(id);
+        campaignRepository.deleteFromMatchingCampaignProjects(id);
+        campaignRepository.deleteFromMatchingCampaignSubjects(id);
+
+        // 5. Supprimer la campagne elle-même
         campaignRepository.deleteById(id);
     }
 }

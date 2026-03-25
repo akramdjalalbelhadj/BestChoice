@@ -137,4 +137,15 @@ public class SubjectController {
         log.info("PATCH /api/subjects/{}/deactivate - Matière désactivée avec succès", id);
         return ResponseEntity.noContent().build();
     }
+
+    // ==================== SUPPRESSION ====================
+
+    @Operation(summary = "Supprimer définitivement une matière")
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        log.info("DELETE /api/subjects/{} - Suppression de la matière", id);
+        subjectService.delete(id);
+        log.info("DELETE /api/subjects/{} - Matière supprimée avec succès", id);
+        return ResponseEntity.noContent().build();
+    }
 }

@@ -281,6 +281,20 @@ public class ProjectService implements IProjectService {
         log.info("Projet désactivé avec succès : id={}, title={}", id, project.getTitle());
     }
 
+    // ==================== SUPPRESSION ====================
+
+    @Transactional
+    public void delete(Long id) {
+        log.info("Suppression projet : id={}", id);
+        Project project = projectRepository.findById(id)
+                .orElseThrow(() -> {
+                    log.error("Projet introuvable : id={}", id);
+                    return new NotFoundException("Projet introuvable avec l'ID : " + id);
+                });
+        projectRepository.delete(project);
+        log.info("Projet supprimé avec succès : id={}", id);
+    }
+
     // ==================== MÉTHODES PRIVÉES ====================
 
     private Set<Skill> resolveSkills(Set<String> skillNames) {

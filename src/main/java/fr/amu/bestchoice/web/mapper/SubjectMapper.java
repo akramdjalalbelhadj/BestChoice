@@ -8,6 +8,8 @@ import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
 
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Mapper pour l'entité Subject.
@@ -32,9 +34,10 @@ public interface SubjectMapper {
     @Mapping(target = "teacherId", source = "teacher.id")
     @Mapping(target = "teacherName",
             expression = "java(entity.getTeacher().getUser().getFirstName() + \" \" + entity.getTeacher().getUser().getLastName())")
-    // La transformation en Set<String> est faite manuellement ou via une méthode default
-    @Mapping(target = "requiredSkills", ignore = true)
-    @Mapping(target = "keywords", ignore = true)
+    @Mapping(target = "requiredSkills",
+            expression = "java(entity.getRequiredSkills() == null ? new java.util.HashSet<>() : entity.getRequiredSkills().stream().map(s -> s.getName()).collect(java.util.stream.Collectors.toSet()))")
+    @Mapping(target = "keywords",
+            expression = "java(entity.getKeywords() == null ? new java.util.HashSet<>() : entity.getKeywords().stream().map(k -> k.getLabel()).collect(java.util.stream.Collectors.toSet()))")
     SubjectResponse toResponse(Subject entity);
 
     List<SubjectResponse> toResponseList(List<Subject> entities);

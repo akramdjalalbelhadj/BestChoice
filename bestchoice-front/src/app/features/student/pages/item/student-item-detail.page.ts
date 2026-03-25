@@ -33,6 +33,11 @@ export class StudentItemDetailPage implements OnInit {
   isProjectCampaign = computed(() => this.campaign()?.campaignType === MatchingCampaignType.PROJECT);
   isStableAlgorithm = computed(() => this.campaign()?.algorithmType === 'STABLE');
 
+  initials = computed(() => {
+    const name = this.auth.displayName();
+    return name ? name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) : '?';
+  });
+
   ngOnInit() {
     const campaignId = this.route.snapshot.paramMap.get('id');
     const user = this.auth.user();

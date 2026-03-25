@@ -34,6 +34,10 @@ export class SubjectService {
     return this.http.patch<void>(`${this.API}/${id}/deactivate`, {});
   }
 
+  delete(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.API}/${id}`);
+  }
+
   runMatching(campaignId: number, request: MatchingRunRequest): Observable<MatchingRunResponse> {
     return this.http.post<MatchingRunResponse>(
       `${this.API}/campaign/${campaignId}/run`,

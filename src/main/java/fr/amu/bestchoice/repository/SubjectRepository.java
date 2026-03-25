@@ -15,7 +15,8 @@ import java.util.List;
 @Repository
 public interface SubjectRepository extends JpaRepository<Subject, Long> {
 
-    List<Subject> findByTeacherId(Long teacherId);
+    @Query("SELECT s FROM Subject s WHERE s.teacher.user.id = :userId")
+    List<Subject> findByTeacherId(@Param("userId") Long userId);
 
     List<Subject> findByActiveTrue();
 
@@ -27,4 +28,31 @@ public interface SubjectRepository extends JpaRepository<Subject, Long> {
     List<Subject> searchActiveSubjects(@Param("query") String query);
 
     @Query("SELECT s FROM Subject s JOIN s.matchingCampaigns c WHERE c.id = :campaignId")
-    List<Subject> findByCampaignId(@Param("campaignId") Long campaignId);}
+    List<Subject> findByCampaignId(@Param("campaignId") Long campaignId);
+
+    // ── Méthodes de statistiques (AdminStatsService) ──────────────────────────
+
+    /** Nombre d'options actives */
+    long countByActiveTrue();
+
+    /** Capacité totale (somme des maxStudents) */
+    @Query("SELECT COALESCE(SUM(s.maxStudents), 0) FROM Subject s")
+    Long sumMaxStudents();
+
+    /** Répartition par type de travail : [WorkType, count] */
+    @Query("SELECT wt, COUNT(s) FROM Subject s JOIN s.workTypes wt GROUP BY wt")
+    List<Object[]> countByWorkType();
+
+    /** Répartition par semestre : [semester, count] */
+    @Query("SELECT s.semester, COUNT(s) FROM Subject s " +
+           "WHERE s.semester IS NOT NULL GROUP BY s.semester ORDER BY s.semester")
+    List<Object[]> countBySemester();
+
+    /** Top enseignants par nombre d'options : [firstName, lastName, count] */
+    @Query("SELECT s.teacher.user.firstName, s.teacher.user.lastName, COUNT(s) " +
+           "FROM Subject s " +
+           "WHERE s.teacher IS NOT NULL AND s.teacher.user IS NOT NULL " +
+           "GROUP BY s.teacher.user.id, s.teacher.user.firstName, s.teacher.user.lastName " +
+           "ORDER BY COUNT(s) DESC")
+    List<Object[]> countByTeacherStats();
+}

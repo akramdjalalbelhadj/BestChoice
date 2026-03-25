@@ -1,0 +1,14 @@
+# Étape 1 : Build
+FROM node:22-alpine AS build
+WORKDIR /app
+COPY . .
+RUN npm install
+# On utilise --configuration production pour s'assurer du bon dossier de sortie
+RUN npm run build -- --configuration production
+
+# Étape 2 : Serveur Nginx
+FROM nginx:stable-alpine
+# Vérifie bien le nom du dossier dans /app/dist/ (souvent le nom du projet)
+COPY --from=build /app/dist/bestchoice-front /usr/share/nginx/html
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]
