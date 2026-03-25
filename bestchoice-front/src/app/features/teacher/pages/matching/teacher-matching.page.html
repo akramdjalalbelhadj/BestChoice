@@ -1,121 +1,56 @@
 <div class="app-layout">
-  <aside class="sidebar">
-    <div class="brand">
-      <div class="logo-box">BC</div>
-      <span class="brand-name">Le Bon Choix</span>
-    </div>
-    <nav class="nav-links">
-      <a routerLink="/app/teacher/dashboard" routerLinkActive="active" [routerLinkActiveOptions]="{exact:true}" class="menu-item">
-        <span class="icon">📊</span> Dashboard
-      </a>
-      <a routerLink="/app/teacher/projects" routerLinkActive="active" class="menu-item">
-        <span class="icon">📁</span> Projets
-      </a>
-      <a routerLink="/app/teacher/subjects" routerLinkActive="active" class="menu-item">
-        <span class="icon">📚</span> Options
-      </a>
-      <a routerLink="/app/teacher/campaigns" routerLinkActive="active" class="menu-item">
-        <span class="icon">🎯</span> Campagnes
-      </a>
-      <a routerLink="/app/teacher/matching-control" routerLinkActive="active" class="menu-item">
-        <span class="icon">⚙️</span> Pilotage
-      </a>
-    </nav>
-    <footer class="sidebar-footer">
-      <app-theme-toggle />
-      <button (click)="logout()" class="btn-logout">
-        <span class="icon">🚪</span> Déconnexion
-      </button>
-    </footer>
-  </aside>
-
   <main class="main-content">
     <header class="top-nav">
-      <div class="header-titles"><h1>Résultats Matching</h1></div>
-      <div class="user-control">
-        <div class="user-text">
-          <span class="user-name">{{ auth.displayName() }}</span>
-          <span class="user-role">Enseignant</span>
-        </div>
-        <div class="avatar">{{ initials() }}</div>
+      <div class="header-titles">
+        <div class="breadcrumb">Enseignant / Campagnes / Résultats</div>
+        <h1>Analyse par Projet</h1>
+        <span class="campaign-pill">{{ campaign()?.name }}</span>
+      </div>
+      <div class="header-actions">
+        <button class="btn-refresh" (click)="loadResults(campaignId()!)" [class.spinning]="isLoading()">🔄</button>
       </div>
     </header>
 
-    <div class="page-scroll">
+    @if (isLoading()) {
+      <div class="skeleton-loader">Chargement des affectations...</div>
+    } @else {
+      <div class="projects-grid">
+        @for (group of groupedResults(); track group.projectId) {
+          <section class="project-card">
+            <div class="project-header">
+              <div class="title-area">
+                <span class="icon">🚀</span>
+                <h3>{{ group.projectName }}</h3>
+              </div>
+              <div class="project-stats">
+                {{ group.results.length }} étudiants • <strong>{{ group.avgScore.toFixed(0) }}% fit</strong>
+              </div>
+            </div>
 
-      <div class="page-header">
-        <div class="page-titles">
-          <h2>Résultats du Matching</h2>
-          <p>Analyse des affectations pour : <strong>{{ campaign()?.name ?? '—' }}</strong></p>
-        </div>
-        <div class="page-actions">
-          <button class="btn-ghost" (click)="loadResults(campaignId()!)">🔄 Actualiser</button>
-          <button class="btn-primary"
-                  [routerLink]="['/app/teacher/matching-control']"
-                  [queryParams]="{campaignId: campaignId()}">
-            ⚙️ Réajuster les poids
-          </button>
-        </div>
+            <div class="students-list">
+              @for (r of group.results; track r.id) {
+                <div class="student-item" [class]="getScoreClass(r.globalScore)">
+                  <div class="rank-label">Rang #{{ r.recommendationRank }}</div>
+
+                  <div class="student-info">
+                    <span class="name">{{ r.studentName }}</span>
+                    <div class="mini-bars">
+                      <div class="bar-wrap"><div class="bar skills" [style.width]="(r.skillsScore * 100) + '%'"></div></div>
+                      <div class="bar-wrap"><div class="bar interests" [style.width]="(r.interestsScore * 100) + '%'"></div></div>
+                    </div>
+                  </div>
+
+                  <div class="score-badge">
+                    {{ (r.globalScore * 100).toFixed(0) }}%
+                  </div>
+                </div>
+              }
+            </div>
+          </section>
+        } @empty {
+          <div class="empty-state">Aucun résultat trouvé.</div>
+        }
       </div>
-
-      @if (isLoading()) {
-        <div class="loading-state">
-          <span class="spinner"></span>
-          <p>Analyse des scores en cours...</p>
-        </div>
-      } @else {
-        <div class="content-card no-padding">
-          <div class="table-container">
-            <table class="data-table">
-              <thead>
-                <tr>
-                  <th>Rang</th>
-                  <th>Étudiant</th>
-                  <th>Affectation</th>
-                  <th>Score Global</th>
-                  <th>Détails (S / I)</th>
-                </tr>
-              </thead>
-              <tbody>
-                @for (r of results(); track r.id) {
-                  <tr>
-                    <td><span class="rank-badge">#{{ r.recommendationRank }}</span></td>
-                    <td><span class="student-ref">Étudiant #{{ r.studentId }}</span></td>
-                    <td>
-                      @if (r.projectId) {
-                        <span class="type-badge">🚀 Projet #{{ r.projectId }}</span>
-                      } @else if (r.subjectId) {
-                        <span class="type-badge subject">📚 Matière #{{ r.subjectId }}</span>
-                      }
-                    </td>
-                    <td>
-                      <span class="score-chip" [class]="getScoreClass(r.globalScore)">
-                        {{ (r.globalScore * 100).toFixed(1) }}%
-                      </span>
-                    </td>
-                    <td>
-                      <div class="mini-scores">
-                        <span>S: {{ (r.skillsScore * 100).toFixed(0) }}%</span>
-                        <span>I: {{ (r.interestsScore * 100).toFixed(0) }}%</span>
-                      </div>
-                    </td>
-                  </tr>
-                } @empty {
-                  <tr>
-                    <td colspan="5">
-                      <div class="empty-state">
-                        <p>Aucun résultat. Lancez le calcul depuis le centre de pilotage.</p>
-                        <a routerLink="/app/teacher/matching-control" class="btn-link">Aller au pilotage</a>
-                      </div>
-                    </td>
-                  </tr>
-                }
-              </tbody>
-            </table>
-          </div>
-        </div>
-      }
-
-    </div>
+    }
   </main>
 </div>

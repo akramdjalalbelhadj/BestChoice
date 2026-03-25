@@ -14,6 +14,9 @@ export interface MatchingResultResponse {
   recommendationRank: number;
   algorithmUsed: MatchingAlgorithmType;
   calculationDate: string;
+  studentName?: string;
+  projectName?: string;
+  subjectName?: string;
 }
 
 /**

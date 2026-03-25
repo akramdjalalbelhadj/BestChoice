@@ -1,33 +1,90 @@
-@use '../layout' as *;
-
-.rank-badge {
-  background: var(--bc-primary-dim);
-  color: var(--bc-primary);
-  border: 1px solid var(--bc-primary-border);
-  padding: 3px 9px;
-  border-radius: var(--bc-radius-sm);
-  font-weight: 800;
-  font-size: 0.78rem;
+.main-content {
+  padding: 2rem;
+  background: #f8fafc;
+  min-height: 100vh;
 }
 
-.student-ref { font-weight: 600; color: var(--bc-text); font-size: 0.875rem; }
-
-.score-chip {
-  display: inline-block;
-  padding: 4px 12px;
-  border-radius: var(--bc-radius-full);
-  font-weight: 700;
-  font-size: 0.875rem;
-
-  &.high   { background: var(--bc-success-dim); color: var(--bc-success); border: 1px solid var(--bc-success-border); }
-  &.medium { background: var(--bc-warn-dim);    color: var(--bc-warn); }
-  &.low    { background: var(--bc-border);      color: var(--bc-text-3); }
-}
-
-.mini-scores {
+.top-nav {
   display: flex;
-  gap: 8px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: var(--bc-text-3);
+  justify-content: space-between;
+  margin-bottom: 2rem;
+  h1 { font-size: 1.8rem; font-weight: 800; color: #1e293b; margin: 0; }
+  .campaign-pill { color: #6366f1; font-weight: 600; font-size: 0.9rem; }
 }
+
+.projects-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+  gap: 1.5rem;
+}
+
+.project-card {
+  background: white;
+  border-radius: 16px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+  display: flex;
+  flex-direction: column;
+
+  .project-header {
+    padding: 1.25rem;
+    border-bottom: 1px solid #f1f5f9;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #fcfcfd;
+    border-radius: 16px 16px 0 0;
+
+    h3 { margin: 0; font-size: 1.1rem; color: #334155; }
+    .project-stats { font-size: 0.8rem; color: #64748b; }
+  }
+}
+
+.student-item {
+  display: flex;
+  align-items: center;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid #f8fafc;
+  gap: 1rem;
+
+  // Couleurs par score
+  &.high { border-left: 4px solid #10b981; }
+  &.medium { border-left: 4px solid #f59e0b; }
+  &.low { border-left: 4px solid #ef4444; }
+
+  .rank-label {
+    font-size: 0.7rem;
+    font-weight: 800;
+    color: #6366f1;
+    background: #eef2ff;
+    padding: 2px 8px;
+    border-radius: 4px;
+    white-space: nowrap;
+  }
+
+  .student-info {
+    flex: 1;
+    .name { display: block; font-weight: 600; color: #1e293b; margin-bottom: 4px; }
+    .mini-bars {
+      display: flex; gap: 4px;
+      .bar-wrap { flex: 1; height: 3px; background: #f1f5f9; border-radius: 2px; }
+      .bar { height: 100%; border-radius: 2px; }
+      .skills { background: #6366f1; }
+      .interests { background: #ec4899; }
+    }
+  }
+
+  .score-badge {
+    font-weight: 800;
+    font-size: 1rem;
+    color: #334155;
+  }
+}
+
+.btn-refresh {
+  background: white; border: 1px solid #e2e8f0; border-radius: 10px;
+  padding: 8px 12px; cursor: pointer;
+  &.spinning { animation: spin 1s linear infinite; }
+}
+
+@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
