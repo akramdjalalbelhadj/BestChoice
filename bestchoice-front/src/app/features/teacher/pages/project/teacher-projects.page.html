@@ -1,114 +1,153 @@
-<div class="dashboard-wrapper">
-  <header class="dash-header">
-    <div class="header-left">
-      <a routerLink="../" class="back-link">← Retour Dashboard</a>
-      <h1>Mes Propositions</h1>
-      <p class="subtitle">Vous avez <strong>{{ projects().length }}</strong> projets enregistrés cette année.</p>
+<div class="app-layout">
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="logo-box">BC</div>
+      <span class="brand-name">Le Bon Choix</span>
     </div>
-    <div class="header-right">
-      <button class="btn-primary" routerLink="./create">
-        <span>+</span> Publier un projet
+    <nav class="nav-links">
+      <a routerLink="/app/teacher/dashboard" routerLinkActive="active" [routerLinkActiveOptions]="{exact:true}" class="menu-item">
+        <span class="icon">📊</span> Dashboard
+      </a>
+      <a routerLink="/app/teacher/projects" routerLinkActive="active" class="menu-item">
+        <span class="icon">📁</span> Projets
+      </a>
+      <a routerLink="/app/teacher/subjects" routerLinkActive="active" class="menu-item">
+        <span class="icon">📚</span> Options
+      </a>
+      <a routerLink="/app/teacher/campaigns" routerLinkActive="active" class="menu-item">
+        <span class="icon">🎯</span> Campagnes
+      </a>
+      <a routerLink="/app/teacher/matching-control" routerLinkActive="active" class="menu-item">
+        <span class="icon">⚙️</span> Pilotage
+      </a>
+    </nav>
+    <footer class="sidebar-footer">
+      <app-theme-toggle />
+      <button (click)="logout()" class="btn-logout">
+        <span class="icon">🚪</span> Déconnexion
       </button>
-    </div>
-  </header>
+    </footer>
+  </aside>
 
-  <div class="toolbar">
-    <div class="search-wrapper">
-      <i class="search-icon">🔍</i>
-      <input
-        type="text"
-        [ngModel]="searchQuery()"
-        (ngModelChange)="searchQuery.set($event)"
-        placeholder="Rechercher par titre, technologie, mot-clé..."
-      />
-    </div>
-  </div>
+  <main class="main-content">
+    <header class="top-nav">
+      <div class="header-titles"><h1>Mes Projets</h1></div>
+      <div class="user-control">
+        <div class="user-text">
+          <span class="user-name">{{ auth.displayName() }}</span>
+          <span class="user-role">Enseignant</span>
+        </div>
+        <div class="avatar">{{ initials() }}</div>
+      </div>
+    </header>
 
-  <section class="content-card no-padding">
-    <div class="table-container">
-      <table class="data-table">
-        <thead>
-        <tr>
-          <th>Projet & Thématiques</th>
-          <th>Infos Académiques</th>
-          <th>Technos</th>
-          <th>Occupation</th>
-          <th>Visibilité</th>
-          <th class="actions-head">Actions</th>
-        </tr>
-        </thead>
-        <tbody>
-          @if (isLoading()) {
-            @for (i of [1,2,3]; track i) {
-              <tr class="skeleton-row">
-                <td colspan="6"><div class="skeleton-bar"></div></td>
-              </tr>
-            }
-          } @else {
-            @for (p of filteredProjects(); track p.id) {
+    <div class="page-scroll">
+
+      <div class="page-header">
+        <div class="page-titles">
+          <h2>Mes Propositions</h2>
+          <p>Vous avez <strong>{{ projects().length }}</strong> projets enregistrés cette année.</p>
+        </div>
+        <div class="page-actions">
+          <button class="btn-primary" routerLink="./create">＋ Publier un projet</button>
+        </div>
+      </div>
+
+      <div class="toolbar">
+        <div class="search-wrapper">
+          <i class="search-icon">🔍</i>
+          <input
+            type="text"
+            [ngModel]="searchQuery()"
+            (ngModelChange)="searchQuery.set($event)"
+            placeholder="Rechercher par titre, technologie, mot-clé..." />
+        </div>
+      </div>
+
+      <div class="content-card no-padding">
+        <div class="table-container">
+          <table class="data-table">
+            <thead>
               <tr>
-                <td class="col-main">
-                  <span class="p-title">{{ p.title }}</span>
-                  <div class="p-keywords">
-                    @for (k of p.keywords; track k) {
-                      <span class="k-tag">#{{ k }}</span>
-                    }
-                  </div>
-                </td>
-                <td class="col-info">
-                  <div class="type-stack">
-                    @for (type of p.workTypes; track type) {
-                      <span class="type-badge">{{ type }}</span>
-                    }
-                  </div>
-                  <div class="academic-detail">S{{ p.semester }} • {{ p.credits }} ECTS</div>
-                </td>
-                <td class="col-skills">
-                  <div class="skill-bubbles">
-                    @for (s of p.requiredSkills.slice(0, 2); track s) {
-                      <span class="s-bubble">{{ s }}</span>
-                    }
-                    @if (p.requiredSkills.length > 2) {
-                      <span class="s-more">+{{ p.requiredSkills.length - 2 }}</span>
-                    }
-                  </div>
-                </td>
-                <td class="col-capacity">
-                  <div class="occupancy-info">
-                    <span class="count">{{ p.assignedStudentEmails.length }} / {{ p.maxStudents }}</span>
-                    <div class="progress-bg">
-                      <div class="progress-fill"
-                           [style.width.%]="(p.assignedStudentEmails.length / p.maxStudents) * 100"
-                           [class.full]="p.complet">
+                <th>Projet & Thématiques</th>
+                <th>Infos Académiques</th>
+                <th>Technos</th>
+                <th>Occupation</th>
+                <th>Visibilité</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              @if (isLoading()) {
+                @for (i of [1,2,3]; track i) {
+                  <tr><td colspan="6"><div class="skeleton-bar"></div></td></tr>
+                }
+              } @else {
+                @for (p of filteredProjects(); track p.id) {
+                  <tr>
+                    <td class="col-main">
+                      <span class="p-title">{{ p.title }}</span>
+                      <div class="p-keywords">
+                        @for (k of p.keywords; track k) {
+                          <span class="k-tag">#{{ k }}</span>
+                        }
                       </div>
-                    </div>
-                  </div>
-                </td>
-                <td class="col-status">
-                  <button (click)="toggleStatus(p)" class="status-pill" [class.is-active]="p.active">
-                    {{ p.active ? 'Public' : 'Brouillon' }}
-                  </button>
-                </td>
-                <td class="col-actions">
-                  <div class="btn-group">
-                    <button class="icon-btn edit" [routerLink]="['./', p.id]" title="Éditer">✏️</button>
-                    <button class="icon-btn view" [routerLink]="['/app/teacher/projects', p.id]" title="Candidats">👥</button>
-                    <button class="icon-btn delete" (click)="deleteProject(p.id)" title="Supprimer">🗑️</button>
-                  </div>
-                </td>
-              </tr>
-            } @empty {
-              <tr class="empty-row">
-                <td colspan="6">
-                  <div class="empty-state">
-                    <p>Aucun projet ne correspond à votre recherche.</p>
-                  </div>
-                </td>
-              </tr>
-            }
-          }
-        </tbody>
-      </table>
+                    </td>
+                    <td>
+                      <div class="type-stack">
+                        @for (type of p.workTypes; track type) {
+                          <span class="type-badge">{{ type }}</span>
+                        }
+                      </div>
+                      <div class="academic-detail">S{{ p.semester }} • {{ p.credits }} ECTS</div>
+                    </td>
+                    <td>
+                      <div class="skill-bubbles">
+                        @for (s of p.requiredSkills.slice(0, 2); track s) {
+                          <span class="skill-pill">{{ s }}</span>
+                        }
+                        @if (p.requiredSkills.length > 2) {
+                          <span class="s-more">+{{ p.requiredSkills.length - 2 }}</span>
+                        }
+                      </div>
+                    </td>
+                    <td>
+                      <div class="occupancy-info">
+                        <span class="count">{{ p.assignedStudentEmails.length }} / {{ p.maxStudents }}</span>
+                        <div class="progress-bg">
+                          <div class="progress-fill"
+                               [style.width.%]="(p.assignedStudentEmails.length / p.maxStudents) * 100"
+                               [class.full]="p.complet">
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                    <td>
+                      <button (click)="toggleStatus(p)" class="status-pill" [class.is-active]="p.active">
+                        {{ p.active ? 'Public' : 'Brouillon' }}
+                      </button>
+                    </td>
+                    <td>
+                      <div class="btn-group">
+                        <button class="icon-btn edit" [routerLink]="['/app/teacher/projects/edit', p.id]" title="Modifier">✏️</button>
+                        <button class="icon-btn" [routerLink]="['/app/teacher/projects', p.id]" title="Candidats">👥</button>
+                        <button class="icon-btn delete" (click)="deleteProject(p.id)" title="Supprimer">🗑️</button>
+                      </div>
+                    </td>
+                  </tr>
+                } @empty {
+                  <tr>
+                    <td colspan="6">
+                      <div class="empty-state"><p>Aucun projet ne correspond à votre recherche.</p></div>
+                    </td>
+                  </tr>
+                }
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+
     </div>
-  </section>
+  </main>
 </div>

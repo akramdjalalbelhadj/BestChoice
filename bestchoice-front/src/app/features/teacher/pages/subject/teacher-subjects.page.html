@@ -31,7 +31,7 @@
 
   <main class="main-content">
     <header class="top-nav">
-      <div class="header-titles"><h1>Mes Campagnes</h1></div>
+      <div class="header-titles"><h1>Matières Optionnelles</h1></div>
       <div class="user-control">
         <div class="user-text">
           <span class="user-name">{{ auth.displayName() }}</span>
@@ -45,11 +45,11 @@
 
       <div class="page-header">
         <div class="page-titles">
-          <h2>Mes Campagnes</h2>
-          <p>Vous avez <strong>{{ campaigns().length }}</strong> sessions de matching créées.</p>
+          <h2>Mes Options</h2>
+          <p>Vous avez <strong>{{ subjects().length }}</strong> matières enregistrées.</p>
         </div>
         <div class="page-actions">
-          <button class="btn-primary" routerLink="./create">＋ Nouvelle Campagne</button>
+          <button class="btn-primary" routerLink="/app/teacher/subjects/create">＋ Créer une option</button>
         </div>
       </div>
 
@@ -60,7 +60,7 @@
             type="text"
             [ngModel]="searchQuery()"
             (ngModelChange)="searchQuery.set($event)"
-            placeholder="Rechercher par nom, année, algorithme..." />
+            placeholder="Rechercher par titre, compétence, mot-clé..." />
         </div>
       </div>
 
@@ -69,12 +69,12 @@
           <table class="data-table">
             <thead>
               <tr>
-                <th>Campagne & Période</th>
-                <th>Type & Moteur</th>
-                <th>Pondération (S/T/I)</th>
-                <th>Participants</th>
-                <th>Date de création</th>
-                <th class="actions-head">Actions</th>
+                <th>Matière & Mots-clés</th>
+                <th>Infos Académiques</th>
+                <th>Compétences</th>
+                <th>Capacité</th>
+                <th>Visibilité</th>
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -83,50 +83,58 @@
                   <tr><td colspan="6"><div class="skeleton-bar"></div></td></tr>
                 }
               } @else {
-                @for (c of filteredCampaigns(); track c.id) {
+                @for (s of filteredSubjects(); track s.id) {
                   <tr>
                     <td class="col-main">
-                      <span class="p-title">{{ c.name }}</span>
-                      <div class="academic-detail">{{ c.academicYear }} • Semestre {{ c.semester }}</div>
+                      <span class="s-title">{{ s.title }}</span>
+                      <div class="s-keywords">
+                        @for (k of s.keywords; track k) {
+                          <span class="k-tag">#{{ k }}</span>
+                        }
+                      </div>
                     </td>
                     <td>
-                      <span class="type-badge" [class.subject]="c.campaignType === 'SUBJECT'">
-                        {{ c.campaignType === 'PROJECT' ? '🚀 PROJETS' : '📚 MATIÈRES' }}
+                      <div class="type-stack">
+                        @for (type of s.workTypes; track type) {
+                          <span class="type-badge">{{ type }}</span>
+                        }
+                      </div>
+                      <div class="academic-detail">S{{ s.semester }} • {{ s.credits }} ECTS • {{ s.academicYear }}</div>
+                    </td>
+                    <td>
+                      <div class="skill-bubbles">
+                        @for (sk of s.requiredSkills.slice(0, 2); track sk) {
+                          <span class="skill-pill">{{ sk }}</span>
+                        }
+                        @if (s.requiredSkills.length > 2) {
+                          <span class="s-more">+{{ s.requiredSkills.length - 2 }}</span>
+                        }
+                      </div>
+                    </td>
+                    <td>
+                      <div class="capacity-info">
+                        <span class="count">{{ s.minStudents }} – {{ s.maxStudents }} étudiants</span>
+                      </div>
+                    </td>
+                    <td>
+                      <span class="status-pill" [class.is-active]="s.active">
+                        {{ s.active ? 'Public' : 'Brouillon' }}
                       </span>
-                      <div class="algo-detail">Algo: <strong>{{ c.algorithmType }}</strong></div>
                     </td>
-                    <td>
-                      <div class="weight-pills">
-                        <span class="w-pill skills" title="Skills">{{ c.skillsWeight * 100 }}%</span>
-                        <span class="w-pill work" title="WorkType">{{ c.workTypeWeight * 100 }}%</span>
-                        <span class="w-pill interests" title="Interests">{{ c.interestsWeight * 100 }}%</span>
-                      </div>
-                    </td>
-                    <td>
-                      <div class="stats-mini">
-                        <div class="stat-group">
-                          <span class="stat-lbl">Étudiants</span>
-                          <span class="stat-val">{{ c.studentsCount }}</span>
-                        </div>
-                        <div class="stat-group">
-                          <span class="stat-lbl">Items</span>
-                          <span class="stat-val">{{ c.itemsCount }}</span>
-                        </div>
-                      </div>
-                    </td>
-                    <td><span class="date-text">{{ c.createdAt | date:'dd/MM/yyyy' }}</span></td>
                     <td>
                       <div class="btn-group">
-                        <button class="icon-btn" [routerLink]="['/app/teacher/campaigns/results', c.id]" title="Résultats">📊</button>
-                        <button class="icon-btn" [routerLink]="['/app/teacher/matching-control']" [queryParams]="{campaignId: c.id}" title="Piloter">⚙️</button>
-                        <button class="icon-btn delete" (click)="deleteCampaign(c.id)" title="Supprimer">🗑️</button>
+                        <button class="icon-btn edit" [routerLink]="['/app/teacher/subjects/edit', s.id]" title="Modifier">✏️</button>
+                        <button class="icon-btn" [class.delete]="s.active" (click)="toggleStatus(s)"
+                                [title]="s.active ? 'Désactiver' : 'Activer'">
+                          {{ s.active ? '🚫' : '✅' }}
+                        </button>
                       </div>
                     </td>
                   </tr>
                 } @empty {
                   <tr>
                     <td colspan="6">
-                      <div class="empty-state"><p>Aucune campagne ne correspond à votre recherche.</p></div>
+                      <div class="empty-state"><p>Aucune matière ne correspond à votre recherche.</p></div>
                     </td>
                   </tr>
                 }

@@ -46,6 +46,7 @@ export class TeacherService {
         this._projects.set(res.projects);
         this._subjects.set(res.subjects);
         this._allStudents.set(res.students);
+        this._campaigns.set(res.campaigns);
         console.log("Données chargées :", res.students.length, "étudiants trouvés.");
       }
     });
@@ -110,6 +111,14 @@ export class TeacherService {
     return this.projectService.getByTeacher(teacherId).pipe(
       tap(projs => {
         this._projects.set(projs);
+      })
+    );
+  }
+
+  loadMySubjects(teacherId: number) {
+    return this.subjectService.getByTeacher(teacherId).pipe(
+      tap(subjects => {
+        this._subjects.set(subjects);
       })
     );
   }

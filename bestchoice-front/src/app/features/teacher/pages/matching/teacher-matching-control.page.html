@@ -1,113 +1,156 @@
-<div class="dashboard-wrapper">
-  <header class="dash-header">
-    <div class="header-left">
-      <a routerLink="/app/teacher/dashboard" class="back-link">← Retour Dashboard</a>
-      <h1>Centre de Pilotage Matching</h1>
-      <p class="subtitle">Orchestrez vos affectations et ajustez les priorités algorithmiques.</p>
+<div class="app-layout">
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="logo-box">BC</div>
+      <span class="brand-name">Le Bon Choix</span>
     </div>
-    <div class="header-right">
-      <button class="btn-secondary-action" routerLink="/app/teacher/campaigns/create">
-        ＋ Nouvelle campagne
+    <nav class="nav-links">
+      <a routerLink="/app/teacher/dashboard" routerLinkActive="active" [routerLinkActiveOptions]="{exact:true}" class="menu-item">
+        <span class="icon">📊</span> Dashboard
+      </a>
+      <a routerLink="/app/teacher/projects" routerLinkActive="active" class="menu-item">
+        <span class="icon">📁</span> Projets
+      </a>
+      <a routerLink="/app/teacher/subjects" routerLinkActive="active" class="menu-item">
+        <span class="icon">📚</span> Options
+      </a>
+      <a routerLink="/app/teacher/campaigns" routerLinkActive="active" class="menu-item">
+        <span class="icon">🎯</span> Campagnes
+      </a>
+      <a routerLink="/app/teacher/matching-control" routerLinkActive="active" class="menu-item">
+        <span class="icon">⚙️</span> Pilotage
+      </a>
+    </nav>
+    <footer class="sidebar-footer">
+      <app-theme-toggle />
+      <button (click)="logout()" class="btn-logout">
+        <span class="icon">🚪</span> Déconnexion
       </button>
+    </footer>
+  </aside>
+
+  <main class="main-content">
+    <header class="top-nav">
+      <div class="header-titles"><h1>Centre de Pilotage</h1></div>
+      <div class="user-control">
+        <div class="user-text">
+          <span class="user-name">{{ auth.displayName() }}</span>
+          <span class="user-role">Enseignant</span>
+        </div>
+        <div class="avatar">{{ initials() }}</div>
+      </div>
+    </header>
+
+    <div class="page-scroll">
+
+      <div class="page-header">
+        <div class="page-titles">
+          <h2>Centre de Pilotage Matching</h2>
+          <p>Orchestrez vos affectations et ajustez les priorités algorithmiques.</p>
+        </div>
+        <div class="page-actions">
+          <button class="btn-ghost" routerLink="/app/teacher/campaigns/create">＋ Nouvelle campagne</button>
+        </div>
+      </div>
+
+      <div class="control-grid">
+
+        <section class="content-card">
+          <div class="card-header">
+            <div>
+              <h3>1. Campagne cible</h3>
+              <p class="card-description">Sélectionnez la session à traiter</p>
+            </div>
+          </div>
+          <div class="form-body">
+            <div class="field">
+              <label>Session de matching</label>
+              <select class="input" [ngModel]="selectedCampaignId()" (ngModelChange)="onCampaignChange($event)">
+                <option [value]="null" disabled>-- Choisir une campagne --</option>
+                @for (c of campaigns(); track c.id) {
+                  <option [value]="c.id">{{ c.name }} ({{ c.campaignType }})</option>
+                }
+              </select>
+            </div>
+            <div class="info-box">
+              <p>Le matching global traitera tous les étudiants inscrits à cette campagne selon leurs vœux.</p>
+            </div>
+          </div>
+        </section>
+
+        @if (selectedCampaign()) {
+          <section class="content-card highlight">
+            <div class="card-header">
+              <div>
+                <h3>2. Réglages & Lancement</h3>
+                <p class="card-description">Ajustez l'importance des critères</p>
+              </div>
+              <span class="badge published">{{ selectedCampaign()?.algorithmType }}</span>
+            </div>
+
+            <div class="campaign-summary">
+              <div class="summary-item">
+                <span class="s-label">Étudiants</span>
+                <span class="s-val">{{ selectedCampaign()?.studentsCount }}</span>
+              </div>
+              <div class="summary-item">
+                <span class="s-label">Items</span>
+                <span class="s-val">{{ selectedCampaign()?.itemsCount }}</span>
+              </div>
+            </div>
+
+            <div class="sliders-list">
+              <div class="slider-group">
+                <div class="slider-info">
+                  <label>Compétences</label>
+                  <span class="pct-pill">{{ (weights().skills * 100).toFixed(0) }}%</span>
+                </div>
+                <input type="range" class="styled-range" min="0" max="100"
+                       [value]="weights().skills * 100"
+                       (input)="updateWeight('skills', $event)">
+              </div>
+
+              <div class="slider-group">
+                <div class="slider-info">
+                  <label>Intérêts & Souhaits</label>
+                  <span class="pct-pill">{{ (weights().interests * 100).toFixed(0) }}%</span>
+                </div>
+                <input type="range" class="styled-range" min="0" max="100"
+                       [value]="weights().interests * 100"
+                       (input)="updateWeight('interests', $event)">
+              </div>
+
+              <div class="slider-group readonly">
+                <div class="slider-info">
+                  <label>Type de travail (Reliquat)</label>
+                  <span class="pct-pill muted">{{ (remainingWeight() * 100).toFixed(0) }}%</span>
+                </div>
+                <div class="static-bar">
+                  <div class="fill" [style.width.%]="remainingWeight() * 100"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="action-zone">
+              <button class="btn-run" (click)="runMatching()" [disabled]="isProcessing()">
+                @if (isProcessing()) {
+                  <span class="spinner"></span> Calcul en cours...
+                } @else {
+                  🚀 Lancer le Matching Global
+                }
+              </button>
+              <p class="disclaimer">Cette action générera de nouvelles propositions d'affectation.</p>
+            </div>
+          </section>
+        } @else {
+          <div class="empty-placeholder">
+            <div class="icon">🎯</div>
+            <h3>En attente de sélection</h3>
+            <p>Choisissez une campagne à gauche pour configurer le moteur.</p>
+          </div>
+        }
+
+      </div>
     </div>
-  </header>
-
-  <div class="main-grid">
-    <section class="content-card">
-      <div class="card-header">
-        <div>
-          <h3>1. Campagne cible</h3>
-          <p class="card-description">Sélectionnez la session à traiter</p>
-        </div>
-      </div>
-
-      <div class="form-body">
-        <div class="field">
-          <label>Session de matching</label>
-          <select class="input-select" [ngModel]="selectedCampaignId()" (ngModelChange)="onCampaignChange($event)">
-            <option [value]="null" disabled>-- Choisir une campagne --</option>
-            @for (c of campaigns(); track c.id) {
-              <option [value]="c.id">{{ c.name }} ({{ c.campaignType }})</option>
-            }
-          </select>
-        </div>
-
-        <div class="info-box-light">
-          <p>Le matching global traitera tous les étudiants inscrits à cette campagne selon leurs vœux.</p>
-        </div>
-      </div>
-    </section>
-
-    @if (selectedCampaign()) {
-      <section class="content-card highlight">
-        <div class="card-header">
-          <div>
-            <h3>2. Réglages & Lancement</h3>
-            <p class="card-description">Ajustez l'importance des critères</p>
-          </div>
-          <span class="badge published">{{ selectedCampaign()?.algorithmType }}</span>
-        </div>
-
-        <div class="campaign-summary-bar">
-          <div class="summary-item">
-            <span class="label">Étudiants</span>
-            <span class="val">{{ selectedCampaign()?.studentsCount }}</span>
-          </div>
-          <div class="summary-item">
-            <span class="label">Items</span>
-            <span class="val">{{ selectedCampaign()?.itemsCount }}</span>
-          </div>
-        </div>
-
-        <div class="sliders-list">
-          <div class="slider-group">
-            <div class="slider-info">
-              <label>Compétences</label>
-              <span class="percentage-pill">{{ (weights().skills * 100).toFixed(0) }}%</span>
-            </div>
-            <input type="range" class="styled-range" min="0" max="100"
-                   [value]="weights().skills * 100"
-                   (input)="updateWeight('skills', $event)">
-          </div>
-
-          <div class="slider-group">
-            <div class="slider-info">
-              <label>Intérêts & Souhaits</label>
-              <span class="percentage-pill">{{ (weights().interests * 100).toFixed(0) }}%</span>
-            </div>
-            <input type="range" class="styled-range" min="0" max="100"
-                   [value]="weights().interests * 100"
-                   (input)="updateWeight('interests', $event)">
-          </div>
-
-          <div class="slider-group readonly">
-            <div class="slider-info">
-              <label>Type de travail (Reliquat)</label>
-              <span class="percentage-pill muted">{{ (remainingWeight() * 100).toFixed(0) }}%</span>
-            </div>
-            <div class="static-progress-bar">
-              <div class="fill" [style.width.%]="remainingWeight() * 100"></div>
-            </div>
-          </div>
-        </div>
-
-        <div class="action-zone">
-          <button class="btn-run-massive" (click)="runMatching()" [disabled]="isProcessing()">
-            @if (isProcessing()) {
-              <span class="spinner-white"></span> Calcul en cours...
-            } @else {
-              Lancer le Matching Global
-            }
-          </button>
-          <p class="disclaimer">Cette action générera de nouvelles propositions d'affectation.</p>
-        </div>
-      </section>
-    } @else {
-      <div class="empty-placeholder">
-        <div class="icon">🎯</div>
-        <h3>En attente de sélection</h3>
-        <p>Choisissez une campagne à gauche pour configurer le moteur.</p>
-      </div>
-    }
-  </div>
+  </main>
 </div>

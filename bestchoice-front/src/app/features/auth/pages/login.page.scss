@@ -2,6 +2,13 @@
   display: block;
 }
 
+.theme-corner {
+  position: fixed;
+  top: 1.25rem;
+  right: 1.25rem;
+  z-index: 10;
+}
+
 .page {
   min-height: 100vh;
   display: grid;

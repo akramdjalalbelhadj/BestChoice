@@ -2,31 +2,31 @@ import { Component, inject, OnInit, signal, ChangeDetectionStrategy, computed } 
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink, RouterLinkActive } from '@angular/router';
-import { TeacherService } from '../../services/teacher.service';
 import { AuthStore } from '../../../../core/auth/auth.store';
 import { ThemeToggleComponent } from '../../../../shared/theme-toggle.component';
+import { SubjectService } from '../../../subject/services/subject.service';
 import { WorkType } from '../../../../core/models/enums.model';
+import { SubjectCreateRequest, SubjectUpdateRequest } from '../../../subject/models/subject.model';
 import { finalize } from 'rxjs';
-import { ProjectCreateRequest, ProjectUpdateRequest } from '../../../project/models/project.model';
 
 @Component({
-  selector: 'app-teacher-project-form',
+  selector: 'app-teacher-subject-form',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, RouterLink, RouterLinkActive, ThemeToggleComponent],
-  templateUrl: './teacher-project-create.page.html',
-  styleUrl: './teacher-project-create.page.scss',
+  templateUrl: './teacher-subject-form.page.html',
+  styleUrl: './teacher-subject-form.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class TeacherProjectFormPage implements OnInit {
+export class TeacherSubjectFormPage implements OnInit {
   private readonly fb = inject(FormBuilder);
-  private readonly teacherService = inject(TeacherService);
+  private readonly subjectService = inject(SubjectService);
   private readonly route = inject(ActivatedRoute);
   protected readonly auth = inject(AuthStore);
   private readonly router = inject(Router);
 
   isSubmitting = signal(false);
   isEditMode = signal(false);
-  projectId = signal<number | null>(null);
+  subjectId = signal<number | null>(null);
 
   requiredSkills = signal<string[]>([]);
   keywords = signal<string[]>([]);
@@ -35,14 +35,13 @@ export class TeacherProjectFormPage implements OnInit {
   form = this.fb.group({
     title: ['', [Validators.required, Validators.maxLength(150)]],
     description: ['', [Validators.required, Validators.maxLength(5000)]],
+    objectives: [''],
     workTypes: [[] as WorkType[], [Validators.required, Validators.minLength(1)]],
-    remotePossible: [false],
     minStudents: [1, [Validators.required, Validators.min(1)]],
     maxStudents: [2, [Validators.required, Validators.min(1)]],
-    credits: [6, [Validators.required]],
+    credits: [3, [Validators.required]],
     semester: [1, [Validators.required]],
-    academicYear: ['2025-2026', [Validators.required]],
-    targetProgram: ['Master Informatique']
+    academicYear: ['2025-2026', [Validators.required]]
   });
 
   initials = computed(() => {
@@ -54,22 +53,26 @@ export class TeacherProjectFormPage implements OnInit {
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
       this.isEditMode.set(true);
-      this.projectId.set(+id);
-      this.loadProjectData(+id);
+      this.subjectId.set(+id);
+      this.loadSubjectData(+id);
     }
   }
 
-  private loadProjectData(id: number) {
-    this.teacherService.getProjectById(id).subscribe(project => {
+  private loadSubjectData(id: number) {
+    this.subjectService.getById(id).subscribe(subject => {
       this.form.patchValue({
-        title: project.title, description: project.description,
-        workTypes: project.workTypes, remotePossible: project.remotePossible,
-        minStudents: project.minStudents, maxStudents: project.maxStudents,
-        credits: project.credits, semester: project.semester,
-        academicYear: project.academicYear, targetProgram: project.targetProgram
+        title: subject.title,
+        description: subject.description,
+        objectives: subject.objectives,
+        workTypes: subject.workTypes,
+        minStudents: subject.minStudents,
+        maxStudents: subject.maxStudents,
+        credits: subject.credits,
+        semester: subject.semester,
+        academicYear: subject.academicYear
       });
-      this.requiredSkills.set(project.requiredSkills);
-      this.keywords.set(project.keywords);
+      this.requiredSkills.set(subject.requiredSkills);
+      this.keywords.set(subject.keywords);
     });
   }
 
@@ -101,30 +104,30 @@ export class TeacherProjectFormPage implements OnInit {
     this.isSubmitting.set(true);
     const user = this.auth.user();
     const raw = this.form.getRawValue();
-    const basePayload = {
-      title: raw.title ?? '', description: raw.description ?? '',
-      workTypes: raw.workTypes ?? [], remotePossible: !!raw.remotePossible,
-      minStudents: raw.minStudents ?? 1, maxStudents: raw.maxStudents ?? 2,
-      credits: raw.credits ?? 6, semester: raw.semester ?? 1,
+    const payload = {
+      title: raw.title ?? '',
+      description: raw.description ?? '',
+      objectives: raw.objectives ?? '',
+      workTypes: raw.workTypes ?? [],
+      minStudents: raw.minStudents ?? 1,
+      maxStudents: raw.maxStudents ?? 2,
+      credits: raw.credits ?? 3,
+      semester: raw.semester ?? 1,
       academicYear: raw.academicYear ?? '2025-2026',
-      targetProgram: raw.targetProgram ?? 'Master Informatique',
-      requiredSkill: this.requiredSkills(), keyword: this.keywords()
+      requiredSkills: this.requiredSkills(),
+      keywords: this.keywords()
     };
+
     if (this.isEditMode()) {
-      const updatePayload: ProjectUpdateRequest = {
-        title: basePayload.title, description: basePayload.description,
-        workTypes: basePayload.workTypes, remotePossible: basePayload.remotePossible,
-        minStudents: basePayload.minStudents, maxStudents: basePayload.maxStudents,
-        requiredSkill: basePayload.requiredSkill, keyword: basePayload.keyword
-      };
-      this.teacherService.updateProject(this.projectId()!, updatePayload)
+      const updatePayload: SubjectUpdateRequest = payload;
+      this.subjectService.update(this.subjectId()!, updatePayload)
         .pipe(finalize(() => this.isSubmitting.set(false)))
-        .subscribe(() => this.router.navigate(['/app/teacher/projects', this.projectId()]));
+        .subscribe(() => this.router.navigate(['/app/teacher/subjects']));
     } else {
-      const createPayload: ProjectCreateRequest = basePayload;
-      this.teacherService.createProject(user!.userId, createPayload)
+      const createPayload: SubjectCreateRequest = payload;
+      this.subjectService.create(user!.userId, createPayload)
         .pipe(finalize(() => this.isSubmitting.set(false)))
-        .subscribe(() => this.router.navigate(['/app/teacher/dashboard']));
+        .subscribe(() => this.router.navigate(['/app/teacher/subjects']));
     }
   }
 

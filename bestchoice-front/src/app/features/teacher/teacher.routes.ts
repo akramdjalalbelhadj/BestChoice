@@ -6,7 +6,9 @@ import { TeacherMatchingControlPage } from './pages/matching/teacher-matching-co
 import { TeacherProjectDetailPage } from './pages/project/teacher-project-detail.page';
 import { TeacherCampaignCreatePage } from './pages/campaign/teacher-campaign-create.page';
 import { TeacherCampaignsPage } from './pages/campaign/teacher-campaigns.page';
-import {MatchingResultsViewPage} from './pages/matching/teacher-matching.page';
+import { MatchingResultsViewPage } from './pages/matching/teacher-matching.page';
+import { TeacherSubjectsPage } from './pages/subject/teacher-subjects.page';
+import { TeacherSubjectFormPage } from './pages/subject/teacher-subject-form.page';
 
 export const TEACHER_ROUTES: Routes = [
   {
@@ -20,6 +22,11 @@ export const TEACHER_ROUTES: Routes = [
       { path: 'projects/create', component: TeacherProjectFormPage },
       { path: 'projects/edit/:id', component: TeacherProjectFormPage },
       { path: 'projects/:id', component: TeacherProjectDetailPage },
+
+      // --- SECTION OPTIONS (SUBJECTS) ---
+      { path: 'subjects', component: TeacherSubjectsPage },
+      { path: 'subjects/create', component: TeacherSubjectFormPage },
+      { path: 'subjects/edit/:id', component: TeacherSubjectFormPage },
 
       // --- SECTION CAMPAGNES ---
       { path: 'campaigns', component: TeacherCampaignsPage },

@@ -32,7 +32,7 @@
   <main class="main-content">
     <header class="top-nav">
       <div class="header-titles">
-        <h1>{{ isEditMode() ? 'Modifier l\'offre' : 'Publier une offre' }}</h1>
+        <h1>{{ isEditMode() ? 'Modifier la matière' : 'Créer une option' }}</h1>
       </div>
       <div class="user-control">
         <div class="user-text">
@@ -47,31 +47,34 @@
 
       <div class="page-header">
         <div class="page-titles">
-          <h2>{{ isEditMode() ? 'Modifier l\'offre' : 'Publier une offre' }}</h2>
-          <p>{{ isEditMode() ? 'Mettez à jour les informations de votre offre.' : 'Décrivez votre projet pour attirer les meilleurs étudiants.' }}</p>
+          <h2>{{ isEditMode() ? 'Modifier la matière' : 'Nouvelle option' }}</h2>
+          <p>{{ isEditMode() ? 'Mettez à jour les informations de cette matière.' : 'Décrivez votre matière optionnelle.' }}</p>
         </div>
         <div class="page-actions">
-          <a [routerLink]="isEditMode() ? ['/app/teacher/projects', projectId()] : ['/app/teacher/projects']"
-             class="btn-ghost">Annuler</a>
-          <button type="submit" form="projectForm" class="btn-primary" [disabled]="form.invalid || isSubmitting()">
+          <a routerLink="/app/teacher/subjects" class="btn-ghost">Annuler</a>
+          <button type="submit" form="subjectForm" class="btn-primary" [disabled]="form.invalid || isSubmitting()">
             @if (isSubmitting()) { <span class="spinner"></span> }
-            {{ isEditMode() ? 'Enregistrer' : 'Publier l\'offre' }}
+            {{ isEditMode() ? 'Enregistrer' : 'Créer la matière' }}
           </button>
         </div>
       </div>
 
-      <form [formGroup]="form" id="projectForm" (ngSubmit)="onSubmit()" class="main-grid">
+      <form [formGroup]="form" id="subjectForm" (ngSubmit)="onSubmit()" class="main-grid">
         <div class="config-col">
           <section class="content-card">
             <div class="card-header"><h3>Description</h3></div>
             <div class="form-body">
               <div class="field">
-                <label>Titre du projet</label>
-                <input type="text" class="input" formControlName="title">
+                <label>Titre de la matière</label>
+                <input type="text" class="input" formControlName="title" placeholder="Ex: Algorithmes avancés">
               </div>
               <div class="field">
                 <label>Description détaillée</label>
-                <textarea class="input" formControlName="description" rows="8"></textarea>
+                <textarea class="input" formControlName="description" rows="5" placeholder="Décrivez le contenu du cours..."></textarea>
+              </div>
+              <div class="field">
+                <label>Objectifs pédagogiques</label>
+                <textarea class="input" formControlName="objectives" rows="3" placeholder="Compétences visées à l'issue du cours..."></textarea>
               </div>
             </div>
           </section>
@@ -81,8 +84,18 @@
             <div class="form-body">
               <div class="row">
                 <div class="field">
+                  <label>Min. étudiants</label>
+                  <input type="number" class="input" formControlName="minStudents" min="1">
+                </div>
+                <div class="field">
+                  <label>Max. étudiants</label>
+                  <input type="number" class="input" formControlName="maxStudents" min="1">
+                </div>
+              </div>
+              <div class="row">
+                <div class="field">
                   <label>Crédits ECTS</label>
-                  <input type="number" class="input" formControlName="credits">
+                  <input type="number" class="input" formControlName="credits" min="1">
                 </div>
                 <div class="field">
                   <label>Semestre</label>
@@ -92,12 +105,9 @@
                   </select>
                 </div>
               </div>
-              <div class="field toggle-field">
-                <label class="switch">
-                  <input type="checkbox" formControlName="remotePossible">
-                  <span class="slider-toggle"></span>
-                </label>
-                <span class="toggle-label">Télétravail autorisé</span>
+              <div class="field">
+                <label>Année académique</label>
+                <input type="text" class="input" formControlName="academicYear" placeholder="2025-2026">
               </div>
             </div>
           </section>
@@ -122,8 +132,8 @@
             <div class="card-header"><h3>Compétences & Tags</h3></div>
             <div class="form-body">
               <div class="field">
-                <label>Compétences (Entrée)</label>
-                <input type="text" class="input" #sIn (keyup.enter)="addTag(sIn, 'skills')" placeholder="Ex: Angular, Java...">
+                <label>Compétences requises (Entrée)</label>
+                <input type="text" class="input" #sIn (keyup.enter)="addTag(sIn, 'skills')" placeholder="Ex: Python, Machine Learning...">
                 <div class="tag-cloud">
                   @for (s of requiredSkills(); track s) {
                     <span class="skill-pill">{{ s }} <button type="button" (click)="removeTag(s, 'skills')">×</button></span>
@@ -132,7 +142,7 @@
               </div>
               <div class="field">
                 <label>Mots-clés (Entrée)</label>
-                <input type="text" class="input" #kIn (keyup.enter)="addTag(kIn, 'keywords')" placeholder="Ex: IA, Web...">
+                <input type="text" class="input" #kIn (keyup.enter)="addTag(kIn, 'keywords')" placeholder="Ex: IA, Optimisation...">
                 <div class="tag-cloud">
                   @for (k of keywords(); track k) {
                     <span class="k-tag-pill">#{{ k }} <button type="button" (click)="removeTag(k, 'keywords')">×</button></span>
