@@ -46,7 +46,7 @@
       <div class="page-header">
         <div class="page-titles">
           <h2>{{ project()?.title || 'Chargement...' }}</h2>
-          <p>Consultez les informations de l'offre et les recommandations de l'algorithme.</p>
+          <p>Consultez les informations de cette offre.</p>
         </div>
         <div class="page-actions">
           <a routerLink="/app/teacher/projects" class="btn-ghost">← Retour</a>
@@ -81,16 +81,12 @@
 
               <div class="meta-row">
                 <div class="meta-item">
-                  <span class="meta-label">Semestre</span>
-                  <span class="meta-val">S{{ project()?.semester }}</span>
-                </div>
-                <div class="meta-item">
-                  <span class="meta-label">Crédits</span>
-                  <span class="meta-val">{{ project()?.credits }} ECTS</span>
-                </div>
-                <div class="meta-item">
                   <span class="meta-label">Capacité</span>
                   <span class="meta-val">{{ project()?.maxStudents }} places</span>
+                </div>
+                <div class="meta-item">
+                  <span class="meta-label">Télétravail</span>
+                  <span class="meta-val">{{ project()?.remotePossible ? 'Oui' : 'Non' }}</span>
                 </div>
               </div>
             </div>
@@ -129,48 +125,20 @@
           </section>
 
           <section class="content-card">
-            <div class="card-header">
-              <div class="header-title">
-                <h3>Candidats Recommandés</h3>
-                <span class="count-pill">{{ candidates().length }}</span>
-              </div>
-              <button class="btn-link" (click)="loadCandidates()" [disabled]="isLoadingMatches()">
-                {{ isLoadingMatches() ? 'Calcul...' : 'Actualiser' }}
-              </button>
+            <div class="info-block">
+              <label>Enseignant responsable</label>
+              <p class="description-text">{{ project()?.teacherName || '—' }}</p>
             </div>
-
-            <div class="candidates-list">
-              @if (isLoadingMatches()) {
-                @for (i of [1,2,3]; track i) {
-                  <div class="skeleton-bar" style="height:72px;margin-bottom:0.75rem;"></div>
-                }
-              } @else {
-                @for (candidate of candidates(); track candidate.id) {
-                  <div class="candidate-card">
-                    <div class="score-badge" [class]="getScoreClass(candidate.globalScore)">
-                      {{ (candidate.globalScore * 100).toFixed(0) }}%
-                    </div>
-                    <div class="candidate-info">
-                      <span class="student-name">Étudiant #{{ candidate.studentId }}</span>
-                      <div class="match-breakdown">
-                        <div class="breakdown-item">
-                          <label>Skills</label>
-                          <div class="mini-bar"><div class="fill" [style.width.%]="candidate.skillsScore * 100"></div></div>
-                        </div>
-                        <div class="breakdown-item">
-                          <label>Intérêts</label>
-                          <div class="mini-bar"><div class="fill" [style.width.%]="candidate.interestsScore * 100"></div></div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                } @empty {
-                  <div class="empty-state">
-                    <p>Aucun matching trouvé pour ce projet.</p>
-                    <a routerLink="/app/teacher/matching-control" class="btn-link">Configurer la campagne</a>
-                  </div>
-                }
-              }
+            <div class="info-block">
+              <label>Statut de publication</label>
+              <div class="params-list">
+                <div class="param-row">
+                  <span class="param-label">Visibilité</span>
+                  <span class="status-pill" [class.is-active]="project()?.active">
+                    {{ project()?.active ? 'Public' : 'Brouillon' }}
+                  </span>
+                </div>
+              </div>
             </div>
           </section>
 

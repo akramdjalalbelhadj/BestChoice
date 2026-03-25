@@ -41,46 +41,12 @@
 
 .tag-group { display: flex; flex-wrap: wrap; gap: 0.375rem; }
 
-// Candidates
-.candidates-list { display: grid; gap: 0.75rem; margin-top: 0.5rem; }
+.params-list { display: flex; flex-direction: column; gap: 0.5rem; margin-top: 0.25rem; }
 
-.candidate-card {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  padding: 1rem;
-  background: var(--bc-input);
-  border: 1px solid var(--bc-border);
-  border-radius: var(--bc-radius-lg);
-  transition: all var(--bc-transition);
-
-  &:hover { border-color: var(--bc-primary-border); background: var(--bc-card-hover); }
-}
-
-.score-badge {
-  width: 46px; height: 46px; border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  font-weight: 800; font-size: 0.78rem; color: #fff; flex-shrink: 0;
-
-  &.score-high   { background: var(--bc-success); box-shadow: 0 0 10px rgba(52,211,153,0.3); }
-  &.score-medium { background: var(--bc-warn); box-shadow: 0 0 10px rgba(251,146,60,0.3); }
-  &.score-low    { background: var(--bc-text-3); }
-}
-
-.candidate-info {
-  flex: 1;
-  .student-name { display: block; font-weight: 700; color: var(--bc-text); font-size: 0.875rem; margin-bottom: 0.5rem; }
-}
-
-.match-breakdown {
-  display: flex; gap: 1rem;
-  .breakdown-item {
-    flex: 1;
-    label { font-size: 0.65rem; color: var(--bc-text-3); text-transform: uppercase; margin-bottom: 3px; display: block; }
-  }
-}
-
-.mini-bar {
-  height: 4px; background: var(--bc-border); border-radius: var(--bc-radius-full); overflow: hidden;
-  .fill { height: 100%; background: var(--bc-primary-grad); border-radius: var(--bc-radius-full); }
+.param-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--bc-border);
+  &:last-child { border-bottom: none; }
+  .param-label { font-size: 0.85rem; color: var(--bc-text-2); }
 }

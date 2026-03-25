@@ -35,9 +35,11 @@ export class TeacherSubjectFormPage implements OnInit {
   titleError       = signal(false);
   descriptionError = signal(false);
   workTypesError   = signal(false);
-  skillsError      = signal(false);
-  keywordsError    = signal(false);
-  maxStudentsError = signal(false);
+  skillsError          = signal(false);
+  keywordsError        = signal(false);
+  maxStudentsError     = signal(false);
+  skillDuplicateWarn   = signal(false);
+  keywordDuplicateWarn = signal(false);
 
   requiredSkills = signal<string[]>([]);
   keywords       = signal<string[]>([]);
@@ -48,8 +50,7 @@ export class TeacherSubjectFormPage implements OnInit {
     description: ['', [Validators.required, Validators.maxLength(5000)]],
     objectives:  [''],
     workTypes:   [[] as WorkType[], []],
-    maxStudents: [20 as number | null],
-    academicYear:['2025-2026']
+    maxStudents: [20 as number | null]
   });
 
   initials = computed(() => {
@@ -90,8 +91,7 @@ export class TeacherSubjectFormPage implements OnInit {
           description:  subject.description  ?? '',
           objectives:   subject.objectives   ?? '',
           workTypes:    (subject.workTypes   as unknown as WorkType[]) ?? [],
-          maxStudents:  subject.maxStudents  ?? 20,
-          academicYear: subject.academicYear ?? '2025-2026'
+          maxStudents:  subject.maxStudents  ?? 20
         });
         this.requiredSkills.set(subject.requiredSkills ?? []);
         this.keywords.set(subject.keywords ?? []);
@@ -126,11 +126,17 @@ export class TeacherSubjectFormPage implements OnInit {
       if (!this.requiredSkills().includes(val)) {
         this.requiredSkills.update(s => [...s, val]);
         this.skillsError.set(false);
+        this.skillDuplicateWarn.set(false);
+      } else {
+        this.skillDuplicateWarn.set(true);
       }
     } else {
       if (!this.keywords().includes(val)) {
         this.keywords.update(k => [...k, val]);
         this.keywordsError.set(false);
+        this.keywordDuplicateWarn.set(false);
+      } else {
+        this.keywordDuplicateWarn.set(true);
       }
     }
     input.value = '';
@@ -201,7 +207,7 @@ export class TeacherSubjectFormPage implements OnInit {
       maxStudents:    raw.maxStudents          ?? 20,
       credits:        3,
       semester:       1,
-      academicYear:   raw.academicYear         ?? '2025-2026',
+      academicYear:   '2025-2026',
       requiredSkills: this.requiredSkills(),
       keywords:       this.keywords()
     };

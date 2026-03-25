@@ -20,8 +20,10 @@ export class TeacherProjectsPage implements OnInit {
   protected readonly auth = inject(AuthStore);
   private readonly router = inject(Router);
 
-  isLoading = signal(true);
-  searchQuery = signal('');
+  isLoading    = signal(true);
+  searchQuery  = signal('');
+  currentPage  = signal(1);
+  readonly pageSize = 5;
 
   projects = this.teacherService.projects;
 
@@ -34,6 +36,33 @@ export class TeacherProjectsPage implements OnInit {
       p.keywords?.some(k => k.toLowerCase().includes(query)) ||
       p.requiredSkills?.some(s => s.toLowerCase().includes(query))
     );
+  });
+
+  totalPages = computed(() => Math.max(1, Math.ceil(this.filteredProjects().length / this.pageSize)));
+
+  paginatedProjects = computed(() => {
+    const start = (this.currentPage() - 1) * this.pageSize;
+    return this.filteredProjects().slice(start, start + this.pageSize);
+  });
+
+  pageNumbers = computed(() => {
+    const total   = this.totalPages();
+    const current = this.currentPage();
+    const maxVisible = 5;
+    let start = Math.max(1, current - Math.floor(maxVisible / 2));
+    let end   = Math.min(total, start + maxVisible - 1);
+    if (end - start + 1 < maxVisible) start = Math.max(1, end - maxVisible + 1);
+    const pages: number[] = [];
+    for (let i = start; i <= end; i++) pages.push(i);
+    return pages;
+  });
+
+  paginationInfo = computed(() => {
+    const total = this.filteredProjects().length;
+    if (total === 0) return '';
+    const start = (this.currentPage() - 1) * this.pageSize + 1;
+    const end   = Math.min(this.currentPage() * this.pageSize, total);
+    return `${start}–${end} sur ${total} résultat${total > 1 ? 's' : ''}`;
   });
 
   initials = computed(() => {
@@ -49,6 +78,15 @@ export class TeacherProjectsPage implements OnInit {
         .subscribe();
     }
   }
+
+  onSearch(query: string) {
+    this.searchQuery.set(query);
+    this.currentPage.set(1);
+  }
+
+  prevPage()          { this.currentPage.update(p => Math.max(1, p - 1)); }
+  nextPage()          { this.currentPage.update(p => Math.min(this.totalPages(), p + 1)); }
+  goToPage(n: number) { this.currentPage.set(n); }
 
   toggleStatus(p: ProjectResponse) {
     const msg = p.active

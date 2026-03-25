@@ -45,16 +45,16 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
      */
     List<Project> findByWorkTypesContaining(WorkType workType);
     /**
-     * Récupère les projets par enseignant
+     * Récupère les projets par enseignant (recherche par user.id)
      */
-    @Query("SELECT p FROM Project p WHERE p.teacher.id = :teacherId")
-    List<Project> findByTeacherId(@Param("teacherId") Long teacherId);
+    @Query("SELECT p FROM Project p WHERE p.teacher.user.id = :userId")
+    List<Project> findByTeacherId(@Param("userId") Long userId);
 
     /**
-     * Récupère les projets actifs par enseignant
+     * Récupère les projets actifs par enseignant (recherche par user.id)
      */
-    @Query("SELECT p FROM Project p WHERE p.teacher.id = :teacherId AND p.active = true")
-    List<Project> findActiveProjectsByTeacherId(@Param("teacherId") Long teacherId);
+    @Query("SELECT p FROM Project p WHERE p.teacher.user.id = :userId AND p.active = true")
+    List<Project> findActiveProjectsByTeacherId(@Param("userId") Long userId);
 
     /**
      * Récupère les projets par formation cible

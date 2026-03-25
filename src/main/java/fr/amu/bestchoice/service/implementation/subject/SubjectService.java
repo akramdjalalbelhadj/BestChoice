@@ -44,10 +44,10 @@ public class SubjectService {
     public SubjectResponse create(Long teacherId, SubjectCreateRequest dto) {
         log.info("Début création matière : teacherId={}, title={}", teacherId, dto.title());
 
-        Teacher teacher = teacherRepository.findById(teacherId)
+        Teacher teacher = teacherRepository.findByUserId(teacherId)
                 .orElseThrow(() -> {
-                    log.error("Enseignant introuvable : teacherId={}", teacherId);
-                    return new NotFoundException("Enseignant introuvable avec l'ID : " + teacherId);
+                    log.error("Enseignant introuvable pour userId={}", teacherId);
+                    return new NotFoundException("Enseignant introuvable pour l'utilisateur ID : " + teacherId);
                 });
 
         // Validation métier : Capacité
@@ -74,7 +74,7 @@ public class SubjectService {
         Subject savedSubject = subjectRepository.save(subject);
         log.info("Matière créée avec succès : id={}, title={}", savedSubject.getId(), savedSubject.getTitle());
 
-        return subjectMapper.toResponse(savedSubject);
+        return toSubjectResponse(savedSubject);
     }
 
     // ==================== READ ====================
@@ -83,7 +83,7 @@ public class SubjectService {
     public SubjectResponse findById(Long id) {
         log.debug("Recherche matière par ID : id={}", id);
         return subjectRepository.findById(id)
-                .map(subjectMapper::toResponse)
+                .map(this::toSubjectResponse)
                 .orElseThrow(() -> new NotFoundException("Matière introuvable avec l'ID : " + id));
     }
 
@@ -91,7 +91,7 @@ public class SubjectService {
     public List<SubjectResponse> findByTeacherId(Long teacherId) {
         log.debug("Récupération des matières pour le professeur ID : {}", teacherId);
         return subjectRepository.findByTeacherId(teacherId).stream()
-                .map(subjectMapper::toResponse)
+                .map(this::toSubjectResponse)
                 .collect(Collectors.toList());
     }
 
@@ -103,14 +103,48 @@ public class SubjectService {
         log.debug("Récupération matières paginée : page={}, size={}", page, size);
 
         Pageable pageable = createPageable(page, size, sortBy, sortDirection);
-        return subjectRepository.findAll(pageable).map(subjectMapper::toResponse);
+        return subjectRepository.findAll(pageable).map(this::toSubjectResponse);
     }
 
     @Transactional(readOnly = true)
     public List<SubjectResponse> findAllActive() {
         return subjectRepository.findByActiveTrue().stream()
-                .map(subjectMapper::toResponse)
+                .map(this::toSubjectResponse)
                 .collect(Collectors.toList());
+    }
+
+    // ==================== UPDATE ====================
+
+    @Transactional
+    public SubjectResponse update(Long id, SubjectCreateRequest dto) {
+        log.info("Mise à jour matière : id={}", id);
+        Subject subject = subjectRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Matière introuvable avec l'ID : " + id));
+
+        if (dto.minStudents() != null && dto.maxStudents() != null && dto.minStudents() > dto.maxStudents()) {
+            throw new BusinessException("Le nombre minimum d'étudiants ne peut pas être supérieur au nombre maximum");
+        }
+
+        subject.setTitle(dto.title());
+        subject.setDescription(dto.description());
+        subject.setObjectives(dto.objectives());
+        subject.setWorkTypes(dto.workTypes() != null ? new HashSet<>(dto.workTypes()) : new HashSet<>());
+        subject.setMinStudents(dto.minStudents());
+        subject.setMaxStudents(dto.maxStudents());
+        subject.setCredits(dto.credits());
+        subject.setSemester(dto.semester());
+        subject.setAcademicYear(dto.academicYear());
+
+        if (dto.requiredSkills() != null) {
+            subject.setRequiredSkills(resolveSkills(dto.requiredSkills()));
+        }
+        if (dto.keywords() != null) {
+            subject.setKeywords(resolveKeywords(dto.keywords()));
+        }
+
+        Subject saved = subjectRepository.save(subject);
+        log.info("Matière mise à jour : id={}, title={}", saved.getId(), saved.getTitle());
+        return toSubjectResponse(saved);
     }
 
     // ==================== ACTIVATION / DÉSACTIVATION ====================
@@ -177,13 +211,25 @@ public class SubjectService {
     private SubjectResponse toSubjectResponse(Subject entity) {
         SubjectResponse response = subjectMapper.toResponse(entity);
 
+        // Calcul sécurisé du nom de l'enseignant (évite NPE si lazy non initialisé)
+        String teacherName = null;
+        try {
+            if (entity.getTeacher() != null && entity.getTeacher().getUser() != null) {
+                String first = entity.getTeacher().getUser().getFirstName();
+                String last  = entity.getTeacher().getUser().getLastName();
+                teacherName = ((first != null ? first : "") + " " + (last != null ? last : "")).trim();
+            }
+        } catch (Exception e) {
+            log.warn("Impossible de récupérer le nom de l'enseignant pour la matière id={}", entity.getId());
+        }
+
         // On extrait manuellement les noms pour remplir le record
         Set<String> skillNames = entity.getRequiredSkills().stream()
-                .map(s -> s.getName())
+                .map(Skill::getName)
                 .collect(Collectors.toSet());
 
         Set<String> keywordNames = entity.getKeywords().stream()
-                .map(k -> k.getLabel())
+                .map(Keyword::getLabel)
                 .collect(Collectors.toSet());
 
         // On reconstruit le record avec les listes de chaînes
@@ -200,7 +246,7 @@ public class SubjectService {
                 response.academicYear(),
                 response.active(),
                 response.teacherId(),
-                response.teacherName(),
+                teacherName,
                 skillNames,
                 keywordNames
         );

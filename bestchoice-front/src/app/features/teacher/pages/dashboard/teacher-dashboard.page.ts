@@ -22,11 +22,15 @@ export class TeacherDashboardPage implements OnInit {
   subjects = this.teacherService.subjects;
   campaigns = this.teacherService.campaigns;
 
-  totalCapacity = computed(() => {
-    const pCap = this.projects().reduce((acc, p) => acc + (p.maxStudents || 0), 0);
-    const sCap = this.subjects().reduce((acc, s) => acc + (s.maxStudents || 0), 0);
-    return pCap + sCap;
-  });
+  projectCapacity = computed(() =>
+    this.projects().reduce((acc, p) => acc + (p.maxStudents || 0), 0)
+  );
+
+  subjectCapacity = computed(() =>
+    this.subjects().reduce((acc, s) => acc + (s.maxStudents || 0), 0)
+  );
+
+  totalCapacity = computed(() => this.projectCapacity() + this.subjectCapacity());
 
   activeCampaignsCount = computed(() => this.campaigns().length);
 

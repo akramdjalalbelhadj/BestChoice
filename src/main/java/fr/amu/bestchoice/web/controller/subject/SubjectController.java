@@ -107,6 +107,19 @@ public class SubjectController {
         return ResponseEntity.status(HttpStatus.CREATED).body(createdSubject);
     }
 
+    // ==================== UPDATE ====================
+
+    @Operation(summary = "Mettre à jour une matière")
+    @PutMapping("/{id}")
+    public ResponseEntity<SubjectResponse> update(
+            @PathVariable Long id,
+            @Valid @RequestBody SubjectCreateRequest request) {
+        log.info("PUT /api/subjects/{} - Mise à jour de la matière", id);
+        SubjectResponse updated = subjectService.update(id, request);
+        log.info("PUT /api/subjects/{} - Matière mise à jour : title={}", id, updated.title());
+        return ResponseEntity.ok(updated);
+    }
+
     // ==================== ACTIVATION / DÉSACTIVATION ====================
 
     @Operation(summary = "Activer une matière")

@@ -46,10 +46,10 @@ public class ProjectService implements IProjectService {
     public ProjectResponse create(Long teacherId, ProjectCreateRequest dto) {
         log.info("Début création projet : teacherId={}, title={}", teacherId, dto.title());
 
-        Teacher teacher = teacherRepository.findById(teacherId)
+        Teacher teacher = teacherRepository.findByUserId(teacherId)
                 .orElseThrow(() -> {
-                    log.error("Enseignant introuvable : teacherId={}", teacherId);
-                    return new NotFoundException("Enseignant introuvable avec l'ID : " + teacherId);
+                    log.error("Enseignant introuvable pour userId={}", teacherId);
+                    return new NotFoundException("Enseignant introuvable pour l'utilisateur ID : " + teacherId);
                 });
 
         // Validation métier
@@ -63,7 +63,12 @@ public class ProjectService implements IProjectService {
         Project project = projectMapper.toEntity(dto);
         project.setTeacher(teacher);
 
-        log.debug("Project mappé : title={}", project.getTitle());
+        // workTypes est ignoré par le mapper → on le remet manuellement depuis le DTO
+        if (dto.workTypes() != null && !dto.workTypes().isEmpty()) {
+            project.setWorkTypes(new java.util.HashSet<>(dto.workTypes()));
+        }
+
+        log.debug("Project mappé : title={}, workTypes={}", project.getTitle(), project.getWorkTypes());
 
         // Résolution des compétences requises
         if (dto.requiredSkill() != null && !dto.requiredSkill().isEmpty()) {
@@ -122,6 +127,11 @@ public class ProjectService implements IProjectService {
         }
 
         projectMapper.updateEntityFromDto(dto, project);
+
+        // workTypes peut être ignoré par le mapper → on le remet manuellement si fourni
+        if (dto.workTypes() != null && !dto.workTypes().isEmpty()) {
+            project.setWorkTypes(new java.util.HashSet<>(dto.workTypes()));
+        }
 
         // Résolution des compétences (si fournis)
         if (dto.requiredSkill() != null) {
@@ -268,9 +278,9 @@ public class ProjectService implements IProjectService {
         Set<Skill> skills = new HashSet<>();
         for (String skillName : skillNames) {
             Skill skill = skillRepository.findByName(skillName)
-                    .orElseThrow(() -> {
-                        log.error("Compétence introuvable : name={}", skillName);
-                        return new NotFoundException("Compétence introuvable : " + skillName);
+                    .orElseGet(() -> {
+                        log.info("Création d'une nouvelle compétence : {}", skillName);
+                        return skillRepository.save(Skill.builder().name(skillName).build());
                     });
             skills.add(skill);
             log.debug("Compétence résolue : name={}, id={}", skillName, skill.getId());
@@ -282,9 +292,9 @@ public class ProjectService implements IProjectService {
         Set<Keyword> keywords = new HashSet<>();
         for (String label : keywordLabels) {
             Keyword keyword = keywordRepository.findByLabel(label)
-                    .orElseThrow(() -> {
-                        log.error("Mot-clé introuvable : label={}", label);
-                        return new NotFoundException("Mot-clé introuvable : " + label);
+                    .orElseGet(() -> {
+                        log.info("Création d'un nouveau mot-clé : {}", label);
+                        return keywordRepository.save(Keyword.builder().label(label).build());
                     });
             keywords.add(keyword);
             log.debug("Mot-clé résolu : label={}, id={}", label, keyword.getId());

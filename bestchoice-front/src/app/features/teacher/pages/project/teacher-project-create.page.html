@@ -150,10 +150,14 @@
                 <label>Compétences <span class="required-star">*</span></label>
                 <input type="text" class="input" #sIn
                        (keyup.enter)="addTag(sIn, 'skills')"
+                       (input)="skillDuplicateWarn.set(false)"
                        [class.input-error]="skillsError()"
                        placeholder="Ex: Angular, Java... (Appuyez sur Entrée)">
                 @if (skillsError()) {
                   <span class="field-warning">⚠ Ajoutez au moins une compétence.</span>
+                }
+                @if (skillDuplicateWarn()) {
+                  <span class="field-warning">⚠ Cette compétence est déjà dans la liste.</span>
                 }
                 <div class="tag-cloud">
                   @for (s of requiredSkills(); track s) {
@@ -166,10 +170,14 @@
                 <label>Mots-clés <span class="required-star">*</span></label>
                 <input type="text" class="input" #kIn
                        (keyup.enter)="addTag(kIn, 'keywords')"
+                       (input)="keywordDuplicateWarn.set(false)"
                        [class.input-error]="keywordsError()"
                        placeholder="Ex: IA, Web... (Appuyez sur Entrée)">
                 @if (keywordsError()) {
                   <span class="field-warning">⚠ Ajoutez au moins un mot-clé.</span>
+                }
+                @if (keywordDuplicateWarn()) {
+                  <span class="field-warning">⚠ Ce mot-clé est déjà dans la liste.</span>
                 }
                 <div class="tag-cloud">
                   @for (k of keywords(); track k) {

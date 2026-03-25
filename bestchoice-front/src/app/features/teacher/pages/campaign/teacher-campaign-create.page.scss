@@ -65,6 +65,29 @@
   }
 }
 
+// Picker search
+.picker-search {
+  padding: 0.625rem 0.875rem;
+  border-bottom: 1px solid var(--bc-border);
+}
+
+.picker-search-input {
+  width: 100%;
+  padding: 0.45rem 0.75rem;
+  font-size: 0.82rem;
+  border: 1px solid var(--bc-border);
+  border-radius: var(--bc-radius);
+  background: var(--bc-input);
+  color: var(--bc-text);
+  font-family: inherit;
+  outline: none;
+  box-sizing: border-box;
+  transition: border-color var(--bc-transition);
+
+  &:focus { border-color: var(--bc-primary-border); }
+  &::placeholder { color: var(--bc-text-3); }
+}
+
 // Picker
 .picker-list {
   max-height: 320px;

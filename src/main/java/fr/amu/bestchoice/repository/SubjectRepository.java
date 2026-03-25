@@ -15,7 +15,8 @@ import java.util.List;
 @Repository
 public interface SubjectRepository extends JpaRepository<Subject, Long> {
 
-    List<Subject> findByTeacherId(Long teacherId);
+    @Query("SELECT s FROM Subject s WHERE s.teacher.user.id = :userId")
+    List<Subject> findByTeacherId(@Param("userId") Long userId);
 
     List<Subject> findByActiveTrue();
 

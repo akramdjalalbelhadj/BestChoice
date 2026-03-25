@@ -59,7 +59,7 @@
           <input
             type="text"
             [ngModel]="searchQuery()"
-            (ngModelChange)="searchQuery.set($event)"
+            (ngModelChange)="onSearch($event)"
             placeholder="Rechercher par titre, compétence, mot-clé..." />
         </div>
       </div>
@@ -83,7 +83,7 @@
                   <tr><td colspan="6"><div class="skeleton-bar"></div></td></tr>
                 }
               } @else {
-                @for (s of filteredSubjects(); track s.id) {
+                @for (s of paginatedSubjects(); track s.id) {
                   <tr>
                     <td class="col-main">
                       <span class="s-title">{{ s.title }}</span>
@@ -99,7 +99,6 @@
                           <span class="type-badge">{{ type }}</span>
                         }
                       </div>
-                      <div class="academic-detail">{{ s.academicYear }}</div>
                     </td>
                     <td>
                       <div class="skill-bubbles">
@@ -140,6 +139,19 @@
             </tbody>
           </table>
         </div>
+
+        @if (filteredSubjects().length > 0) {
+          <div class="pagination">
+            <span class="page-info">{{ paginationInfo() }}</span>
+            <div class="page-controls">
+              <button class="page-btn" (click)="prevPage()" [disabled]="currentPage() === 1">‹</button>
+              @for (n of pageNumbers(); track n) {
+                <button class="page-btn" [class.active]="n === currentPage()" (click)="goToPage(n)">{{ n }}</button>
+              }
+              <button class="page-btn" (click)="nextPage()" [disabled]="currentPage() === totalPages()">›</button>
+            </div>
+          </div>
+        }
       </div>
 
     </div>

@@ -35,9 +35,11 @@ export class TeacherProjectFormPage implements OnInit {
   titleError       = signal(false);
   descriptionError = signal(false);
   workTypesError   = signal(false);
-  skillsError      = signal(false);
-  keywordsError    = signal(false);
-  maxStudentsError = signal(false);
+  skillsError          = signal(false);
+  keywordsError        = signal(false);
+  maxStudentsError     = signal(false);
+  skillDuplicateWarn   = signal(false);
+  keywordDuplicateWarn = signal(false);
 
   requiredSkills = signal<string[]>([]);
   keywords       = signal<string[]>([]);
@@ -125,11 +127,17 @@ export class TeacherProjectFormPage implements OnInit {
       if (!this.requiredSkills().includes(val)) {
         this.requiredSkills.update(s => [...s, val]);
         this.skillsError.set(false);
+        this.skillDuplicateWarn.set(false);
+      } else {
+        this.skillDuplicateWarn.set(true);
       }
     } else {
       if (!this.keywords().includes(val)) {
         this.keywords.update(k => [...k, val]);
         this.keywordsError.set(false);
+        this.keywordDuplicateWarn.set(false);
+      } else {
+        this.keywordDuplicateWarn.set(true);
       }
     }
     input.value = '';

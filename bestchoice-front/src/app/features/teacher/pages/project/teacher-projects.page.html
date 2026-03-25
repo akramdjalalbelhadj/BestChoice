@@ -59,7 +59,7 @@
           <input
             type="text"
             [ngModel]="searchQuery()"
-            (ngModelChange)="searchQuery.set($event)"
+            (ngModelChange)="onSearch($event)"
             placeholder="Rechercher par titre, technologie, mot-clé..." />
         </div>
       </div>
@@ -83,7 +83,7 @@
                   <tr><td colspan="6"><div class="skeleton-bar"></div></td></tr>
                 }
               } @else {
-                @for (p of filteredProjects(); track p.id) {
+                @for (p of paginatedProjects(); track p.id) {
                   <tr>
                     <td class="col-main">
                       <span class="p-title">{{ p.title }}</span>
@@ -99,7 +99,6 @@
                           <span class="type-badge">{{ type }}</span>
                         }
                       </div>
-                      <div class="academic-detail">S{{ p.semester }} • {{ p.credits }} ECTS</div>
                     </td>
                     <td>
                       <div class="skill-bubbles">
@@ -130,7 +129,7 @@
                     <td>
                       <div class="btn-group">
                         <button class="icon-btn edit" [routerLink]="['/app/teacher/projects/edit', p.id]" title="Modifier">✏️</button>
-                        <button class="icon-btn" [routerLink]="['/app/teacher/projects', p.id]" title="Candidats">👥</button>
+                        <button class="icon-btn" [routerLink]="['/app/teacher/projects', p.id]" title="Voir le détail">👁️</button>
                         <button class="icon-btn delete" (click)="deleteProject(p.id)" title="Supprimer">🗑️</button>
                       </div>
                     </td>
@@ -146,6 +145,19 @@
             </tbody>
           </table>
         </div>
+
+        @if (filteredProjects().length > 0) {
+          <div class="pagination">
+            <span class="page-info">{{ paginationInfo() }}</span>
+            <div class="page-controls">
+              <button class="page-btn" (click)="prevPage()" [disabled]="currentPage() === 1">‹</button>
+              @for (n of pageNumbers(); track n) {
+                <button class="page-btn" [class.active]="n === currentPage()" (click)="goToPage(n)">{{ n }}</button>
+              }
+              <button class="page-btn" (click)="nextPage()" [disabled]="currentPage() === totalPages()">›</button>
+            </div>
+          </div>
+        }
       </div>
 
     </div>
