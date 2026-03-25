@@ -53,12 +53,17 @@
         <div class="page-actions">
           <a [routerLink]="isEditMode() ? ['/app/teacher/projects', projectId()] : ['/app/teacher/projects']"
              class="btn-ghost">Annuler</a>
-          <button type="submit" form="projectForm" class="btn-primary" [disabled]="form.invalid || isSubmitting()">
+          <button type="submit" form="projectForm" class="btn-primary"
+                  [disabled]="isSubmitting() || (isEditMode() ? !isDirty() : form.invalid)">
             @if (isSubmitting()) { <span class="spinner"></span> }
             {{ isEditMode() ? 'Enregistrer' : 'Publier l\'offre' }}
           </button>
         </div>
       </div>
+
+      @if (errorMsg()) {
+        <div class="error-banner">⚠️ {{ errorMsg() }}</div>
+      }
 
       <form [formGroup]="form" id="projectForm" (ngSubmit)="onSubmit()" class="main-grid">
         <div class="config-col">

@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal, ChangeDetectionStrategy, computed } from '@angular/core';
+import { Component, inject, OnInit, signal, ChangeDetectionStrategy, computed, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink, RouterLinkActive } from '@angular/router';
@@ -18,30 +18,33 @@ import { finalize } from 'rxjs';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TeacherSubjectFormPage implements OnInit {
-  private readonly fb = inject(FormBuilder);
+  private readonly fb         = inject(FormBuilder);
   private readonly subjectService = inject(SubjectService);
-  private readonly route = inject(ActivatedRoute);
-  protected readonly auth = inject(AuthStore);
-  private readonly router = inject(Router);
+  private readonly route      = inject(ActivatedRoute);
+  protected readonly auth     = inject(AuthStore);
+  private readonly router     = inject(Router);
+  private readonly cdr        = inject(ChangeDetectorRef);
 
   isSubmitting = signal(false);
-  isEditMode = signal(false);
-  subjectId = signal<number | null>(null);
+  isEditMode   = signal(false);
+  subjectId    = signal<number | null>(null);
+  isDirty      = signal(false);
+  errorMsg     = signal<string | null>(null);
 
   requiredSkills = signal<string[]>([]);
-  keywords = signal<string[]>([]);
-  workTypesList = Object.values(WorkType) as WorkType[];
+  keywords       = signal<string[]>([]);
+  workTypesList  = Object.values(WorkType) as WorkType[];
 
   form = this.fb.group({
-    title: ['', [Validators.required, Validators.maxLength(150)]],
+    title:       ['', [Validators.required, Validators.maxLength(200)]],
     description: ['', [Validators.required, Validators.maxLength(5000)]],
-    objectives: [''],
-    workTypes: [[] as WorkType[], [Validators.required, Validators.minLength(1)]],
-    minStudents: [1, [Validators.required, Validators.min(1)]],
-    maxStudents: [2, [Validators.required, Validators.min(1)]],
-    credits: [3, [Validators.required]],
-    semester: [1, [Validators.required]],
-    academicYear: ['2025-2026', [Validators.required]]
+    objectives:  [''],
+    workTypes:   [[] as WorkType[], []],
+    minStudents: [1  as number | null],
+    maxStudents: [20 as number | null],
+    credits:     [3  as number | null],
+    semester:    [1  as number | null],
+    academicYear:['2025-2026']
   });
 
   initials = computed(() => {
@@ -50,6 +53,14 @@ export class TeacherSubjectFormPage implements OnInit {
   });
 
   ngOnInit() {
+    // Sync isDirty avec n'importe quelle frappe clavier, select, checkbox
+    this.form.valueChanges.subscribe(() => {
+      if (this.form.dirty) {
+        this.isDirty.set(true);
+        this.cdr.markForCheck();
+      }
+    });
+
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
       this.isEditMode.set(true);
@@ -59,28 +70,41 @@ export class TeacherSubjectFormPage implements OnInit {
   }
 
   private loadSubjectData(id: number) {
-    this.subjectService.getById(id).subscribe(subject => {
-      this.form.patchValue({
-        title: subject.title,
-        description: subject.description,
-        objectives: subject.objectives,
-        workTypes: subject.workTypes,
-        minStudents: subject.minStudents,
-        maxStudents: subject.maxStudents,
-        credits: subject.credits,
-        semester: subject.semester,
-        academicYear: subject.academicYear
-      });
-      this.requiredSkills.set(subject.requiredSkills);
-      this.keywords.set(subject.keywords);
+    this.subjectService.getById(id).subscribe({
+      next: subject => {
+        this.form.patchValue({
+          title:        subject.title        ?? '',
+          description:  subject.description  ?? '',
+          objectives:   subject.objectives   ?? '',
+          workTypes:    (subject.workTypes   as unknown as WorkType[]) ?? [],
+          minStudents:  subject.minStudents  ?? 1,
+          maxStudents:  subject.maxStudents  ?? 20,
+          credits:      subject.credits      ?? 3,
+          semester:     subject.semester     ?? 1,
+          academicYear: subject.academicYear ?? '2025-2026'
+        });
+        this.requiredSkills.set(subject.requiredSkills ?? []);
+        this.keywords.set(subject.keywords ?? []);
+        this.form.markAsPristine();
+        this.isDirty.set(false);
+        this.cdr.markForCheck();
+      },
+      error: () => {
+        this.errorMsg.set('Impossible de charger la matière.');
+        this.cdr.markForCheck();
+      }
     });
   }
 
   onWorkTypeToggle(type: WorkType) {
     const current = this.form.get('workTypes')?.value || [];
-    const next = current.includes(type) ? current.filter(t => t !== type) : [...current, type];
+    const next = current.includes(type)
+      ? current.filter(t => t !== type)
+      : [...current, type];
     this.form.patchValue({ workTypes: next });
-    this.form.get('workTypes')?.markAsTouched();
+    this.form.markAsDirty();
+    this.isDirty.set(true);
+    this.cdr.markForCheck();
   }
 
   addTag(input: HTMLInputElement, list: 'skills' | 'keywords') {
@@ -92,42 +116,72 @@ export class TeacherSubjectFormPage implements OnInit {
       if (!this.keywords().includes(val)) this.keywords.update(k => [...k, val]);
     }
     input.value = '';
+    this.isDirty.set(true);
+    this.form.markAsDirty();
   }
 
   removeTag(val: string, list: 'skills' | 'keywords') {
     if (list === 'skills') this.requiredSkills.update(s => s.filter(x => x !== val));
     else this.keywords.update(k => k.filter(x => x !== val));
+    this.isDirty.set(true);
+    this.form.markAsDirty();
   }
 
   onSubmit() {
-    if (this.form.invalid) return;
-    this.isSubmitting.set(true);
+    this.errorMsg.set(null);
+
+    // Création : titre + description obligatoires
+    if (!this.isEditMode() && this.form.invalid) return;
+    // Édition : sauvegarder uniquement si modifié
+    if (this.isEditMode() && !this.isDirty()) return;
+
     const user = this.auth.user();
+    if (!user) { this.errorMsg.set('Session expirée, veuillez vous reconnecter.'); return; }
+
+    this.isSubmitting.set(true);
     const raw = this.form.getRawValue();
+
     const payload = {
-      title: raw.title ?? '',
-      description: raw.description ?? '',
-      objectives: raw.objectives ?? '',
-      workTypes: raw.workTypes ?? [],
-      minStudents: raw.minStudents ?? 1,
-      maxStudents: raw.maxStudents ?? 2,
-      credits: raw.credits ?? 3,
-      semester: raw.semester ?? 1,
+      title:        raw.title?.trim()  ?? '',
+      description:  raw.description?.trim() ?? '',
+      objectives:   raw.objectives?.trim() ?? '',
+      workTypes:    (raw.workTypes ?? []) as WorkType[],
+      minStudents:  raw.minStudents  ?? 1,
+      maxStudents:  raw.maxStudents  ?? 20,
+      credits:      raw.credits      ?? 3,
+      semester:     raw.semester     ?? 1,
       academicYear: raw.academicYear ?? '2025-2026',
       requiredSkills: this.requiredSkills(),
-      keywords: this.keywords()
+      keywords:       this.keywords()
     };
 
     if (this.isEditMode()) {
       const updatePayload: SubjectUpdateRequest = payload;
       this.subjectService.update(this.subjectId()!, updatePayload)
-        .pipe(finalize(() => this.isSubmitting.set(false)))
-        .subscribe(() => this.router.navigate(['/app/teacher/subjects']));
+        .pipe(finalize(() => { this.isSubmitting.set(false); this.cdr.markForCheck(); }))
+        .subscribe({
+          next: () => {
+            this.isDirty.set(false);
+            this.router.navigate(['/app/teacher/subjects']);
+          },
+          error: (err) => {
+            const msg = err?.error?.message ?? err?.message ?? 'Erreur lors de la mise à jour.';
+            this.errorMsg.set(msg);
+            this.cdr.markForCheck();
+          }
+        });
     } else {
       const createPayload: SubjectCreateRequest = payload;
-      this.subjectService.create(user!.userId, createPayload)
-        .pipe(finalize(() => this.isSubmitting.set(false)))
-        .subscribe(() => this.router.navigate(['/app/teacher/subjects']));
+      this.subjectService.create(user.userId, createPayload)
+        .pipe(finalize(() => { this.isSubmitting.set(false); this.cdr.markForCheck(); }))
+        .subscribe({
+          next: () => this.router.navigate(['/app/teacher/subjects']),
+          error: (err) => {
+            const msg = err?.error?.message ?? err?.message ?? 'Erreur lors de la création.';
+            this.errorMsg.set(msg);
+            this.cdr.markForCheck();
+          }
+        });
     }
   }
 

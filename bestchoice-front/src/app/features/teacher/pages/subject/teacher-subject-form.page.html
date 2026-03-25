@@ -52,12 +52,17 @@
         </div>
         <div class="page-actions">
           <a routerLink="/app/teacher/subjects" class="btn-ghost">Annuler</a>
-          <button type="submit" form="subjectForm" class="btn-primary" [disabled]="form.invalid || isSubmitting()">
+          <button type="submit" form="subjectForm" class="btn-primary"
+                  [disabled]="isSubmitting() || (isEditMode() ? !isDirty() : form.invalid)">
             @if (isSubmitting()) { <span class="spinner"></span> }
             {{ isEditMode() ? 'Enregistrer' : 'Créer la matière' }}
           </button>
         </div>
       </div>
+
+      @if (errorMsg()) {
+        <div class="error-banner">⚠️ {{ errorMsg() }}</div>
+      }
 
       <form [formGroup]="form" id="subjectForm" (ngSubmit)="onSubmit()" class="main-grid">
         <div class="config-col">
