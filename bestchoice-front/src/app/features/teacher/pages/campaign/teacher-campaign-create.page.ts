@@ -1,20 +1,21 @@
 import { Component, inject, signal, computed, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { CampaignService } from '../../../campaign/services/campaign.service';
 import { TeacherService } from '../../services/teacher.service';
 import { AuthStore } from '../../../../core/auth/auth.store';
+import { ThemeToggleComponent } from '../../../../shared/theme-toggle.component';
 import { MatchingAlgorithmType } from '../../../../core/models/enums.model';
 import { MatchingCampaignType } from '../../../campaign/models/matching-campaign-type.model';
-import { finalize, forkJoin, switchMap } from 'rxjs';
+import { finalize } from 'rxjs';
 import { toSignal } from '@angular/core/rxjs-interop';
-import {CampaignRequest} from '../../../campaign/models/campaign.model';
+import { CampaignRequest } from '../../../campaign/models/campaign.model';
 
 @Component({
   selector: 'app-campaign-create',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, RouterLinkActive, ThemeToggleComponent],
   templateUrl: './teacher-campaign-create.page.html',
   styleUrl: './teacher-campaign-create.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -23,7 +24,7 @@ export class TeacherCampaignCreatePage implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly campaignService = inject(CampaignService);
   private readonly teacherService = inject(TeacherService);
-  private readonly auth = inject(AuthStore);
+  protected readonly auth = inject(AuthStore);
   private readonly router = inject(Router);
 
   isSubmitting = signal(false);
@@ -41,8 +42,8 @@ export class TeacherCampaignCreatePage implements OnInit {
     MatchingAlgorithmType.HYBRID
   ];
   campaignTypes = [
-    {label: 'Projets (PFE/Tutorés)', value: MatchingCampaignType.PROJECT},
-    {label: 'Matières / Options', value: MatchingCampaignType.SUBJECT}
+    { label: 'Projets (PFE/Tutorés)', value: MatchingCampaignType.PROJECT },
+    { label: 'Matières / Options', value: MatchingCampaignType.SUBJECT }
   ];
 
   form = this.fb.group({
@@ -57,6 +58,11 @@ export class TeacherCampaignCreatePage implements OnInit {
     workTypeWeight: [33]
   });
 
+  initials = computed(() => {
+    const name = this.auth.displayName();
+    return name ? name.split(' ').map(n => n[0]).join('').toUpperCase() : '?';
+  });
+
   ngOnInit() {
     const userId = this.auth.user()?.userId;
     if (userId) {
@@ -66,7 +72,7 @@ export class TeacherCampaignCreatePage implements OnInit {
 
   campaignTypeSelected = toSignal(
     this.form.get('campaignType')!.valueChanges,
-    {initialValue: MatchingCampaignType.PROJECT}
+    { initialValue: MatchingCampaignType.PROJECT }
   );
 
   isProjectType = computed(() => this.campaignTypeSelected() === MatchingCampaignType.PROJECT);
@@ -79,61 +85,33 @@ export class TeacherCampaignCreatePage implements OnInit {
     const newVal = +(event.target as HTMLInputElement).value;
     const oldVal = this.form.get(field)?.value || 0;
     const diff = newVal - oldVal;
+    const otherFields = (['skillsWeight', 'interestsWeight', 'workTypeWeight'] as const).filter(f => f !== field);
 
-    const otherFields = (['skillsWeight', 'interestsWeight', 'workTypeWeight'] as const)
-      .filter(f => f !== field);
+    let nextF1 = (this.form.get(otherFields[0])?.value || 0) - (diff / 2);
+    let nextF2 = (this.form.get(otherFields[1])?.value || 0) - (diff / 2);
 
-    let remainingDiff = diff;
-
-    const currentValues = {
-      f1: this.form.get(otherFields[0])?.value || 0,
-      f2: this.form.get(otherFields[1])?.value || 0
-    };
-
-    let nextF1 = currentValues.f1 - (diff / 2);
-    let nextF2 = currentValues.f2 - (diff / 2);
-
-    if (nextF1 < 0) {
-      nextF2 += nextF1;
-      nextF1 = 0;
-    }
-    if (nextF2 < 0) {
-      nextF1 += nextF2;
-      nextF2 = 0;
-    }
-
+    if (nextF1 < 0) { nextF2 += nextF1; nextF1 = 0; }
+    if (nextF2 < 0) { nextF1 += nextF2; nextF2 = 0; }
     if (nextF1 > 100) nextF1 = 100;
     if (nextF2 > 100) nextF2 = 100;
 
-    this.form.patchValue({
-      [field]: newVal,
-      [otherFields[0]]: Math.round(nextF1),
-      [otherFields[1]]: Math.round(nextF2)
-    }, {emitEvent: false});
+    this.form.patchValue({ [field]: newVal, [otherFields[0]]: Math.round(nextF1), [otherFields[1]]: Math.round(nextF2) }, { emitEvent: false });
 
     const finalTotal = (this.form.get('skillsWeight')?.value || 0) +
       (this.form.get('interestsWeight')?.value || 0) +
       (this.form.get('workTypeWeight')?.value || 0);
-
     if (finalTotal !== 100) {
-      const adjustment = 100 - finalTotal;
-      const currentF2 = this.form.get(otherFields[1])?.value || 0;
-      this.form.get(otherFields[1])?.setValue(currentF2 + adjustment, {emitEvent: false});
+      const current = this.form.get(otherFields[1])?.value || 0;
+      this.form.get(otherFields[1])?.setValue(current + (100 - finalTotal), { emitEvent: false });
     }
   }
 
-  // --- GESTION DES SÉLECTIONS ---
-
   toggleStudent(id: number) {
-    this.selectedStudentIds.update(ids =>
-      ids.includes(id) ? ids.filter(i => i !== id) : [...ids, id]
-    );
+    this.selectedStudentIds.update(ids => ids.includes(id) ? ids.filter(i => i !== id) : [...ids, id]);
   }
 
   toggleItem(id: number) {
-    this.selectedItemIds.update(ids =>
-      ids.includes(id) ? ids.filter(i => i !== id) : [...ids, id]
-    );
+    this.selectedItemIds.update(ids => ids.includes(id) ? ids.filter(i => i !== id) : [...ids, id]);
   }
 
   selectAllStudents() {
@@ -143,13 +121,11 @@ export class TeacherCampaignCreatePage implements OnInit {
 
   onSubmit() {
     if (this.form.invalid || this.selectedStudentIds().length === 0 || this.selectedItemIds().length === 0) {
-      alert("Formulaire incomplet : vérifiez les sélections.");
+      alert('Formulaire incomplet : vérifiez les sélections.');
       return;
     }
-
     this.isSubmitting.set(true);
     const raw = this.form.getRawValue();
-
     const payload: CampaignRequest = {
       name: raw.name ?? '',
       description: raw.description ?? '',
@@ -165,17 +141,16 @@ export class TeacherCampaignCreatePage implements OnInit {
       projectIds: this.isProjectType() ? this.selectedItemIds() : [],
       subjectIds: !this.isProjectType() ? this.selectedItemIds() : []
     };
+    this.teacherService.createCompleteCampaign(payload)
+      .pipe(finalize(() => this.isSubmitting.set(false)))
+      .subscribe({
+        next: () => this.router.navigate(['/app/teacher/dashboard']),
+        error: (err) => { console.error('Erreur publication campagne :', err); alert('Une erreur est survenue lors de la création.'); }
+      });
+  }
 
-    this.teacherService.createCompleteCampaign(payload).pipe(
-      finalize(() => this.isSubmitting.set(false))
-    ).subscribe({
-      next: () => {
-        this.router.navigate(['/app/teacher/dashboard']);
-      },
-      error: (err) => {
-        console.error("Erreur publication campagne :", err);
-        alert("Une erreur est survenue lors de la création.");
-      }
-    });
+  logout() {
+    this.auth.logout();
+    this.router.navigateByUrl('/auth/login');
   }
 }

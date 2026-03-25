@@ -28,8 +28,8 @@ export interface SubjectCreateRequest {
   credits: number;
   semester: number;
   academicYear: string;
-  requiredSkill: string[];
-  keyword: string[];
+  requiredSkills: string[];
+  keywords: string[];
 }
 
 export interface SubjectUpdateRequest extends Partial<SubjectCreateRequest> {

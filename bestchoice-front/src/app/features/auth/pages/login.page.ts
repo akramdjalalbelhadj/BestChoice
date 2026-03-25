@@ -4,14 +4,19 @@ import { ReactiveFormsModule, NonNullableFormBuilder, Validators } from '@angula
 import { Router, RouterLink } from '@angular/router';
 import { AuthApi } from '../../../core/api/auth.api';
 import { AuthStore } from '../../../core/auth/auth.store';
+import { ThemeToggleComponent } from '../../../shared/theme-toggle.component';
 import { finalize } from 'rxjs';
 
 @Component({
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, ThemeToggleComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="page">
+      <div class="theme-corner">
+        <app-theme-toggle />
+      </div>
+
       <div class="card">
         <h1>Connexion</h1>
         <p class="muted">Connectez-vous pour accéder à votre espace.</p>
@@ -66,18 +71,16 @@ export class LoginPage {
 
   submit() {
     if (this.form.invalid || this.loading()) return;
-
     this.loading.set(true);
     this.error.set(null);
-
     this.api.login(this.form.getRawValue())
-        .pipe(finalize(() => this.loading.set(false)))
-        .subscribe({
-          next: (res) => {
-            this.auth.setFromLogin(res);
-            this.router.navigateByUrl('/app');
-          },
-          error: (err) => this.error.set(err?.error?.message ?? 'Connexion impossible.')
-        });
+      .pipe(finalize(() => this.loading.set(false)))
+      .subscribe({
+        next: (res) => {
+          this.auth.setFromLogin(res);
+          this.router.navigateByUrl('/app');
+        },
+        error: (err) => this.error.set(err?.error?.message ?? 'Connexion impossible.')
+      });
   }
 }

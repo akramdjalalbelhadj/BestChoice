@@ -1,0 +1,23 @@
+@use '../layout' as *;
+
+.s-title { display: block; font-weight: 700; color: var(--bc-text); margin-bottom: 3px; }
+
+.s-keywords {
+  display: flex; gap: 4px; flex-wrap: wrap; margin-top: 4px;
+}
+
+.academic-detail { font-size: 0.8rem; color: var(--bc-text-3); margin-top: 4px; }
+
+.type-stack { display: flex; flex-direction: column; gap: 3px; }
+
+.skill-bubbles { display: flex; gap: 4px; flex-wrap: wrap; }
+
+.s-more {
+  font-size: 0.72rem; font-weight: 700;
+  color: var(--bc-text-3); background: var(--bc-border);
+  padding: 2px 7px; border-radius: var(--bc-radius-full);
+}
+
+.capacity-info {
+  .count { display: block; font-size: 0.875rem; font-weight: 700; color: var(--bc-text); }
+}

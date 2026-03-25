@@ -1,149 +1,182 @@
-<div class="dashboard-wrapper">
-  <header class="dash-header">
-    <div class="header-left">
-      <a routerLink="/app/teacher/projects" class="back-link">← Retour aux projets</a>
-      <h1>Détails du Projet</h1>
-      <p class="subtitle">Consultez les informations de l'offre et les recommandations de l'algorithme.</p>
+<div class="app-layout">
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="logo-box">BC</div>
+      <span class="brand-name">Le Bon Choix</span>
     </div>
-    <div class="header-right">
-      <button class="btn-secondary-action" [routerLink]="['/app/teacher/projects/edit', project()?.id]">
-        Modifier l'offre
+    <nav class="nav-links">
+      <a routerLink="/app/teacher/dashboard" routerLinkActive="active" [routerLinkActiveOptions]="{exact:true}" class="menu-item">
+        <span class="icon">📊</span> Dashboard
+      </a>
+      <a routerLink="/app/teacher/projects" routerLinkActive="active" class="menu-item">
+        <span class="icon">📁</span> Projets
+      </a>
+      <a routerLink="/app/teacher/subjects" routerLinkActive="active" class="menu-item">
+        <span class="icon">📚</span> Options
+      </a>
+      <a routerLink="/app/teacher/campaigns" routerLinkActive="active" class="menu-item">
+        <span class="icon">🎯</span> Campagnes
+      </a>
+      <a routerLink="/app/teacher/matching-control" routerLinkActive="active" class="menu-item">
+        <span class="icon">⚙️</span> Pilotage
+      </a>
+    </nav>
+    <footer class="sidebar-footer">
+      <app-theme-toggle />
+      <button (click)="logout()" class="btn-logout">
+        <span class="icon">🚪</span> Déconnexion
       </button>
-    </div>
-  </header>
+    </footer>
+  </aside>
 
-  @if (isLoading()) {
-    <div class="loading-state">
-      <span class="spinner"></span>
-      <p>Chargement des détails...</p>
-    </div>
-  } @else {
-    <main class="main-grid">
-
-      <section class="config-col">
-        <div class="content-card highlight-card">
-          <div class="card-header">
-            <div class="header-title">
-              <h3>Informations Générales</h3>
-              <span class="count-pill">ID #{{ project()?.id }}</span>
-            </div>
-            <span class="status-pill" [class.is-active]="project()?.active">
-              {{ project()?.active ? 'Public' : 'Brouillon' }}
-            </span>
-          </div>
-
-          <div class="project-main-info">
-            <span class="category-label">PROJET ACADÉMIQUE</span>
-            <h2 class="project-title">{{ project()?.title }}</h2>
-
-            <div class="meta-row">
-              <div class="meta-item">
-                <span class="label">Semestre</span>
-                <span class="val">S{{ project()?.semester }}</span>
-              </div>
-              <div class="meta-item">
-                <span class="label">Crédits</span>
-                <span class="val">{{ project()?.credits }} ECTS</span>
-              </div>
-              <div class="meta-item">
-                <span class="label">Capacité</span>
-                <span class="val">{{ project()?.maxStudents }} places</span>
-              </div>
-            </div>
-          </div>
-
-          <div class="info-block">
-            <label>Description du projet</label>
-            <p class="description-text">{{ project()?.description }}</p>
-          </div>
-
-          <div class="info-block">
-            <label>Types de travail</label>
-            <div class="tag-group">
-              @for (type of project()?.workTypes; track type) {
-                <span class="type-badge">{{ type }}</span>
-              }
-            </div>
-          </div>
-
-          <div class="info-block">
-            <label>Compétences recherchées</label>
-            <div class="tag-group">
-              @for (skill of project()?.requiredSkills; track skill) {
-                <span class="skill-pill">{{ skill }}</span>
-              }
-            </div>
-          </div>
-
-          <div class="info-block">
-            <label>Mots-clés</label>
-            <div class="tag-group">
-              @for (k of project()?.keywords; track k) {
-                <span class="k-tag">#{{ k }}</span>
-              }
-            </div>
-          </div>
+  <main class="main-content">
+    <header class="top-nav">
+      <div class="header-titles"><h1>Détail du Projet</h1></div>
+      <div class="user-control">
+        <div class="user-text">
+          <span class="user-name">{{ auth.displayName() }}</span>
+          <span class="user-role">Enseignant</span>
         </div>
-      </section>
+        <div class="avatar">{{ initials() }}</div>
+      </div>
+    </header>
 
-      <section class="selection-col">
-        <div class="content-card">
-          <div class="card-header">
-            <div class="header-title">
-              <h3>Candidats Recommandés</h3>
-              <p class="card-description">Basé sur les scores de matching</p>
+    <div class="page-scroll">
+
+      <div class="page-header">
+        <div class="page-titles">
+          <h2>{{ project()?.title || 'Chargement...' }}</h2>
+          <p>Consultez les informations de l'offre et les recommandations de l'algorithme.</p>
+        </div>
+        <div class="page-actions">
+          <a routerLink="/app/teacher/projects" class="btn-ghost">← Retour</a>
+          <button class="btn-primary" [routerLink]="['/app/teacher/projects/edit', project()?.id]">
+            ✏️ Modifier
+          </button>
+        </div>
+      </div>
+
+      @if (isLoading()) {
+        <div class="loading-state">
+          <span class="spinner"></span>
+          <p>Chargement des détails...</p>
+        </div>
+      } @else {
+        <div class="detail-grid">
+
+          <section class="content-card highlight">
+            <div class="card-header">
+              <div class="header-title">
+                <h3>Informations Générales</h3>
+                <span class="count-pill">ID #{{ project()?.id }}</span>
+              </div>
+              <span class="status-pill" [class.is-active]="project()?.active">
+                {{ project()?.active ? 'Public' : 'Brouillon' }}
+              </span>
             </div>
-            <button class="btn-link" (click)="loadCandidates()" [disabled]="isLoadingMatches()">
-              {{ isLoadingMatches() ? 'Calcul...' : 'Actualiser' }}
-            </button>
-          </div>
 
-          <div class="candidates-list">
-            @if (isLoadingMatches()) {
-              @for (i of [1,2,3]; track i) {
-                <div class="skeleton-bar" style="height: 80px; margin-bottom: 1rem;"></div>
-              }
-            } @else {
-              @for (candidate of candidates(); track candidate.id) {
-                <div class="candidate-item-card">
-                  <div class="score-badge" [class]="getScoreClass(candidate.globalScore)">
-                    {{ (candidate.globalScore * 100).toFixed(0) }}%
-                  </div>
+            <div class="project-main-info">
+              <span class="category-label">PROJET ACADÉMIQUE</span>
+              <h2 class="project-title">{{ project()?.title }}</h2>
 
-                  <div class="candidate-info">
-                    <span class="student-name">Étudiant #{{ candidate.studentId }}</span>
+              <div class="meta-row">
+                <div class="meta-item">
+                  <span class="meta-label">Semestre</span>
+                  <span class="meta-val">S{{ project()?.semester }}</span>
+                </div>
+                <div class="meta-item">
+                  <span class="meta-label">Crédits</span>
+                  <span class="meta-val">{{ project()?.credits }} ECTS</span>
+                </div>
+                <div class="meta-item">
+                  <span class="meta-label">Capacité</span>
+                  <span class="meta-val">{{ project()?.maxStudents }} places</span>
+                </div>
+              </div>
+            </div>
 
-                    <div class="match-breakdown">
-                      <div class="breakdown-item">
-                        <label>Skills</label>
-                        <div class="mini-progress-bg">
-                          <div class="fill" [style.width.%]="candidate.skillsScore * 100"></div>
+            <div class="info-block">
+              <label>Description</label>
+              <p class="description-text">{{ project()?.description }}</p>
+            </div>
+
+            <div class="info-block">
+              <label>Types de travail</label>
+              <div class="tag-group">
+                @for (type of project()?.workTypes; track type) {
+                  <span class="type-badge">{{ type }}</span>
+                }
+              </div>
+            </div>
+
+            <div class="info-block">
+              <label>Compétences recherchées</label>
+              <div class="tag-group">
+                @for (skill of project()?.requiredSkills; track skill) {
+                  <span class="skill-pill">{{ skill }}</span>
+                }
+              </div>
+            </div>
+
+            <div class="info-block">
+              <label>Mots-clés</label>
+              <div class="tag-group">
+                @for (k of project()?.keywords; track k) {
+                  <span class="k-tag">#{{ k }}</span>
+                }
+              </div>
+            </div>
+          </section>
+
+          <section class="content-card">
+            <div class="card-header">
+              <div class="header-title">
+                <h3>Candidats Recommandés</h3>
+                <span class="count-pill">{{ candidates().length }}</span>
+              </div>
+              <button class="btn-link" (click)="loadCandidates()" [disabled]="isLoadingMatches()">
+                {{ isLoadingMatches() ? 'Calcul...' : 'Actualiser' }}
+              </button>
+            </div>
+
+            <div class="candidates-list">
+              @if (isLoadingMatches()) {
+                @for (i of [1,2,3]; track i) {
+                  <div class="skeleton-bar" style="height:72px;margin-bottom:0.75rem;"></div>
+                }
+              } @else {
+                @for (candidate of candidates(); track candidate.id) {
+                  <div class="candidate-card">
+                    <div class="score-badge" [class]="getScoreClass(candidate.globalScore)">
+                      {{ (candidate.globalScore * 100).toFixed(0) }}%
+                    </div>
+                    <div class="candidate-info">
+                      <span class="student-name">Étudiant #{{ candidate.studentId }}</span>
+                      <div class="match-breakdown">
+                        <div class="breakdown-item">
+                          <label>Skills</label>
+                          <div class="mini-bar"><div class="fill" [style.width.%]="candidate.skillsScore * 100"></div></div>
                         </div>
-                      </div>
-                      <div class="breakdown-item">
-                        <label>Intérêts</label>
-                        <div class="mini-progress-bg">
-                          <div class="fill" [style.width.%]="candidate.interestsScore * 100"></div>
+                        <div class="breakdown-item">
+                          <label>Intérêts</label>
+                          <div class="mini-bar"><div class="fill" [style.width.%]="candidate.interestsScore * 100"></div></div>
                         </div>
                       </div>
                     </div>
                   </div>
-
-                  <button class="icon-btn-view" [routerLink]="['/app/teacher/students', candidate.studentId]">
-                    👤
-                  </button>
-                </div>
-              } @empty {
-                <div class="empty-state">
-                  <p>Aucun matching trouvé pour ce projet.</p>
-                  <button class="btn-secondary" routerLink="/app/teacher/matching-control">Configurer la campagne</button>
-                </div>
+                } @empty {
+                  <div class="empty-state">
+                    <p>Aucun matching trouvé pour ce projet.</p>
+                    <a routerLink="/app/teacher/matching-control" class="btn-link">Configurer la campagne</a>
+                  </div>
+                }
               }
-            }
-          </div>
-        </div>
-      </section>
+            </div>
+          </section>
 
-    </main>
-  }
+        </div>
+      }
+
+    </div>
+  </main>
 </div>
