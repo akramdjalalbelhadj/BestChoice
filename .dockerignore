@@ -1,0 +1,15 @@
+.git
+.gitignore
+.idea
+.vscode
+*.log
+node_modules
+dist
+target
+.DS_Store
+.env.local
+*.tmp
+.gradle
+.svn
+CVS
+
