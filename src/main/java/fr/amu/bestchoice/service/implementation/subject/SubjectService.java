@@ -46,8 +46,8 @@ public class SubjectService {
 
         Teacher teacher = teacherRepository.findByUserId(teacherId)
                 .orElseThrow(() -> {
-                    log.error("Enseignant introuvable pour userId={}", teacherId);
-                    return new NotFoundException("Enseignant introuvable pour l'utilisateur ID : " + teacherId);
+                    log.error("Enseignant introuvable : teacherId={}", teacherId);
+                    return new NotFoundException("Enseignant introuvable avec l'ID : " + teacherId);
                 });
 
         // Validation métier : Capacité
@@ -109,6 +109,13 @@ public class SubjectService {
     @Transactional(readOnly = true)
     public List<SubjectResponse> findAllActive() {
         return subjectRepository.findByActiveTrue().stream()
+                .map(this::toSubjectResponse)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public List<SubjectResponse> findByCampaignId(Long campaignId) {
+        return subjectRepository.findByCampaignId(campaignId).stream()
                 .map(this::toSubjectResponse)
                 .collect(Collectors.toList());
     }

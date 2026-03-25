@@ -26,4 +26,7 @@ public interface SubjectRepository extends JpaRepository<Subject, Long> {
             "(LOWER(s.title) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
             "LOWER(s.description) LIKE LOWER(CONCAT('%', :query, '%')))")
     List<Subject> searchActiveSubjects(@Param("query") String query);
+
+    @Query("SELECT s FROM MatchingCampaign mc JOIN mc.subjects s WHERE mc.id = :campaignId")
+    List<Subject> findByCampaignId(@Param("campaignId") Long campaignId);
 }
