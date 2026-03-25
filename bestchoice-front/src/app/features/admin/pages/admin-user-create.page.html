@@ -1,0 +1,156 @@
+<div class="app-layout">
+
+  <!-- ── Sidebar ────────────────────────────────────────────── -->
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="logo-box">BC</div>
+      <span class="brand-name">Le Bon Choix</span>
+    </div>
+    <nav class="nav-links">
+      <a routerLink="/app/admin/dashboard" class="menu-item">
+        <span class="icon">📊</span> Dashboard
+      </a>
+      <a routerLink="/app/admin/users" class="menu-item">
+        <span class="icon">👥</span> Utilisateurs
+      </a>
+      <a routerLink="/app/admin/stats" class="menu-item">
+        <span class="icon">📈</span> Statistiques
+      </a>
+    </nav>
+    <footer class="sidebar-footer">
+      <app-theme-toggle />
+      <button (click)="logout()" class="btn-logout">
+        <span class="icon">🚪</span> Déconnexion
+      </button>
+    </footer>
+  </aside>
+
+  <!-- ── Main Content ───────────────────────────────────────── -->
+  <main class="main-content">
+    <header class="top-nav">
+      <div class="header-titles"><h1>Créer un utilisateur</h1></div>
+      <div class="user-control">
+        <div class="user-text">
+          <span class="user-name">{{ auth.displayName() }}</span>
+          <span class="user-role">Administrateur</span>
+        </div>
+        <div class="avatar">{{ initials() }}</div>
+      </div>
+    </header>
+
+    <div class="page-scroll">
+
+      <div class="page-header">
+        <div class="page-titles">
+          <h2>Nouveau compte</h2>
+          <p>Créez un compte enseignant ou étudiant.</p>
+        </div>
+        <div class="page-actions">
+          <a routerLink="/app/admin/users" class="btn-ghost">← Retour</a>
+          <button class="btn-primary" (click)="onSubmit()" [disabled]="isSubmitting()">
+            @if (isSubmitting()) { <span class="spinner"></span> }
+            Créer le compte
+          </button>
+        </div>
+      </div>
+
+      @if (errorMsg()) {
+        <div class="error-banner">⚠️ {{ errorMsg() }}</div>
+      }
+
+      <form [formGroup]="form" (ngSubmit)="onSubmit()" class="form-grid">
+
+        <!-- ── Identité ──────────────────────────────────────── -->
+        <section class="content-card">
+          <div class="card-header"><h3>Identité</h3></div>
+          <div class="form-body">
+
+            <div class="form-row">
+              <div class="field">
+                <label>Prénom <span class="required-star">*</span></label>
+                <input type="text" class="input" formControlName="firstName"
+                       [class.input-error]="firstNameError()"
+                       placeholder="Ex: Jean">
+                @if (firstNameError()) {
+                  <span class="field-warning">⚠ Le prénom est obligatoire (min. 2 caractères).</span>
+                }
+              </div>
+              <div class="field">
+                <label>Nom <span class="required-star">*</span></label>
+                <input type="text" class="input" formControlName="lastName"
+                       [class.input-error]="lastNameError()"
+                       placeholder="Ex: Dupont">
+                @if (lastNameError()) {
+                  <span class="field-warning">⚠ Le nom est obligatoire (min. 2 caractères).</span>
+                }
+              </div>
+            </div>
+
+            <div class="field">
+              <label>Adresse email <span class="required-star">*</span></label>
+              <input type="email" class="input" formControlName="email"
+                     [class.input-error]="emailError()"
+                     placeholder="Ex: jean.dupont@univ-amu.fr">
+              @if (emailError()) {
+                <span class="field-warning">⚠ L'adresse email est invalide.</span>
+              }
+            </div>
+
+            <div class="field">
+              <label>Mot de passe <span class="required-star">*</span></label>
+              <input type="password" class="input" formControlName="password"
+                     [class.input-error]="passwordError()"
+                     placeholder="Min. 8 caractères">
+              @if (passwordError()) {
+                <span class="field-warning">⚠ Le mot de passe doit contenir au moins 8 caractères.</span>
+              }
+            </div>
+
+          </div>
+        </section>
+
+        <!-- ── Rôle & Numéro étudiant ────────────────────────── -->
+        <section class="content-card">
+          <div class="card-header"><h3>Rôle</h3></div>
+          <div class="form-body">
+
+            <div class="field">
+              <label>Type de compte <span class="required-star">*</span></label>
+              <div class="role-picker">
+                <button type="button" class="role-btn"
+                        [class.active]="form.get('role')?.value === Role.TEACHER"
+                        (click)="onRoleChange(Role.TEACHER)">
+                  <span class="role-icon"></span>
+                  <span class="role-label">Enseignant</span>
+                  <span class="role-desc">Peut créer des projets et des options</span>
+                </button>
+                <button type="button" class="role-btn"
+                        [class.active]="form.get('role')?.value === Role.STUDENT"
+                        (click)="onRoleChange(Role.STUDENT)">
+                  <span class="role-icon"></span>
+                  <span class="role-label">Étudiant</span>
+                  <span class="role-desc">Peut participer aux campagnes de matching</span>
+                </button>
+              </div>
+            </div>
+
+            @if (isStudentRole()) {
+              <div class="field">
+                <label>Numéro étudiant <span class="required-star">*</span></label>
+                <input type="text" class="input" formControlName="studentNumber"
+                       [class.input-error]="studentNumError()"
+                       placeholder="Ex: 21805123">
+                @if (studentNumError()) {
+                  <span class="field-warning">⚠ Le numéro étudiant est obligatoire pour un étudiant.</span>
+                }
+              </div>
+            }
+
+          </div>
+        </section>
+
+      </form>
+
+    </div>
+  </main>
+</div>

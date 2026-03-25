@@ -47,8 +47,6 @@ import { finalize } from 'rxjs';
 
         <div class="links">
           <a routerLink="/auth/forgot-password">Mot de passe oublié ?</a>
-          <span>•</span>
-          <a routerLink="/auth/register">Créer un compte</a>
         </div>
       </div>
     </div>

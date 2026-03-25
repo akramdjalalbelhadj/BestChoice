@@ -72,6 +72,12 @@ export class TeacherService {
     );
   }
 
+  deleteProject(id: number) {
+    return this.projectService.deactivate(id).pipe(
+      tap(() => this._projects.update(all => all.filter(p => p.id !== id)))
+    );
+  }
+
   // ==================== GESTION DES MATIÈRES OPTIONNELLES ====================
 
   createSubject(teacherId: number, req: SubjectCreateRequest) {
@@ -86,6 +92,12 @@ export class TeacherService {
       tap(() => this._subjects.update(all =>
         all.map(s => s.id === id ? { ...s, active: !currentStatus } : s)
       ))
+    );
+  }
+
+  deleteSubject(id: number) {
+    return this.subjectService.deactivate(id).pipe(
+      tap(() => this._subjects.update(all => all.filter(s => s.id !== id)))
     );
   }
 

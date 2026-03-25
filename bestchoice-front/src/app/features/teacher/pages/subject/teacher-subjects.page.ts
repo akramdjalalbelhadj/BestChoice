@@ -99,7 +99,7 @@ export class TeacherSubjectsPage implements OnInit {
 
   deleteSubject(id: number) {
     if (confirm('Voulez-vous vraiment supprimer cette matière ?')) {
-      this.teacherService.toggleSubjectStatus(id, true).subscribe();
+      this.teacherService.deleteSubject(id).subscribe();
     }
   }
 
