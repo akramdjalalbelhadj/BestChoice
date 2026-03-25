@@ -18,7 +18,7 @@ import { ThemeToggleComponent } from '../../../../shared/theme-toggle.component'
         <div class="brand">BC</div>
         <nav class="nav-links">
           <a routerLink="/app/student/dashboard" routerLinkActive="active" class="menu-item">📊 Dashboard</a>
-          <a routerLink="/app/student/projects" routerLinkActive="active" class="menu-item">🔍 Projets</a>
+          <a routerLink="/app/student/campaigns" routerLinkActive="active" class="menu-item">🔍 Campagnes</a>
           <a routerLink="/app/student/preferences" routerLinkActive="active" class="menu-item">⭐ Mes Choix</a>
           <a routerLink="/app/student/profile" routerLinkActive="active" class="menu-item">👤 Mon Profil</a>
         </nav>

@@ -4,6 +4,7 @@ import { StudentProjectsPage } from './pages/project/student-projects.page';
 import { StudentProjectDetailPage } from './pages/project/student-project-detail.page';
 import { StudentPreferencesPage } from './pages/preference/student-preferences.page';
 import {StudentProfilePage} from './pages/profil/student-profile.page';
+import { StudentCampaignPage } from './pages/campaign/student-campaign.page';
 
 export const STUDENT_ROUTES: Routes = [
   {
@@ -25,6 +26,8 @@ export const STUDENT_ROUTES: Routes = [
 
       // Édition du profil (Skills/Interests)
       { path: 'profile', component: StudentProfilePage },
+
+      { path: 'campaigns', component: StudentCampaignPage },
     ]
   }
 ];
