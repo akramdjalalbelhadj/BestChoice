@@ -14,7 +14,7 @@ public interface MatchingCampaignMapper {
     // ==================== TO ENTITY ====================
 
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "teacher", ignore = true) // Géré manuellement dans le Service
+    @Mapping(target = "teacher", ignore = true)
     @Mapping(target = "students", ignore = true)
     @Mapping(target = "projects", ignore = true)
     @Mapping(target = "subjects", ignore = true)

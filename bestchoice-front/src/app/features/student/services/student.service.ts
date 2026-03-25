@@ -5,16 +5,19 @@ import { ProjectResponse } from '../../project/models/project.model';
 import { StudentResponse, StudentUpdateRequest } from '../models/student.model';
 import { MatchingResultResponse } from '../../matching/models/matching.model';
 import { PreferenceCreateRequest, PreferenceResponse } from '../models/preference.model';
+import { CampaignService } from '../../campaign/services/campaign.service';
 import {Observable, tap} from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class StudentService {
   private http = inject(HttpClient);
+  private campaignService = inject(CampaignService);
   private readonly API = `${environment.apiBaseUrl}/api/students`;
 
   studentProfile = signal<StudentResponse | null>(null);
   availableProjects = signal<ProjectResponse[]>([]);
   topMatches = signal<MatchingResultResponse[]>([]);
+  campaigns = this.campaignService.campaigns;
 
   getAllStudents(): Observable<StudentResponse[]> {
     return this.http.get<StudentResponse[]>(this.API);
@@ -82,5 +85,9 @@ export class StudentService {
   /** Récupère tous les mots-clés actifs du catalogue */
   getAllActiveKeywords() {
     return this.http.get<any[]>(`${this.API}/keywords/active`);
+  }
+
+  loadMyCampaigns(studentId: number) {
+    return this.campaignService.loadByStudent(studentId);
   }
 }

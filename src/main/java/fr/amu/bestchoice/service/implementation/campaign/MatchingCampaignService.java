@@ -94,6 +94,14 @@ public class MatchingCampaignService implements IMatchingCampaignService
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public List<MatchingCampaignResponse> findByStudentId(Long studentId) {
+        return campaignRepository.findAllByStudentIdInTable(studentId).stream()
+                .map(mapper::toResponse)
+                .toList();
+    }
+
+    @Override
     public void delete(Long id) {
         campaignRepository.deleteById(id);
     }

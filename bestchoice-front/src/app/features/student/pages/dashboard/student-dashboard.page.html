@@ -1,0 +1,118 @@
+<div class="app-layout">
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="logo-box">BC</div>
+      <span class="brand-name">Le Bon Choix</span>
+    </div>
+
+    <nav class="nav-links">
+      <a routerLink="/app/student/dashboard" routerLinkActive="active" class="menu-item">
+        <span class="icon">📊</span> Dashboard
+      </a>
+      <a routerLink="/app/student/campaigns" routerLinkActive="active" class="menu-item">
+        <span class="icon">🔍</span> Explorer Campagnes
+      </a>
+      <a routerLink="/app/student/preferences" routerLinkActive="active" class="menu-item">
+        <span class="icon">⭐</span> Mes Vœux
+      </a>
+      <a routerLink="/app/student/profile" routerLinkActive="active" class="menu-item">
+        <span class="icon">👤</span> Mon Profil
+      </a>
+    </nav>
+
+    <footer class="sidebar-footer">
+      <app-theme-toggle></app-theme-toggle>
+      <button (click)="logout()" class="btn-logout">
+        <span class="icon">🚪</span> Déconnexion
+      </button>
+    </footer>
+  </aside>
+
+  <main class="main-content">
+    <header class="top-nav">
+      <div class="header-left">
+        <h1>Tableau de bord</h1>
+        <p class="subtitle">Bonjour, {{ auth.user()?.firstName }} 👋. Voici l'état de vos candidatures.</p>
+      </div>
+
+      <div class="user-control">
+        <div class="user-text">
+          <span class="user-name">{{ auth.displayName() }}</span>
+          <span class="user-role">Étudiant • Master {{ profile()?.studyYear }}</span>
+        </div>
+        <div class="avatar">{{ initials() }}</div>
+      </div>
+    </header>
+
+    <div class="dashboard-scroll">
+      <div class="dashboard-wrapper">
+
+        <section class="stats-grid">
+          <div class="stat-card highlight">
+            <div class="stat-label">Complétude du profil</div>
+            <div class="stat-value">{{ completion() }}%</div>
+            <div class="progress-bar">
+              <div class="fill" [style.width.%]="completion()"></div>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-label">Vœux enregistrés</div>
+            <div class="stat-value" [class.warning]="preferenceCount() < 1">
+              {{ preferenceCount() }}<small>/10</small>
+            </div>
+            <div class="stat-unit">projets sélectionnés</div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-label">Compétences</div>
+            <div class="stat-value">{{ profile()?.skill?.length || 0 }}</div>
+            <div class="stat-unit">expertises validées</div>
+          </div>
+        </section>
+
+        <div class="main-grid">
+          <section class="content-card wide">
+            <div class="card-header">
+              <div>
+                <h3>Recommandations IA</h3>
+                <p class="card-description">Basé sur vos compétences et votre projet professionnel</p>
+              </div>
+              <a routerLink="/app/student/projects" class="btn-link">Explorer plus</a>
+            </div>
+
+            <div class="match-list">
+              @if (isLoading()) {
+                <div class="skeleton-loader">
+                  <div class="skeleton-bar"></div>
+                  <div class="skeleton-bar"></div>
+                </div>
+              } @else {
+                @for (match of topMatches(); track match.id) {
+                  <div class="match-item">
+                    <div class="score-pill">{{ (match.globalScore * 100).toFixed(0) }}%</div>
+                    <div class="item-main">
+                      <span class="title">Projet #{{ match.projectId }}</span>
+                      <div class="score-breakdown">
+                        <span class="badge">💻 Skills: {{ (match.skillsScore * 100).toFixed(0) }}%</span>
+                        <span class="badge">🌟 Intérêts: {{ (match.interestsScore * 100).toFixed(0) }}%</span>
+                      </div>
+                    </div>
+                    <button class="btn-secondary-action" [routerLink]="['/app/student/projects', match.projectId]">
+                      Voir l'offre
+                    </button>
+                  </div>
+                } @empty {
+                  <div class="empty-state">
+                    <p>Aucun matching n'a encore été lancé pour votre profil.</p>
+                    <button class="btn-primary" routerLink="/app/student/projects">Parcourir les projets</button>
+                  </div>
+                }
+              }
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>

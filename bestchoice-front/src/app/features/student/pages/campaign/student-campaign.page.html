@@ -1,0 +1,58 @@
+<div class="dashboard-wrapper">
+  <header class="dash-header">
+    <div class="header-left">
+      <a routerLink="/app/student/dashboard" class="back-link">← Retour Dashboard</a>
+      <h1>Mes Campagnes de Matching</h1>
+      <p class="subtitle">Retrouvez ici les sessions de sélection auxquelles vous participez.</p>
+    </div>
+  </header>
+
+  @if (isLoading()) {
+    <div class="skeleton-container">
+      <div class="skeleton-card"></div>
+      <div class="skeleton-card"></div>
+    </div>
+  } @else {
+    <div class="campaign-grid">
+      @for (c of campaigns(); track c.id) {
+        <div class="campaign-card">
+          <div class="card-badge" [class.project]="c.campaignType === 'PROJECT'">
+            {{ c.campaignType === 'PROJECT' ? '🚀 Projets' : '📚 Matières' }}
+          </div>
+
+          <div class="card-content">
+            <h3 class="name">{{ c.name }}</h3>
+            <p class="description">{{ c.description || 'Aucune description fournie.' }}</p>
+
+            <div class="meta-info">
+              <div class="info-item">
+                <span class="label">Période</span>
+                <span class="value">{{ c.academicYear }} • Semestre {{ c.semester }}</span>
+              </div>
+              <div class="info-item">
+                <span class="label">Responsable</span>
+                <span class="value">{{ c.teacherName }}</span>
+              </div>
+              <div class="info-item">
+                <span class="label">Offres disponibles</span>
+                <span class="value">{{ c.itemsCount }}</span>
+              </div>
+            </div>
+          </div>
+
+          <footer class="card-footer">
+            <button class="btn-primary" [routerLink]="c.campaignType === 'PROJECT' ? '/app/student/projects' : '/app/student/subjects'">
+              Voir les offres
+            </button>
+          </footer>
+        </div>
+      } @empty {
+        <div class="empty-state">
+          <div class="icon">📁</div>
+          <p>Vous n'êtes actuellement inscrit dans aucune campagne de matching.</p>
+          <small>Contactez votre responsable pédagogique si cela vous semble anormal.</small>
+        </div>
+      }
+    </div>
+  }
+</div>

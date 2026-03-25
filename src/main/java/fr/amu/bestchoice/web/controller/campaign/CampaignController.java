@@ -36,6 +36,11 @@ public class CampaignController
         return ResponseEntity.ok(campaignService.findByTeacherId(teacherId));
     }
 
+    @GetMapping("/student/{studentId}")
+    public ResponseEntity<List<MatchingCampaignResponse>> getByStudent(@PathVariable Long studentId) {
+        return ResponseEntity.ok(campaignService.findByStudentId(studentId));
+    }
+
     @PostMapping("/{id}/students")
     public ResponseEntity<Void> addStudents(@PathVariable Long id, @RequestBody List<Long> studentIds) {
         campaignService.addStudentsToCampaign(id, studentIds);
