@@ -99,7 +99,7 @@ export class TeacherProjectsPage implements OnInit {
 
   deleteProject(id: number) {
     if (confirm('Voulez-vous vraiment retirer ce projet ?')) {
-      this.teacherService.toggleProjectStatus(id, true).subscribe();
+      this.teacherService.deleteProject(id).subscribe();
     }
   }
 

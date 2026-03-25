@@ -26,10 +26,10 @@ import { ThemeToggleComponent } from '../../../shared/theme-toggle.component';
           <p class="muted">Lister utilisateurs + rôles</p>
         </a>
 
-        <div class="card disabled">
-          <h3>Stats</h3>
-          <p class="muted">À venir (projets, matching, etc.)</p>
-        </div>
+        <a class="card" routerLink="/app/admin/stats">
+          <h3>Statistiques</h3>
+          <p class="muted">Projets, options, enseignants, étudiants</p>
+        </a>
       </div>
 
       <footer class="footer muted">

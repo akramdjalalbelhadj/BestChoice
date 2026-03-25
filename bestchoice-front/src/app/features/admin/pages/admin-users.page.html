@@ -1,0 +1,311 @@
+<div class="app-layout">
+
+  <!-- ── Sidebar ────────────────────────────────────────────── -->
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="logo-box">BC</div>
+      <span class="brand-name">Le Bon Choix</span>
+    </div>
+    <nav class="nav-links">
+      <a routerLink="/app/admin/dashboard" class="menu-item">
+        <span class="icon">📊</span> Dashboard
+      </a>
+      <a routerLink="/app/admin/users" class="menu-item active">
+        <span class="icon">👥</span> Utilisateurs
+      </a>
+      <a routerLink="/app/admin/stats" class="menu-item">
+        <span class="icon">📈</span> Statistiques
+      </a>
+    </nav>
+    <footer class="sidebar-footer">
+      <app-theme-toggle />
+      <button (click)="logout()" class="btn-logout">
+        <span class="icon">🚪</span> Déconnexion
+      </button>
+    </footer>
+  </aside>
+
+  <!-- ── Main Content ───────────────────────────────────────── -->
+  <main class="main-content">
+    <header class="top-nav">
+      <div class="header-titles"><h1>Gestion des Utilisateurs</h1></div>
+      <div class="user-control">
+        <div class="user-text">
+          <span class="user-name">{{ auth.displayName() }}</span>
+          <span class="user-role">Administrateur</span>
+        </div>
+        <div class="avatar">{{ initials() }}</div>
+      </div>
+    </header>
+
+    <div class="page-scroll">
+
+      <!-- ── En-tête de page ──────────────────────────────── -->
+      <div class="page-header">
+        <div class="page-titles">
+          <h2>Comptes utilisateurs</h2>
+          <p>
+            <strong>{{ teacherCount() }}</strong> enseignant{{ teacherCount() > 1 ? 's' : '' }} •
+            <strong>{{ studentCount() }}</strong> étudiant{{ studentCount() > 1 ? 's' : '' }}
+          </p>
+        </div>
+        <div class="page-actions">
+          <a routerLink="/app/admin/users/create" class="btn-primary">＋ Créer un utilisateur</a>
+        </div>
+      </div>
+
+      <!-- ── Message succès ────────────────────────────────── -->
+      @if (successMsg()) {
+        <div class="success-banner">{{ successMsg() }}</div>
+      }
+
+      <!-- ── Formulaire de création ────────────────────────── -->
+      @if (showForm()) {
+        <div class="content-card form-card">
+          <div class="card-header">
+            <h3>Nouveau compte</h3>
+          </div>
+
+          @if (errorMsg()) {
+            <div class="error-banner">⚠️ {{ errorMsg() }}</div>
+          }
+
+          <form [formGroup]="form" (ngSubmit)="onSubmit()" class="create-form">
+
+            <div class="form-row">
+              <div class="field">
+                <label>Prénom <span class="required-star">*</span></label>
+                <input type="text" class="input" formControlName="firstName"
+                       [class.input-error]="firstNameError()"
+                       placeholder="Ex: Jean">
+                @if (firstNameError()) {
+                  <span class="field-warning">⚠ Le prénom est obligatoire (min. 2 caractères).</span>
+                }
+              </div>
+              <div class="field">
+                <label>Nom <span class="required-star">*</span></label>
+                <input type="text" class="input" formControlName="lastName"
+                       [class.input-error]="lastNameError()"
+                       placeholder="Ex: Dupont">
+                @if (lastNameError()) {
+                  <span class="field-warning">⚠ Le nom est obligatoire (min. 2 caractères).</span>
+                }
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="field">
+                <label>Email <span class="required-star">*</span></label>
+                <input type="email" class="input" formControlName="email"
+                       [class.input-error]="emailError()"
+                       placeholder="Ex: jean.dupont@univ-amu.fr">
+                @if (emailError()) {
+                  <span class="field-warning">⚠ Email invalide.</span>
+                }
+              </div>
+              <div class="field">
+                <label>Mot de passe <span class="required-star">*</span></label>
+                <input type="password" class="input" formControlName="password"
+                       [class.input-error]="passwordError()"
+                       placeholder="Min. 8 caractères">
+                @if (passwordError()) {
+                  <span class="field-warning">⚠ Le mot de passe doit contenir au moins 8 caractères.</span>
+                }
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="field">
+                <label>Rôle <span class="required-star">*</span></label>
+                <div class="role-picker">
+                  <button type="button"
+                          class="role-btn"
+                          [class.active]="form.get('role')?.value === Role.TEACHER"
+                          (click)="form.get('role')?.setValue(Role.TEACHER); onRoleChange()">
+                     Enseignant
+                  </button>
+                  <button type="button"
+                          class="role-btn"
+                          [class.active]="form.get('role')?.value === Role.STUDENT"
+                          (click)="form.get('role')?.setValue(Role.STUDENT); onRoleChange()">
+                     Étudiant
+                  </button>
+                </div>
+              </div>
+
+              @if (isStudentRole()) {
+                <div class="field">
+                  <label>Numéro étudiant <span class="required-star">*</span></label>
+                  <input type="text" class="input" formControlName="studentNumber"
+                         [class.input-error]="studentNumError()"
+                         placeholder="Ex: 21805123">
+                  @if (studentNumError()) {
+                    <span class="field-warning">⚠ Le numéro étudiant est obligatoire.</span>
+                  }
+                </div>
+              }
+            </div>
+
+            <div class="form-actions">
+              <button type="button" class="btn-ghost" (click)="toggleForm()">Annuler</button>
+              <button type="submit" class="btn-primary" [disabled]="isSubmitting()">
+                @if (isSubmitting()) { <span class="spinner"></span> }
+                Créer le compte
+              </button>
+            </div>
+
+          </form>
+        </div>
+      }
+
+      <!-- ── Formulaire d'édition ──────────────────────────── -->
+      @if (editingUser()) {
+        <div class="content-card form-card">
+          <div class="card-header">
+            <h3>Modifier — {{ editingUser()!.firstName }} {{ editingUser()!.lastName }}</h3>
+            <button type="button" class="btn-ghost btn-close" (click)="cancelEdit()">✕</button>
+          </div>
+
+          @if (errorMsg()) {
+            <div class="error-banner">⚠️ {{ errorMsg() }}</div>
+          }
+
+          <form [formGroup]="editForm" (ngSubmit)="saveEdit()" class="create-form">
+            <div class="form-row">
+              <div class="field">
+                <label>Prénom <span class="required-star">*</span></label>
+                <input type="text" class="input" formControlName="firstName"
+                       [class.input-error]="editFirstNameError()" placeholder="Ex: Jean">
+                @if (editFirstNameError()) {
+                  <span class="field-warning">⚠ Min. 2 caractères.</span>
+                }
+              </div>
+              <div class="field">
+                <label>Nom <span class="required-star">*</span></label>
+                <input type="text" class="input" formControlName="lastName"
+                       [class.input-error]="editLastNameError()" placeholder="Ex: Dupont">
+                @if (editLastNameError()) {
+                  <span class="field-warning">⚠ Min. 2 caractères.</span>
+                }
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="field">
+                <label>Email <span class="required-star">*</span></label>
+                <input type="email" class="input" formControlName="email"
+                       [class.input-error]="editEmailError()" placeholder="Ex: jean@univ-amu.fr">
+                @if (editEmailError()) {
+                  <span class="field-warning">⚠ Email invalide.</span>
+                }
+              </div>
+              @if (editingUser()!.role === Role.STUDENT) {
+                <div class="field">
+                  <label>Numéro étudiant</label>
+                  <input type="text" class="input" formControlName="studentNumber"
+                         placeholder="Ex: 21805123">
+                </div>
+              }
+            </div>
+            <div class="form-actions">
+              <button type="button" class="btn-ghost" (click)="cancelEdit()">Annuler</button>
+              <button type="submit" class="btn-primary" [disabled]="isEditSubmitting()">
+                @if (isEditSubmitting()) { <span class="spinner"></span> }
+                Sauvegarder
+              </button>
+            </div>
+          </form>
+        </div>
+      }
+
+      <!-- ── Toolbar ────────────────────────────────────────── -->
+      <div class="toolbar">
+        <div class="filter-tabs">
+          <button class="filter-tab" [class.active]="roleFilter() === 'ALL'"       (click)="setFilter('ALL')">Tous ({{ users().length }})</button>
+          <button class="filter-tab" [class.active]="roleFilter() === 'ENSEIGNANT'" (click)="setFilter('ENSEIGNANT')">Enseignants ({{ teacherCount() }})</button>
+          <button class="filter-tab" [class.active]="roleFilter() === 'ETUDIANT'"   (click)="setFilter('ETUDIANT')">Étudiants ({{ studentCount() }})</button>
+        </div>
+        <div class="search-wrapper">
+          <i class="search-icon">🔍</i>
+          <input type="text" [ngModel]="searchQuery()" (ngModelChange)="onSearch($event)"
+                 placeholder="Rechercher par nom, email, numéro...">
+        </div>
+      </div>
+
+      <!-- ── Table ──────────────────────────────────────────── -->
+      <div class="content-card no-padding">
+        <div class="table-container">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Utilisateur</th>
+                <th>Email</th>
+                <th>Rôle</th>
+                <th>N° Étudiant</th>
+                <th>Statut</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              @if (isLoading()) {
+                @for (i of [1,2,3,4,5]; track i) {
+                  <tr><td colspan="6"><div class="skeleton-bar"></div></td></tr>
+                }
+              } @else {
+                @for (u of paginatedUsers(); track u.id) {
+                  <tr>
+                    <td class="col-main">
+                      <div class="user-avatar-mini">{{ u.firstName[0] }}{{ u.lastName[0] }}</div>
+                      <span class="user-fullname">{{ u.firstName }} {{ u.lastName }}</span>
+                    </td>
+                    <td class="col-email">{{ u.email }}</td>
+                    <td>
+                      <span class="role-badge" [class.teacher]="u.role === Role.TEACHER" [class.student]="u.role === Role.STUDENT">
+                        {{ u.role === Role.TEACHER ? ' Enseignant' : u.role === Role.STUDENT ? ' Étudiant' : '🔧 Admin' }}
+                      </span>
+                    </td>
+                    <td class="col-num">{{ u.studentNumber || '—' }}</td>
+                    <td>
+                      <span class="status-pill" [class.is-active]="u.active">
+                        {{ u.active ? 'Actif' : 'Inactif' }}
+                      </span>
+                    </td>
+                    <td>
+                      <div class="actions-cell">
+                        <button class="icon-btn" (click)="startEdit(u)" title="Modifier">✏️</button>
+                        <button class="icon-btn" [class.deactivate]="u.active" [class.activate]="!u.active"
+                                (click)="toggleUserStatus(u)"
+                                [title]="u.active ? 'Désactiver' : 'Réactiver'">
+                          {{ u.active ? '🚫' : '✅' }}
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                } @empty {
+                  <tr>
+                    <td colspan="6">
+                      <div class="empty-state"><p>Aucun utilisateur ne correspond à votre recherche.</p></div>
+                    </td>
+                  </tr>
+                }
+              }
+            </tbody>
+          </table>
+        </div>
+
+        @if (filteredUsers().length > pageSize) {
+          <div class="pagination">
+            <span class="page-info">{{ paginationInfo() }}</span>
+            <div class="page-controls">
+              <button class="page-btn" (click)="prevPage()" [disabled]="currentPage() === 1">‹</button>
+              @for (n of pageNumbers(); track n) {
+                <button class="page-btn" [class.active]="n === currentPage()" (click)="goToPage(n)">{{ n }}</button>
+              }
+              <button class="page-btn" (click)="nextPage()" [disabled]="currentPage() === totalPages()">›</button>
+            </div>
+          </div>
+        }
+      </div>
+
+    </div>
+  </main>
+</div>

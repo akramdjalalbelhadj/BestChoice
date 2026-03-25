@@ -1,0 +1,244 @@
+<div class="app-layout">
+
+  <!-- ── Sidebar ────────────────────────────────────────────── -->
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="logo-box">BC</div>
+      <span class="brand-name">Le Bon Choix</span>
+    </div>
+    <nav class="nav-links">
+      <a routerLink="/app/admin/dashboard" class="menu-item">
+        <span class="icon">📊</span> Dashboard
+      </a>
+      <a routerLink="/app/admin/users" class="menu-item">
+        <span class="icon">👥</span> Utilisateurs
+      </a>
+      <a routerLink="/app/admin/stats" class="menu-item active">
+        <span class="icon">📈</span> Statistiques
+      </a>
+    </nav>
+    <footer class="sidebar-footer">
+      <app-theme-toggle />
+      <button (click)="logout()" class="btn-logout">
+        <span class="icon">🚪</span> Déconnexion
+      </button>
+    </footer>
+  </aside>
+
+  <!-- ── Main ───────────────────────────────────────────────── -->
+  <main class="main-content">
+    <header class="top-nav">
+      <div class="header-titles"><h1>Statistiques</h1></div>
+      <div class="user-control">
+        <div class="user-text">
+          <span class="user-name">{{ auth.displayName() }}</span>
+          <span class="user-role">Administrateur</span>
+        </div>
+        <div class="avatar">{{ initials() }}</div>
+      </div>
+    </header>
+
+    <div class="page-scroll">
+
+      @if (isLoading()) {
+        <div class="loading-state">
+          <div class="spinner-lg"></div>
+          <p>Chargement des statistiques…</p>
+        </div>
+      } @else if (errorMsg()) {
+        <div class="error-banner">⚠️ {{ errorMsg() }}</div>
+      } @else if (stats()) {
+
+        <!-- ── KPI Row ──────────────────────────────────────── -->
+        <div class="kpi-row">
+          <div class="kpi-card proj">
+            <div class="kpi-icon">📁</div>
+            <div class="kpi-body">
+              <span class="kpi-value">{{ stats()!.totalProjects }}</span>
+              <span class="kpi-label">Projets</span>
+            </div>
+          </div>
+          <div class="kpi-card subj">
+            <div class="kpi-icon">📋</div>
+            <div class="kpi-body">
+              <span class="kpi-value">{{ stats()!.totalSubjects }}</span>
+              <span class="kpi-label">Options</span>
+            </div>
+          </div>
+          <div class="kpi-card teach">
+            <div class="kpi-icon">👨‍🏫</div>
+            <div class="kpi-body">
+              <span class="kpi-value">{{ stats()!.totalTeachers }}</span>
+              <span class="kpi-label">Enseignants</span>
+            </div>
+          </div>
+          <div class="kpi-card stud">
+            <div class="kpi-icon">🎓</div>
+            <div class="kpi-body">
+              <span class="kpi-value">{{ stats()!.totalStudents }}</span>
+              <span class="kpi-label">Étudiants</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- ══════════════════════════════════════════════════ -->
+        <!-- SECTION PROJETS (collapsible)                      -->
+        <!-- ══════════════════════════════════════════════════ -->
+        <div class="section-header" (click)="projOpen.set(!projOpen())">
+          <h2>📁 Projets</h2>
+          <span class="chevron" [class.open]="projOpen()">›</span>
+        </div>
+
+        @if (projOpen()) {
+          <div class="charts-row">
+
+            <!-- Donut projets -->
+            <div class="content-card donut-card">
+              <div class="card-header"><h3>Actifs / Inactifs</h3></div>
+              <div class="donut-wrap">
+                <div class="donut-container">
+                  <svg viewBox="0 0 36 36" class="donut-svg">
+                    <circle class="donut-bg" cx="18" cy="18" r="15.9" fill="none" stroke-width="3.5"/>
+                    <circle class="donut-fill proj" cx="18" cy="18" r="15.9" fill="none" stroke-width="3.5"
+                            [attr.stroke-dasharray]="projActivePct() + ' ' + (100 - projActivePct())"
+                            transform="rotate(-90 18 18)"/>
+                  </svg>
+                  <div class="donut-center">
+                    <span class="donut-pct">{{ projActivePct() }}%</span>
+                    <span class="donut-lbl">actifs</span>
+                  </div>
+                </div>
+              </div>
+              <div class="donut-legend">
+                <div class="legend-row"><span class="dot primary"></span>Actifs — {{ stats()!.activeProjects }}</div>
+                <div class="legend-row"><span class="dot muted"></span>Inactifs — {{ stats()!.inactiveProjects }}</div>
+                <div class="legend-row"><span class="dot warn"></span>Complets — {{ stats()!.completedProjects }}</div>
+              </div>
+              <div class="extra-stat">
+                <span class="extra-label">Capacité totale</span>
+                <span class="extra-value">{{ stats()!.totalProjectCapacity }} places</span>
+              </div>
+            </div>
+
+            <!-- Barres : types de travail projets -->
+            <div class="content-card">
+              <div class="card-header"><h3>Types de travail</h3></div>
+              @if (projWorkTypeBars().length === 0) {
+                <p class="no-data">Aucune donnée</p>
+              } @else {
+                <div class="bar-list">
+                  @for (b of projWorkTypeBars(); track b.label) {
+                    <div class="bar-row">
+                      <span class="bar-label">{{ b.label }}</span>
+                      <div class="bar-track"><div class="bar-fill proj" [style.width.%]="b.pct"></div></div>
+                      <span class="bar-count">{{ b.value }}</span>
+                    </div>
+                  }
+                </div>
+              }
+            </div>
+
+          </div>
+
+          <!-- Top enseignants projets -->
+          <div class="content-card wide">
+            <div class="card-header"><h3>Top enseignants — Projets</h3></div>
+            @if (projTeacherBars().length === 0) {
+              <p class="no-data">Aucun enseignant avec des projets</p>
+            } @else {
+              <div class="bar-list">
+                @for (b of projTeacherBars(); track b.label; let i = $index) {
+                  <div class="bar-row ranked">
+                    <span class="rank">{{ i + 1 }}</span>
+                    <span class="bar-label">{{ b.label }}</span>
+                    <div class="bar-track"><div class="bar-fill proj" [style.width.%]="b.pct"></div></div>
+                    <span class="bar-count">{{ b.value }} projet{{ b.value > 1 ? 's' : '' }}</span>
+                  </div>
+                }
+              </div>
+            }
+          </div>
+        }
+
+        <!-- ══════════════════════════════════════════════════ -->
+        <!-- SECTION OPTIONS (collapsible)                      -->
+        <!-- ══════════════════════════════════════════════════ -->
+        <div class="section-header" (click)="subjOpen.set(!subjOpen())">
+          <h2>📋 Options</h2>
+          <span class="chevron" [class.open]="subjOpen()">›</span>
+        </div>
+
+        @if (subjOpen()) {
+          <div class="charts-row">
+
+            <!-- Donut options -->
+            <div class="content-card donut-card">
+              <div class="card-header"><h3>Actifs / Inactifs</h3></div>
+              <div class="donut-wrap">
+                <div class="donut-container">
+                  <svg viewBox="0 0 36 36" class="donut-svg">
+                    <circle class="donut-bg" cx="18" cy="18" r="15.9" fill="none" stroke-width="3.5"/>
+                    <circle class="donut-fill subj" cx="18" cy="18" r="15.9" fill="none" stroke-width="3.5"
+                            [attr.stroke-dasharray]="subjActivePct() + ' ' + (100 - subjActivePct())"
+                            transform="rotate(-90 18 18)"/>
+                  </svg>
+                  <div class="donut-center">
+                    <span class="donut-pct">{{ subjActivePct() }}%</span>
+                    <span class="donut-lbl">actifs</span>
+                  </div>
+                </div>
+              </div>
+              <div class="donut-legend">
+                <div class="legend-row"><span class="dot subj"></span>Actifs — {{ stats()!.activeSubjects }}</div>
+                <div class="legend-row"><span class="dot muted"></span>Inactifs — {{ stats()!.inactiveSubjects }}</div>
+              </div>
+              <div class="extra-stat">
+                <span class="extra-label">Capacité totale</span>
+                <span class="extra-value">{{ stats()!.totalSubjectCapacity }} places</span>
+              </div>
+            </div>
+
+            <!-- Barres : types de travail options -->
+            <div class="content-card">
+              <div class="card-header"><h3>Types de travail</h3></div>
+              @if (subjWorkTypeBars().length === 0) {
+                <p class="no-data">Aucune donnée</p>
+              } @else {
+                <div class="bar-list">
+                  @for (b of subjWorkTypeBars(); track b.label) {
+                    <div class="bar-row">
+                      <span class="bar-label">{{ b.label }}</span>
+                      <div class="bar-track"><div class="bar-fill subj" [style.width.%]="b.pct"></div></div>
+                      <span class="bar-count">{{ b.value }}</span>
+                    </div>
+                  }
+                </div>
+              }
+            </div>
+
+          </div>
+
+          <!-- Top enseignants options -->
+          <div class="content-card wide">
+            <div class="card-header"><h3>Top enseignants — Options</h3></div>
+            @if (subjTeacherBars().length === 0) {
+              <p class="no-data">Aucun enseignant avec des options</p>
+            } @else {
+              <div class="bar-list">
+                @for (b of subjTeacherBars(); track b.label; let i = $index) {
+                  <div class="bar-row ranked">
+                    <span class="rank">{{ i + 1 }}</span>
+                    <span class="bar-label">{{ b.label }}</span>
+                    <div class="bar-track"><div class="bar-fill subj" [style.width.%]="b.pct"></div></div>
+                    <span class="bar-count">{{ b.value }} option{{ b.value > 1 ? 's' : '' }}</span>
+                  </div>
+                }
+              </div>
+            }
+          </div>
+        }
+
+      }
+    </div>
+  </main>
+</div>
