@@ -24,12 +24,10 @@ export class StudentItemDetailPage implements OnInit {
   private campaignService = inject(CampaignService);
   protected auth = inject(AuthStore);
 
-  // État local via Signals
   campaign = signal<CampaignResponse | null>(null);
   items = signal<any[]>([]);
   isLoading = signal(true);
 
-  // Helper pour savoir quel type de data on manipule
   isProjectCampaign = computed(() => this.campaign()?.campaignType === MatchingCampaignType.PROJECT);
 
   ngOnInit() {

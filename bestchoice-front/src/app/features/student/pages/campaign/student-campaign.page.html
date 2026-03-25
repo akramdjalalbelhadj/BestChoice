@@ -40,13 +40,11 @@
             </div>
           </div>
 
-          <footer class="card-footer">
-            <button class="btn-primary"
-                    [routerLink]="['/app/student/items']"
-                    [queryParams]="{ campaignId: c.id }">
-              Explorer l'offre
-            </button>
-          </footer>
+            <footer class="card-footer">
+                <button class="btn-primary" [routerLink]="['/app/student/items', c.id]">
+                    Explorer l'offre
+                </button>
+            </footer>
         </div>
       } @empty {
         <div class="empty-state">

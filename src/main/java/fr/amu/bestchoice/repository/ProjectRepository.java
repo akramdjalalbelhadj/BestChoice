@@ -121,4 +121,9 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
 
     List<Project> findAllByActiveTrue();
 
-    List<Project> findByCampaignId(Long campaignId);}
+    /**
+     * Récupère les projets associés à une campagne spécifique
+     */
+    @Query("SELECT p FROM Project p JOIN p.matchingCampaigns c WHERE c.id = :campaignId")
+    List<Project> findByCampaignId(@Param("campaignId") Long campaignId);
+}

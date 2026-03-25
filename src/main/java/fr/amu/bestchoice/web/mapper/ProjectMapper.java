@@ -40,9 +40,8 @@ public interface ProjectMapper {
     @Mapping(target = "preferences", ignore = true)
     @Mapping(target = "matchingResults", ignore = true)
     @Mapping(target = "assignedStudents", ignore = true)
-
-    // ✅ AJOUT ICI : On ignore car le nom diffère et c'est une collection
     @Mapping(target = "workTypes", ignore = true)
+    @Mapping(target = "matchingCampaigns", ignore = true)
     Project toEntity(ProjectCreateRequest dto);
 
     // ==================== UPDATE ====================
@@ -62,9 +61,8 @@ public interface ProjectMapper {
     @Mapping(target = "preferences", ignore = true)
     @Mapping(target = "matchingResults", ignore = true)
     @Mapping(target = "assignedStudents", ignore = true)
-
-    // ✅ AJOUT ICI AUSSI
     @Mapping(target = "workTypes", ignore = true)
+    @Mapping(target = "matchingCampaigns", ignore = true)
     void updateEntityFromDto(ProjectUpdateRequest dto, @MappingTarget Project entity);
 
     // ==================== READ ====================
@@ -74,9 +72,7 @@ public interface ProjectMapper {
     @Mapping(target = "keywords", ignore = true)
     @Mapping(target = "assignedStudentEmails", ignore = true)
 
-    // ✅ AJOUT ICI : Pour renvoyer la liste des types dans la réponse
-    // Si ProjectResponse a aussi un champ 'workTypes' (Set)
-    // @Mapping(target = "workTypes", source = "workTypes")
+    @Mapping(target = "workTypes", source = "workTypes")
     ProjectResponse toResponse(Project entity);
 
     List<ProjectResponse> toResponseList(List<Project> entities);
