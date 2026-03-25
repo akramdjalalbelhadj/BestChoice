@@ -1,6 +1,6 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import {Observable, tap, switchMap, forkJoin} from 'rxjs';
+import {Observable, tap, switchMap, forkJoin, of} from 'rxjs';
 import { environment } from '../../../../environments/environment';
 import { CampaignResponse, CampaignRequest } from '../models/campaign.model';
 
@@ -73,4 +73,30 @@ export class CampaignService {
     );
   }
 
+  getCampaignItems(campaignId: number): Observable<any[]> {
+    return this.getById(campaignId).pipe(
+      switchMap(campaign => {
+        if (campaign.campaignType === 'PROJECT') {
+          return this.http.get<any[]>(`${environment.apiBaseUrl}/api/projects/campaign/${campaignId}`);
+        } else if (campaign.campaignType === 'SUBJECT') {
+          return this.http.get<any[]>(`${environment.apiBaseUrl}/api/subjects/campaign/${campaignId}`);
+        }
+        return of([]);
+      })
+    );
+  }
+
+  getCompleteCampaign(campaignId: number): Observable<{ campaign: CampaignResponse, items: any[] }> {
+    return this.getById(campaignId).pipe(
+      switchMap(campaign => {
+        const itemsUrl = campaign.campaignType === 'PROJECT'
+          ? `${environment.apiBaseUrl}/api/projects/campaign/${campaignId}`
+          : `${environment.apiBaseUrl}/api/subjects/campaign/${campaignId}`;
+
+        return this.http.get<any[]>(itemsUrl).pipe(
+          switchMap(items => of({ campaign, items }))
+        );
+      })
+    );
+  }
 }

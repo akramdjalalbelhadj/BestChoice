@@ -88,6 +88,15 @@ public class SubjectController {
         return ResponseEntity.ok(subjects);
     }
 
+    @Operation(summary = "Récupérer les matières d'une campagne spécifique")
+    @GetMapping("/campaign/{campaignId}")
+    public ResponseEntity<List<SubjectResponse>> getByCampaign(@PathVariable Long campaignId) {
+        log.debug("GET /api/subjects/campaign/{} - Récupération des matières de la campagne", campaignId);
+        List<SubjectResponse> subjects = subjectService.findByCampaignId(campaignId);
+        log.info("GET /api/subjects/campaign/{} - {} matières retournées", campaignId, subjects.size());
+        return ResponseEntity.ok(subjects);
+    }
+
     // ==================== CREATE ====================
 
     @Operation(summary = "Créer une nouvelle matière pour un enseignant")
@@ -106,6 +115,8 @@ public class SubjectController {
 
         return ResponseEntity.status(HttpStatus.CREATED).body(createdSubject);
     }
+
+
 
     // ==================== ACTIVATION / DÉSACTIVATION ====================
 
