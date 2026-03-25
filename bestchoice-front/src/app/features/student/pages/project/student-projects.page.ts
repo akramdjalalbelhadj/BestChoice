@@ -2,10 +2,10 @@ import { Component, inject, OnInit, signal, computed, ChangeDetectionStrategy } 
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { StudentService } from '../services/student.service';
-import { AuthStore } from '../../../core/auth/auth.store';
+import { StudentService } from '../../services/student.service';
+import { AuthStore } from '../../../../core/auth/auth.store';
 import { finalize } from 'rxjs';
-import { ThemeToggleComponent } from '../../../shared/theme-toggle.component';
+import { ThemeToggleComponent } from '../../../../shared/theme-toggle.component';
 
 @Component({
   selector: 'app-student-projects',

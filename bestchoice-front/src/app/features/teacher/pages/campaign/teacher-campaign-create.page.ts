@@ -5,20 +5,21 @@ import { Router, RouterLink } from '@angular/router';
 import { CampaignService } from '../../../campaign/services/campaign.service';
 import { TeacherService } from '../../services/teacher.service';
 import { AuthStore } from '../../../../core/auth/auth.store';
-import { MatchingAlgorithmType } from '../../../matching/models/matching.model';
+import { MatchingAlgorithmType } from '../../../../core/models/enums.model';
 import { MatchingCampaignType } from '../../../campaign/models/matching-campaign-type.model';
 import { finalize, forkJoin, switchMap } from 'rxjs';
 import { toSignal } from '@angular/core/rxjs-interop';
+import {CampaignRequest} from '../../../campaign/models/campaign.model';
 
 @Component({
   selector: 'app-campaign-create',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, RouterLink],
-  templateUrl: './campaign-create.page.html',
-  styleUrl: './campaign-create.page.scss',
+  templateUrl: './teacher-campaign-create.page.html',
+  styleUrl: './teacher-campaign-create.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class CampaignCreatePage implements OnInit {
+export class TeacherCampaignCreatePage implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly campaignService = inject(CampaignService);
   private readonly teacherService = inject(TeacherService);
@@ -34,10 +35,14 @@ export class CampaignCreatePage implements OnInit {
   selectedStudentIds = signal<number[]>([]);
   selectedItemIds = signal<number[]>([]);
 
-  algorithmTypes: MatchingAlgorithmType[] = ['WEIGHTED', 'STABLE', 'HYBRID'];
+  algorithmTypes = [
+    MatchingAlgorithmType.WEIGHTED,
+    MatchingAlgorithmType.STABLE,
+    MatchingAlgorithmType.HYBRID
+  ];
   campaignTypes = [
-    { label: 'Projets (PFE/Tutorés)', value: MatchingCampaignType.PROJECT },
-    { label: 'Matières / Options', value: MatchingCampaignType.SUBJECT }
+    {label: 'Projets (PFE/Tutorés)', value: MatchingCampaignType.PROJECT},
+    {label: 'Matières / Options', value: MatchingCampaignType.SUBJECT}
   ];
 
   form = this.fb.group({
@@ -61,7 +66,7 @@ export class CampaignCreatePage implements OnInit {
 
   campaignTypeSelected = toSignal(
     this.form.get('campaignType')!.valueChanges,
-    { initialValue: MatchingCampaignType.PROJECT }
+    {initialValue: MatchingCampaignType.PROJECT}
   );
 
   isProjectType = computed(() => this.campaignTypeSelected() === MatchingCampaignType.PROJECT);
@@ -69,8 +74,6 @@ export class CampaignCreatePage implements OnInit {
   onTypeChange() {
     this.selectedItemIds.set([]);
   }
-
-  // --- LOGIQUE DES SLIDERS (CORRIGÉE) ---
 
   updateWeight(field: 'skillsWeight' | 'interestsWeight' | 'workTypeWeight', event: Event) {
     const newVal = +(event.target as HTMLInputElement).value;
@@ -106,7 +109,7 @@ export class CampaignCreatePage implements OnInit {
       [field]: newVal,
       [otherFields[0]]: Math.round(nextF1),
       [otherFields[1]]: Math.round(nextF2)
-    }, { emitEvent: false });
+    }, {emitEvent: false});
 
     const finalTotal = (this.form.get('skillsWeight')?.value || 0) +
       (this.form.get('interestsWeight')?.value || 0) +
@@ -115,7 +118,7 @@ export class CampaignCreatePage implements OnInit {
     if (finalTotal !== 100) {
       const adjustment = 100 - finalTotal;
       const currentF2 = this.form.get(otherFields[1])?.value || 0;
-      this.form.get(otherFields[1])?.setValue(currentF2 + adjustment, { emitEvent: false });
+      this.form.get(otherFields[1])?.setValue(currentF2 + adjustment, {emitEvent: false});
     }
   }
 
@@ -140,31 +143,39 @@ export class CampaignCreatePage implements OnInit {
 
   onSubmit() {
     if (this.form.invalid || this.selectedStudentIds().length === 0 || this.selectedItemIds().length === 0) {
-      alert("Formulaire incomplet : vérifiez les poids (100%) et les sélections.");
+      alert("Formulaire incomplet : vérifiez les sélections.");
       return;
     }
 
     this.isSubmitting.set(true);
-    const userId = this.auth.user()?.userId!;
-
     const raw = this.form.getRawValue();
-    const payload = {
-      ...raw,
-      teacherId: userId,
-      skillsWeight: (raw.skillsWeight || 0) / 100,
-      interestsWeight: (raw.interestsWeight || 0) / 100,
-      workTypeWeight: (raw.workTypeWeight || 0) / 100
+
+    const payload: CampaignRequest = {
+      name: raw.name ?? '',
+      description: raw.description ?? '',
+      academicYear: raw.academicYear ?? '',
+      semester: Number(raw.semester),
+      campaignType: raw.campaignType!,
+      algorithmType: raw.algorithmType!,
+      skillsWeight: (raw.skillsWeight ?? 0) / 100,
+      interestsWeight: (raw.interestsWeight ?? 0) / 100,
+      workTypeWeight: (raw.workTypeWeight ?? 0) / 100,
+      teacherId: this.auth.user()?.userId!,
+      studentIds: this.selectedStudentIds(),
+      projectIds: this.isProjectType() ? this.selectedItemIds() : [],
+      subjectIds: !this.isProjectType() ? this.selectedItemIds() : []
     };
 
-    this.campaignService.create(payload as any).pipe(
-      switchMap(campaign => forkJoin({
-        st: this.campaignService.addStudents(campaign.id, this.selectedStudentIds()),
-        it: this.campaignService.addItems(campaign.id, this.selectedItemIds())
-      })),
+    this.teacherService.createCompleteCampaign(payload).pipe(
       finalize(() => this.isSubmitting.set(false))
     ).subscribe({
-      next: () => this.router.navigate(['/app/teacher/dashboard']),
-      error: (err) => console.error(err)
+      next: () => {
+        this.router.navigate(['/app/teacher/dashboard']);
+      },
+      error: (err) => {
+        console.error("Erreur publication campagne :", err);
+        alert("Une erreur est survenue lors de la création.");
+      }
     });
   }
 }

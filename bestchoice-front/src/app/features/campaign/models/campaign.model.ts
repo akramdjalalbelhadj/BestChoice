@@ -30,4 +30,7 @@ export interface CampaignRequest {
   workTypeWeight: number;
   interestsWeight: number;
   teacherId: number;
+  studentIds: number[];
+  projectIds?: number[];
+  subjectIds?: number[];
 }

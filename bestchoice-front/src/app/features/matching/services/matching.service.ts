@@ -22,10 +22,7 @@ export class MatchingService {
    * Route : POST /api/matching/campaign/{campaignId}/run
    */
   runMatching(campaignId: number): Observable<MatchingRunResponse> {
-    return this.http.post<MatchingRunResponse>(
-      `${this.API}/campaign/${campaignId}/run`,
-      {}
-    );
+    return this.http.post<MatchingRunResponse>(`${this.API}/campaign/${campaignId}/run`, {});
   }
 
   // Note : Si ton backend évolue pour accepter le MatchingRunRequest dans le body :
@@ -83,6 +80,10 @@ export class MatchingService {
    * Supprime tous les résultats d'une campagne (Reset).
    */
   deleteResultsByCampaign(campaignId: number): Observable<void> {
+    return this.http.delete<void>(`${this.API}/campaign/${campaignId}`);
+  }
+
+  clearResults(campaignId: number): Observable<void> {
     return this.http.delete<void>(`${this.API}/campaign/${campaignId}`);
   }
 }

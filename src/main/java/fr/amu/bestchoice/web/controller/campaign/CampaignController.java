@@ -16,7 +16,8 @@ import java.util.List;
 @RequestMapping("/api/campaigns")
 @RequiredArgsConstructor
 @Tag(name = "Campagnes de Matching")
-public class MatchingCampaignController {
+public class CampaignController
+{
 
     private final IMatchingCampaignService campaignService;
 

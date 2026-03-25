@@ -1,6 +1,6 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, tap, switchMap } from 'rxjs';
+import {Observable, tap, switchMap, forkJoin} from 'rxjs';
 import { environment } from '../../../../environments/environment';
 import { CampaignResponse, CampaignRequest } from '../models/campaign.model';
 
@@ -47,34 +47,18 @@ export class CampaignService {
       tap(() => this._campaigns.update(all => all.filter(c => c.id !== id)))
     );
   }
-
-  /**
-   * Ajoute des étudiants à une campagne et rafraîchit le signal local
-   */
-  addStudents(campaignId: number, studentIds: number[]): Observable<CampaignResponse> {
-    return this.http.post<void>(`${this.API}/${campaignId}/students`, studentIds).pipe(
-      // switchMap attend un Observable, getById lui donne exactement ça !
-      switchMap(() => this.getById(campaignId)),
-      tap(updatedCampaign => this.updateLocalCampaign(updatedCampaign))
-    );
-  }
-
-  /**
-   * Ajoute des items (projets/sujets) et rafraîchit le signal local
-   */
-  addItems(campaignId: number, itemIds: number[]): Observable<CampaignResponse> {
-    return this.http.post<void>(`${this.API}/${campaignId}/items`, itemIds).pipe(
-      switchMap(() => this.getById(campaignId)),
-      tap(updatedCampaign => this.updateLocalCampaign(updatedCampaign))
-    );
-  }
-
   /**
    * Helper : remplace la campagne modifiée dans la liste actuelle
    */
   private updateLocalCampaign(updated: CampaignResponse) {
     this._campaigns.update(all =>
       all.map(c => c.id === updated.id ? updated : c)
+    );
+  }
+
+  createCompleteCampaign(request: CampaignRequest): Observable<CampaignResponse> {
+    return this.http.post<CampaignResponse>(this.API, request).pipe(
+      tap(newC => this._campaigns.update(all => [newC, ...all]))
     );
   }
 }

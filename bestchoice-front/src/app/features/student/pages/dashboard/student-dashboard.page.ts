@@ -1,10 +1,10 @@
 import { Component, inject, OnInit, ChangeDetectionStrategy, computed, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
-import { AuthStore } from '../../../core/auth/auth.store';
-import { StudentService } from '../services/student.service';
+import { AuthStore } from '../../../../core/auth/auth.store';
+import { StudentService } from '../../services/student.service';
 import { finalize } from 'rxjs';
-import { ThemeToggleComponent } from '../../../shared/theme-toggle.component';
+import { ThemeToggleComponent } from '../../../../shared/theme-toggle.component';
 
 @Component({
   selector: 'app-student-dashboard',
@@ -154,14 +154,11 @@ export class StudentDashboardPage implements OnInit {
   ngOnInit() {
     const user = this.auth.user();
     if (user?.userId) {
-      // 1. Charger le profil
       this.studentService.loadProfile(user.userId)
         .pipe(finalize(() => this.isLoading.set(false)))
         .subscribe(student => {
           if (student.id) {
-            // 2. Charger les top matches réels du backend
             this.studentService.loadTopMatches(student.id).subscribe();
-            // 3. Charger le nombre de vœux
             this.studentService.getPreferences(student.id).subscribe(prefs => {
               this.preferenceCount.set(prefs.length);
             });

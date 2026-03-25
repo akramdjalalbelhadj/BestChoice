@@ -1,0 +1,82 @@
+<div class="dashboard-wrapper">
+  <header class="dash-header">
+    <div class="header-left">
+      <a routerLink="/app/teacher/campaigns" class="back-link">← Retour aux campagnes</a>
+      <h1>Résultats du Matching</h1>
+      <p class="subtitle">Analyse des affectations pour : <strong>{{ campaign()?.name }}</strong></p>
+    </div>
+    <div class="header-right">
+      <button class="btn-secondary-action" (click)="loadResults(campaignId()!)">Actualiser</button>
+      <button class="btn-primary" [routerLink]="['/app/teacher/matching-control']" [queryParams]="{campaignId: campaignId()}">
+        Réajuster les poids
+      </button>
+    </div>
+  </header>
+
+  @if (isLoading()) {
+    <div class="loading-container">
+      <span class="spinner"></span>
+      <p>Analyse des scores en cours...</p>
+    </div>
+  } @else {
+    <section class="content-card no-padding">
+      <div class="table-container">
+        <table class="data-table">
+          <thead>
+          <tr>
+            <th>Rang</th>
+            <th>Étudiant</th>
+            <th>Affectation (ID)</th>
+            <th>Score Global</th>
+            <th>Détails (S / I)</th>
+            <th>Actions</th>
+          </tr>
+          </thead>
+          <tbody>
+            @for (r of results(); track r.id) {
+              <tr>
+                <td><span class="rank-badge">#{{ r.recommendationRank }}</span></td>
+                <td>
+                  <div class="student-cell">
+                    <span class="name">Étudiant #{{ r.studentId }}</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="item-cell">
+                    @if (r.projectId) {
+                      <span class="item-tag project">🚀 Projet #{{ r.projectId }}</span>
+                    } @else if (r.subjectId) {
+                      <span class="item-tag subject">📚 Matière #{{ r.subjectId }}</span>
+                    }
+                  </div>
+                </td>
+                <td>
+                  <div class="score-pill" [class]="getScoreClass(r.globalScore)">
+                    {{ (r.globalScore * 100).toFixed(1) }}%
+                  </div>
+                </td>
+                <td>
+                  <div class="mini-scores">
+                    <span title="Skills Score">S: {{ (r.skillsScore * 100).toFixed(0) }}%</span>
+                    <span title="Interests Score">I: {{ (r.interestsScore * 100).toFixed(0) }}%</span>
+                  </div>
+                </td>
+                <td>
+                  <button class="btn-icon" [routerLink]="['/app/teacher/students', r.studentId]">👤</button>
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="6">
+                  <div class="empty-state">
+                    <p>Aucun résultat trouvé. Lancez le calcul depuis le centre de pilotage.</p>
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </section>
+  }
+</div>

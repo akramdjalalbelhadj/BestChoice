@@ -4,6 +4,7 @@ import fr.amu.bestchoice.model.entity.MatchingCampaignType;
 import fr.amu.bestchoice.service.implementation.algorithmes.MatchingAlgorithmType;
 import jakarta.validation.constraints.*;
 import java.math.BigDecimal;
+import java.util.List;
 
 public record MatchingCampaignRequest(
 
@@ -37,5 +38,10 @@ public record MatchingCampaignRequest(
         @DecimalMax("1.0")
         BigDecimal interestsWeight,
 
-        @NotNull Long teacherId
+        @NotNull
+        Long teacherId,
+
+        List<Long> studentIds,
+        List<Long> projectIds,
+        List<Long> subjectIds
 ) {}

@@ -15,24 +15,24 @@ import { finalize } from 'rxjs';
   styleUrl: './teacher-projects.page.scss'
 })
 export class TeacherProjectsPage implements OnInit {
-  private teacherService = inject(TeacherService);
-  private auth = inject(AuthStore);
+  private readonly teacherService = inject(TeacherService);
+  private readonly auth = inject(AuthStore);
 
   isLoading = signal(true);
   searchQuery = signal('');
 
-  // Récupération réactive des projets du service
   projects = this.teacherService.projects;
 
-  // Filtrage intelligent (Titre, Mots-clés ou Compétences)
   filteredProjects = computed(() => {
     const query = this.searchQuery().toLowerCase().trim();
-    if (!query) return this.projects();
+    const allProjects = this.projects();
 
-    return this.projects().filter(p =>
+    if (!query) return allProjects;
+
+    return allProjects.filter(p =>
       p.title.toLowerCase().includes(query) ||
-      p.keywords.some(k => k.toLowerCase().includes(query)) ||
-      p.requiredSkills.some(s => s.toLowerCase().includes(query))
+      p.keywords?.some(k => k.toLowerCase().includes(query)) ||
+      p.requiredSkills?.some(s => s.toLowerCase().includes(query))
     );
   });
 
@@ -45,14 +45,13 @@ export class TeacherProjectsPage implements OnInit {
     }
   }
 
-  // Utilisation de la méthode centralisée du TeacherService
   toggleStatus(p: ProjectResponse) {
     this.teacherService.toggleProjectStatus(p.id, p.active).subscribe();
   }
 
   deleteProject(id: number) {
-    if (confirm('Voulez-vous vraiment retirer ce projet ? Il sera archivé et ne sera plus visible.')) {
-      this.teacherService.toggleProjectStatus(id, true).subscribe(); // Ou deleteProject si implémenté
+    if (confirm('Voulez-vous vraiment retirer ce projet ?')) {
+      this.teacherService.toggleProjectStatus(id, true).subscribe();
     }
   }
 }

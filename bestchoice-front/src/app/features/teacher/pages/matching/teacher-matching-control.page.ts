@@ -1,7 +1,7 @@
 import { Component, inject, signal, computed, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import {Router, RouterLink} from '@angular/router';
 import { MatchingService } from '../../../matching/services/matching.service';
 import { TeacherService } from '../../services/teacher.service';
 import { AuthStore } from '../../../../core/auth/auth.store';
@@ -11,13 +11,14 @@ import { finalize } from 'rxjs';
   selector: 'app-matching-control',
   standalone: true,
   imports: [CommonModule, FormsModule, RouterLink],
-  templateUrl: './matching-control.page.html',
-  styleUrl: './matching-control.page.scss'
+  templateUrl: './teacher-matching-control.page.html',
+  styleUrl: './teacher-matching-control.page.scss'
 })
-export class MatchingControlPage implements OnInit {
+export class TeacherMatchingControlPage implements OnInit {
   private readonly matchingService = inject(MatchingService);
   private readonly teacherService = inject(TeacherService);
   private readonly auth = inject(AuthStore);
+  private readonly router = inject(Router);
 
   // État des données
   campaigns = this.teacherService.campaigns;
@@ -61,15 +62,14 @@ export class MatchingControlPage implements OnInit {
 
   updateWeight(key: 'skills' | 'interests', event: Event) {
     const valPercent = +(event.target as HTMLInputElement).value;
-    const valDecimal = parseFloat((valPercent / 100).toFixed(2));
+    const valDecimal = Math.round(valPercent) / 100;
 
     this.weights.update(current => {
       const next = { ...current, [key]: valDecimal };
 
-      // Si la somme dépasse 1.0 (100%), on ajuste l'autre curseur
       if (next.skills + next.interests > 1) {
-        if (key === 'skills') next.interests = parseFloat((1 - valDecimal).toFixed(2));
-        else next.skills = parseFloat((1 - valDecimal).toFixed(2));
+        if (key === 'skills') next.interests = Math.round((1 - valDecimal) * 100) / 100;
+        else next.skills = Math.round((1 - valDecimal) * 100) / 100;
       }
 
       return next;
@@ -82,14 +82,15 @@ export class MatchingControlPage implements OnInit {
 
     this.isProcessing.set(true);
 
-    this.matchingService.runMatching(campaign.id)
+    this.teacherService.executeMatching(campaign.id)
       .pipe(finalize(() => this.isProcessing.set(false)))
       .subscribe({
-        next: (res) => {
-          alert(`Calcul terminé !\n${res.studentsProcessed} étudiants traités.`);
+        next: (response) => {
+          this.router.navigate(['/app/teacher/campaigns/results', campaign.id]);
         },
         error: (err) => {
-          alert('Erreur lors du calcul. Vérifiez que la campagne contient des participants.');
+          console.error('Erreur matching:', err);
+          alert('Le calcul a échoué. Vérifiez que la campagne contient assez de vœux étudiants.');
         }
       });
   }

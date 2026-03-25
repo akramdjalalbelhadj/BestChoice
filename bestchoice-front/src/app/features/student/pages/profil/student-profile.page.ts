@@ -2,11 +2,11 @@ import { Component, inject, OnInit, signal, computed, ChangeDetectionStrategy } 
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { FormsModule, ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
-import { StudentService } from '../services/student.service';
-import { AuthStore } from '../../../core/auth/auth.store';
-import { WorkType } from '../../../core/models/enums.model';
+import { StudentService } from '../../services/student.service';
+import { AuthStore } from '../../../../core/auth/auth.store';
+import { WorkType } from '../../../../core/models/enums.model';
 import { finalize } from 'rxjs';
-import { ThemeToggleComponent } from '../../../shared/theme-toggle.component';
+import { ThemeToggleComponent } from '../../../../shared/theme-toggle.component';
 
 @Component({
   selector: 'app-student-profile',

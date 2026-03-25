@@ -30,6 +30,7 @@ public class MatchingCampaignService implements IMatchingCampaignService
     private final MatchingCampaignMapper mapper;
 
     @Override
+    @Transactional
     public MatchingCampaignResponse create(MatchingCampaignRequest request) {
         Teacher teacher = teacherRepository.findById(request.teacherId())
                 .orElseThrow(() -> new NotFoundException("Enseignant introuvable"));
@@ -37,7 +38,20 @@ public class MatchingCampaignService implements IMatchingCampaignService
         MatchingCampaign campaign = mapper.toEntity(request);
         campaign.setTeacher(teacher);
 
-        return mapper.toResponse(campaignRepository.save(campaign));
+        if (request.studentIds() != null && !request.studentIds().isEmpty()) {
+            campaign.getStudents().addAll(studentRepository.findAllById(request.studentIds()));
+        }
+
+        if (request.campaignType() == MatchingCampaignType.PROJECT
+                && request.projectIds() != null && !request.projectIds().isEmpty()) {
+            campaign.getProjects().addAll(projectRepository.findAllById(request.projectIds()));
+        } else if (request.campaignType() == MatchingCampaignType.SUBJECT
+                && request.subjectIds() != null && !request.subjectIds().isEmpty()) {
+            campaign.getSubjects().addAll(subjectRepository.findAllById(request.subjectIds()));
+        }
+
+        MatchingCampaign saved = campaignRepository.save(campaign);
+        return mapper.toResponse(saved);
     }
 
     @Override

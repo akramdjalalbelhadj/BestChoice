@@ -2,12 +2,8 @@ import { Component, inject, OnInit, signal, ChangeDetectionStrategy } from '@ang
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { finalize } from 'rxjs';
-
-// Services
 import { TeacherService } from '../../services/teacher.service';
 import { MatchingService } from '../../../matching/services/matching.service';
-
-// Models
 import { ProjectResponse } from '../../../project/models/project.model';
 import { MatchingResultResponse } from '../../../matching/models/matching.model';
 
@@ -17,14 +13,13 @@ import { MatchingResultResponse } from '../../../matching/models/matching.model'
   imports: [CommonModule, RouterLink],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './teacher-project-detail.page.html',
-  styleUrl: './project-detail.page.scss'
+  styleUrl: './teacher-project-detail.page.scss'
 })
 export class TeacherProjectDetailPage implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly teacherService = inject(TeacherService);
   private readonly matchingService = inject(MatchingService);
 
-  // État du composant (Signals)
   project = signal<ProjectResponse | null>(null);
   candidates = signal<MatchingResultResponse[]>([]);
   isLoading = signal(false);
@@ -78,8 +73,8 @@ export class TeacherProjectDetailPage implements OnInit {
    * Helper pour le style dynamique des scores
    */
   getScoreClass(score: number): string {
-    if (score >= 0.8) return 'score-high';
-    if (score >= 0.5) return 'score-medium';
+    if (score >= 0.75) return 'score-high';
+    if (score >= 0.45) return 'score-medium';
     return 'score-low';
   }
 }

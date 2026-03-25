@@ -1,0 +1,113 @@
+<div class="dashboard-wrapper">
+  <header class="dash-header">
+    <div class="header-left">
+      <a routerLink="../" class="back-link">← Retour Dashboard</a>
+      <h1>Mes Campagnes</h1>
+      <p class="subtitle">Vous avez <strong>{{ campaigns().length }}</strong> sessions de matching créées.</p>
+    </div>
+    <div class="header-right">
+      <button class="btn-primary" routerLink="./create">
+        <span>+</span> Nouvelle Campagne
+      </button>
+    </div>
+  </header>
+
+  <div class="toolbar">
+    <div class="search-wrapper">
+      <i class="search-icon">🔍</i>
+      <input
+        type="text"
+        [ngModel]="searchQuery()"
+        (ngModelChange)="searchQuery.set($event)"
+        placeholder="Rechercher par nom, année, algorithme..."
+      />
+    </div>
+  </div>
+
+  <section class="content-card no-padding">
+    <div class="table-container">
+      <table class="data-table">
+        <thead>
+        <tr>
+          <th>Campagne & Période</th>
+          <th>Type & Moteur</th>
+          <th>Pondération (S/T/I)</th>
+          <th>Participants</th>
+          <th>Date de création</th>
+          <th class="actions-head">Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+          @if (isLoading()) {
+            @for (i of [1,2,3]; track i) {
+              <tr class="skeleton-row">
+                <td colspan="6"><div class="skeleton-bar"></div></td>
+              </tr>
+            }
+          } @else {
+            @for (c of filteredCampaigns(); track c.id) {
+              <tr>
+                <td class="col-main">
+                  <span class="p-title">{{ c.name }}</span>
+                  <div class="academic-detail">{{ c.academicYear }} • Semestre {{ c.semester }}</div>
+                </td>
+                <td class="col-info">
+                  <div class="type-stack">
+                    <span class="type-badge" [class.subject]="c.campaignType === 'SUBJECT'">
+                      {{ c.campaignType === 'PROJECT' ? '🚀 PROJETS' : '📚 MATIÈRES' }}
+                    </span>
+                  </div>
+                  <div class="algo-detail">Algo: <strong>{{ c.algorithmType }}</strong></div>
+                </td>
+                <td class="col-weights">
+                  <div class="weight-pills">
+                    <span class="w-pill" title="Skills">{{ c.skillsWeight * 100 }}%</span>
+                    <span class="w-pill" title="WorkType">{{ c.workTypeWeight * 100 }}%</span>
+                    <span class="w-pill" title="Interests">{{ c.interestsWeight * 100 }}%</span>
+                  </div>
+                </td>
+                <td class="col-stats">
+                  <div class="stats-mini">
+                    <div class="stat-group">
+                      <span class="stat-label">Étudiants</span>
+                      <span class="stat-val">{{ c.studentsCount }}</span>
+                    </div>
+                    <div class="stat-group">
+                      <span class="stat-label">Items</span>
+                      <span class="stat-val">{{ c.itemsCount }}</span>
+                    </div>
+                  </div>
+                </td>
+                <td class="col-date">
+                  <span class="date-text">{{ c.createdAt | date:'dd/MM/yyyy' }}</span>
+                </td>
+                <td class="col-actions">
+                  <div class="btn-group">
+                    <button class="icon-btn"
+                            [routerLink]="['/app/teacher/campaigns/results', c.id]"
+                            title="Voir les résultats">📊</button>
+                    <button class="icon-btn view"
+                            [routerLink]="['/app/teacher/matching-control']"
+                            [queryParams]="{campaignId: c.id}"
+                            title="Piloter le matching">⚙️</button>
+                    <button class="icon-btn delete"
+                            (click)="deleteCampaign(c.id)"
+                            title="Supprimer la campagne">🗑️</button>
+                  </div>
+                </td>
+              </tr>
+            } @empty {
+              <tr class="empty-row">
+                <td colspan="6">
+                  <div class="empty-state">
+                    <p>Aucune campagne ne correspond à votre recherche.</p>
+                  </div>
+                </td>
+              </tr>
+            }
+          }
+        </tbody>
+      </table>
+    </div>
+  </section>
+</div>

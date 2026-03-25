@@ -2,12 +2,12 @@ import { Component, inject, OnInit, signal, ChangeDetectionStrategy } from '@ang
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
-import { StudentService } from '../services/student.service';
-import { AuthStore } from '../../../core/auth/auth.store';
-import { ProjectResponse } from '../../project/models/project.model';
-import { PreferenceCreateRequest } from '../models/preference.model';
+import { StudentService } from '../../services/student.service';
+import { AuthStore } from '../../../../core/auth/auth.store';
+import { ProjectResponse } from '../../../project/models/project.model';
+import { PreferenceCreateRequest } from '../../models/preference.model';
 import { finalize } from 'rxjs';
-import { ThemeToggleComponent } from '../../../shared/theme-toggle.component';
+import { ThemeToggleComponent } from '../../../../shared/theme-toggle.component';
 
 @Component({
   selector: 'app-student-project-detail',

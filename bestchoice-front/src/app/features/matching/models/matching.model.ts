@@ -1,16 +1,16 @@
-export type MatchingAlgorithmType = 'WEIGHTED' | 'STABLE' | 'HYBRID';
+import { MatchingAlgorithmType } from '../../../core/models/enums.model';
+
 export type MatchingScope = 'ALL_STUDENTS' | 'ONE_STUDENT';
 
 export interface MatchingResultResponse {
   id: number;
   studentId: number;
   campaignId: number;
-  projectId?: number;
-  subjectId?: number;
+  projectId: number | null;
+  subjectId: number | null;
   globalScore: number;
   skillsScore: number;
   interestsScore: number;
-  workTypeScore?: number;
   recommendationRank: number;
   algorithmUsed: MatchingAlgorithmType;
   calculationDate: string;

@@ -1,0 +1,196 @@
+:host {
+  display: block;
+  background-color: #f8fafc;
+  min-height: 100vh;
+  font-family: 'Inter', system-ui, sans-serif;
+}
+
+.dashboard-wrapper {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+// Re-use Dash Header
+.dash-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2.5rem;
+
+  .back-link {
+    display: block;
+    color: #4f46e5;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.875rem;
+    margin-bottom: 0.5rem;
+  }
+
+  h1 { font-size: 1.875rem; font-weight: 800; color: #1e293b; margin: 0; }
+  .subtitle { color: #64748b; margin-top: 0.25rem; }
+}
+
+// Main Grid
+.main-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 1.5rem;
+}
+
+.content-card {
+  background: white;
+  padding: 1.75rem;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  height: fit-content;
+
+  &.highlight { border-top: 4px solid #4f46e5; }
+
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+    h3 { font-size: 1.125rem; font-weight: 700; margin: 0; color: #1e293b; }
+    .card-description { font-size: 0.875rem; color: #94a3b8; }
+  }
+}
+
+// Form Elements
+.input-select {
+  width: 100%;
+  padding: 0.75rem;
+  border-radius: 8px;
+  border: 1px solid #cbd5e1;
+  background-color: #fcfdfe;
+  font-family: inherit;
+  font-size: 0.938rem;
+  color: #1e293b;
+  outline: none;
+  &:focus { border-color: #4f46e5; box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1); }
+}
+
+.field label {
+  display: block;
+  font-size: 0.813rem;
+  font-weight: 600;
+  color: #64748b;
+  text-transform: uppercase;
+  margin-bottom: 0.5rem;
+}
+
+// Sliders & Progress
+.slider-group {
+  margin-bottom: 1.5rem;
+
+  .slider-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+    label { font-weight: 600; color: #334155; font-size: 0.938rem; }
+  }
+}
+
+.percentage-pill {
+  background: #eef2ff;
+  color: #4f46e5;
+  padding: 0.25rem 0.625rem;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  &.muted { background: #f1f5f9; color: #64748b; }
+}
+
+.styled-range {
+  width: 100%;
+  height: 6px;
+  background: #e2e8f0;
+  border-radius: 3px;
+  appearance: none;
+  outline: none;
+
+  &::-webkit-slider-thumb {
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    background: #4f46e5;
+    border: 3px solid white;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+}
+
+.static-progress-bar {
+  height: 6px;
+  background: #f1f5f9;
+  border-radius: 3px;
+  .fill { height: 100%; background: #94a3b8; border-radius: 3px; transition: width 0.3s ease; }
+}
+
+// Buttons
+.btn-run-massive {
+  width: 100%;
+  background: #4f46e5;
+  color: white;
+  border: none;
+  padding: 1rem;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.25);
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+
+  &:hover:not(:disabled) { background: #4338ca; transform: translateY(-1px); }
+  &:disabled { opacity: 0.6; cursor: not-allowed; }
+}
+
+.action-zone {
+  margin-top: 2rem;
+  text-align: center;
+  .disclaimer { font-size: 0.75rem; color: #94a3b8; margin-top: 1rem; font-style: italic; }
+}
+
+.campaign-summary-bar {
+  display: flex;
+  gap: 2rem;
+  background: #f8fafc;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 2rem;
+  .summary-item {
+    display: flex;
+    flex-direction: column;
+    .label { font-size: 0.7rem; color: #94a3b8; text-transform: uppercase; font-weight: 600; }
+    .val { font-size: 1.125rem; font-weight: 700; color: #1e293b; }
+  }
+}
+
+.empty-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: #f8fafc;
+  border: 2px dashed #e2e8f0;
+  border-radius: 12px;
+  padding: 4rem;
+  text-align: center;
+  .icon { font-size: 3rem; margin-bottom: 1rem; }
+  h3 { color: #64748b; margin-bottom: 0.5rem; }
+  p { color: #94a3b8; }
+}
+
+.badge {
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  background: #dcfce7; color: #15803d;
+}

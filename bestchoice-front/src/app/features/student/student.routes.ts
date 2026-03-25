@@ -1,9 +1,9 @@
 import { Routes } from '@angular/router';
-import { StudentDashboardPage } from './pages/student-dashboard.page';
-import { StudentProjectsPage } from './pages/student-projects.page';
-import { StudentProjectDetailPage } from './pages/student-project-detail.page'; // ➕ Import
-import { StudentPreferencesPage } from './pages/student-preferences.page';
-import {StudentProfilePage} from './pages/student-profile.page';     // ➕ Import
+import { StudentDashboardPage } from './pages/dashboard/student-dashboard.page';
+import { StudentProjectsPage } from './pages/project/student-projects.page';
+import { StudentProjectDetailPage } from './pages/project/student-project-detail.page';
+import { StudentPreferencesPage } from './pages/preference/student-preferences.page';
+import {StudentProfilePage} from './pages/profil/student-profile.page';
 
 export const STUDENT_ROUTES: Routes = [
   {

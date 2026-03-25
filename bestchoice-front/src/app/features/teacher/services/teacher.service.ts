@@ -1,14 +1,16 @@
 import { Injectable, inject, signal, computed } from '@angular/core';
-import {forkJoin, of, tap} from 'rxjs';
+import {forkJoin, Observable, of, tap} from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { ProjectService } from '../../project/services/project.service';
 import { SubjectService } from '../../subject/services/subject.service';
 import { CampaignService } from '../../campaign/services/campaign.service';
-import { ProjectResponse, ProjectCreateRequest } from '../../project/models/project.model';
+import {ProjectResponse, ProjectCreateRequest, ProjectUpdateRequest} from '../../project/models/project.model';
 import { SubjectResponse, SubjectCreateRequest } from '../../subject/models/subject.model';
 import { CampaignResponse, CampaignRequest } from '../../campaign/models/campaign.model';
 import { StudentService } from '../../student/services/student.service';
 import {StudentResponse} from '../../student/models/student.model';
+import {MatchingRunResponse} from '../../matching/models/matching.model';
+import { MatchingService } from '../../matching/services/matching.service';
 
 @Injectable({ providedIn: 'root' })
 export class TeacherService {
@@ -16,6 +18,7 @@ export class TeacherService {
   private subjectService = inject(SubjectService);
   private campaignService = inject(CampaignService);
   private studentService = inject(StudentService);
+  private matchingService = inject(MatchingService);
 
   private readonly _projects = signal<ProjectResponse[]>([]);
   private readonly _subjects = signal<SubjectResponse[]>([]);
@@ -87,8 +90,12 @@ export class TeacherService {
 
   // ==================== GESTION DES CAMPAGNES ====================
 
-  createCampaign(req: CampaignRequest) {
-    return this.campaignService.create(req);
+  createCompleteCampaign(req: CampaignRequest) {
+    return this.campaignService.createCompleteCampaign(req).pipe(
+      tap(newC => {
+        this._campaigns.update(all => [newC, ...all]);
+      })
+    );
   }
 
   deleteCampaign(id: number) {
@@ -106,4 +113,28 @@ export class TeacherService {
       })
     );
   }
+
+  /**
+   * Met à jour un projet existant et actualise le Signal local
+   */
+  updateProject(id: number, req: ProjectUpdateRequest) {
+    return this.projectService.update(id, req).pipe(
+      tap(updatedP => {
+        this._projects.update(all =>
+          all.map(p => p.id === id ? updatedP : p)
+        );
+      })
+    );
+  }
+
+  executeMatching(campaignId: number): Observable<MatchingRunResponse> {
+    return this.matchingService.runMatching(campaignId).pipe(
+      tap(response => {
+        console.log(`Matching réussi pour la campagne ${response.campaignId}`);
+        // Optionnel: rafraîchir les données de l'enseignant pour voir les nouveaux counts
+        // this.loadAllData(response.teacherId);
+      })
+    );
+  }
+
 }

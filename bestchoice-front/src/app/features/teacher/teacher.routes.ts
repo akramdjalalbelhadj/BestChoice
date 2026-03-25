@@ -1,9 +1,12 @@
 import { Routes } from '@angular/router';
 import { TeacherDashboardPage } from './pages/dashboard/teacher-dashboard.page';
 import { TeacherProjectsPage } from './pages/project/teacher-projects.page';
-import { ProjectCreatePage } from './pages/project/project-create.page';
-import { MatchingControlPage } from './pages/matching control/matching-control.page';
-import { CampaignCreatePage } from './pages/campaign/campaign-create.page';
+import { TeacherProjectFormPage } from './pages/project/teacher-project-create.page';
+import { TeacherMatchingControlPage } from './pages/matching/teacher-matching-control.page';
+import { TeacherProjectDetailPage } from './pages/project/teacher-project-detail.page';
+import { TeacherCampaignCreatePage } from './pages/campaign/teacher-campaign-create.page';
+import { TeacherCampaignsPage } from './pages/campaign/teacher-campaigns.page';
+import {MatchingResultsViewPage} from './pages/matching/teacher-matching.page';
 
 export const TEACHER_ROUTES: Routes = [
   {
@@ -14,14 +17,18 @@ export const TEACHER_ROUTES: Routes = [
 
       // --- SECTION PROJETS ---
       { path: 'projects', component: TeacherProjectsPage },
-      { path: 'projects/create', component: ProjectCreatePage },
-      { path: 'projects/edit/:id', component: ProjectCreatePage },
+      { path: 'projects/create', component: TeacherProjectFormPage },
+      { path: 'projects/edit/:id', component: TeacherProjectFormPage },
+      { path: 'projects/:id', component: TeacherProjectDetailPage },
 
       // --- SECTION CAMPAGNES ---
-      { path: 'campaigns/create', component: CampaignCreatePage },
+      { path: 'campaigns', component: TeacherCampaignsPage },
+      { path: 'campaigns/create', component: TeacherCampaignCreatePage },
+      { path: 'campaigns/results/:id', component: MatchingResultsViewPage },
 
       // --- SECTION MATCHING ---
-      { path: 'matching-control', component: MatchingControlPage }
+      { path: 'matching-control', component: TeacherMatchingControlPage }
+
     ]
   }
 ];

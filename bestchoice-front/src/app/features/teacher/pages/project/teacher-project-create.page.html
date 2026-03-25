@@ -1,0 +1,103 @@
+<div class="dashboard-wrapper">
+  <header class="dash-header">
+    <div class="header-left">
+      <a [routerLink]="isEditMode() ? ['/app/teacher/projects', projectId()] : ['../']" class="back-link">
+        ← Annuler et retourner
+      </a>
+      <h1>{{ isEditMode() ? 'Modifier l\'offre' : 'Publier une offre' }}</h1>
+      <p class="subtitle">
+        {{ isEditMode() ? 'Mettez à jour les informations de votre offre existante.' : 'Décrivez votre projet pour attirer les meilleurs étudiants.' }}
+      </p>
+    </div>
+    <div class="header-right">
+      <button type="submit" form="projectForm" class="btn-primary" [disabled]="form.invalid || isSubmitting()">
+        @if (isSubmitting()) { <span class="spinner"></span> }
+        {{ isEditMode() ? 'Enregistrer les modifications' : 'Publier l\'offre' }}
+      </button>
+    </div>
+  </header>
+
+  <form [formGroup]="form" id="projectForm" (ngSubmit)="onSubmit()" class="main-grid">
+    <div class="config-col">
+      <section class="content-card">
+        <div class="card-header"><h3>Description</h3></div>
+        <div class="form-body">
+          <div class="field">
+            <label>Titre du projet</label>
+            <input type="text" class="input" formControlName="title">
+          </div>
+          <div class="field">
+            <label>Description détaillée</label>
+            <textarea class="input" formControlName="description" rows="8"></textarea>
+          </div>
+        </div>
+      </section>
+
+      <section class="content-card">
+        <div class="card-header"><h3>Paramètres</h3></div>
+        <div class="form-body">
+          <div class="row">
+            <div class="field">
+              <label>Crédits ECTS</label>
+              <input type="number" class="input" formControlName="credits">
+            </div>
+            <div class="field">
+              <label>Semestre</label>
+              <select class="input" formControlName="semester">
+                <option [value]="1">S1</option>
+                <option [value]="2">S2</option>
+              </select>
+            </div>
+          </div>
+          <div class="field toggle-field">
+            <label class="switch">
+              <input type="checkbox" formControlName="remotePossible">
+              <span class="slider"></span>
+            </label>
+            <span class="toggle-label">Télétravail autorisé</span>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <div class="selection-col">
+      <section class="content-card highlight-card">
+        <div class="card-header"><h3>Types de travail</h3></div>
+        <div class="work-types-grid">
+          @for (type of workTypesList; track type) {
+            <div class="picker-item"
+                 [class.selected]="form.get('workTypes')?.value?.includes(type)"
+                 (click)="onWorkTypeToggle(type)">
+              <div class="custom-checkbox" [class.checked]="form.get('workTypes')?.value?.includes(type)"></div>
+              <span class="main-text">{{ type }}</span>
+            </div>
+          }
+        </div>
+      </section>
+
+      <section class="content-card">
+        <div class="card-header"><h3>Compétences & Tags</h3></div>
+        <div class="form-body">
+          <div class="field">
+            <label>Compétences (Entrée)</label>
+            <input type="text" class="input" #sIn (keyup.enter)="addTag(sIn, 'skills')">
+            <div class="tag-cloud">
+              @for (s of requiredSkills(); track s) {
+                <span class="skill-pill">{{ s }} <button type="button" (click)="removeTag(s, 'skills')">×</button></span>
+              }
+            </div>
+          </div>
+          <div class="field">
+            <label>Mots-clés (Entrée)</label>
+            <input type="text" class="input" #kIn (keyup.enter)="addTag(kIn, 'keywords')">
+            <div class="tag-cloud">
+              @for (k of keywords(); track k) {
+                <span class="k-tag">#{{ k }} <button type="button" (click)="removeTag(k, 'keywords')">×</button></span>
+              }
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </form>
+</div>

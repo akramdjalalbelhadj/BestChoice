@@ -1,11 +1,11 @@
 import { Component, inject, OnInit, signal, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
-import { StudentService } from '../services/student.service';
-import { AuthStore } from '../../../core/auth/auth.store';
-import { PreferenceResponse } from '../models/preference.model';
+import { StudentService } from '../../services/student.service';
+import { AuthStore } from '../../../../core/auth/auth.store';
+import { PreferenceResponse } from '../../models/preference.model';
 import { finalize } from 'rxjs';
-import { ThemeToggleComponent } from '../../../shared/theme-toggle.component';
+import { ThemeToggleComponent } from '../../../../shared/theme-toggle.component';
 
 @Component({
   selector: 'app-student-preferences',

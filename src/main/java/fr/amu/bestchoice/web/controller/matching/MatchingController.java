@@ -15,14 +15,11 @@ public class MatchingController {
 
     /**
      * Lance le matching pour une campagne.
-     * Route : POST /api/matching/campaign/5/run
      */
     @PostMapping("/campaign/{campaignId}/run")
     public ResponseEntity<MatchingRunResponse> run(@PathVariable Long campaignId) {
-        // Le service s'occupe de tout : charger la campagne, wipe, calculer, sauvegarder.
         var result = matchingContextService.run(campaignId);
 
-        // On transforme le résultat technique en réponse API
         var response = MatchingRunResponse.from(result);
 
         return ResponseEntity.ok(response);

@@ -42,7 +42,7 @@ public record SubjectCreateRequest(
         @Size(max = 9)
         String academicYear,
 
-        Set<String> requiredSkill,
+        Set<String> requiredSkills,
 
-        Set<String> keyword
+        Set<String> keywords
 ) {}
