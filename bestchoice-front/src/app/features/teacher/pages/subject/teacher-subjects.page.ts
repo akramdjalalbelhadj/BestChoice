@@ -51,7 +51,18 @@ export class TeacherSubjectsPage implements OnInit {
   }
 
   toggleStatus(s: SubjectResponse) {
-    this.teacherService.toggleSubjectStatus(s.id, s.active).subscribe();
+    const msg = s.active
+      ? 'Voulez-vous vraiment passer cette matière en Brouillon ?'
+      : 'Voulez-vous rendre cette matière Publique ?';
+    if (confirm(msg)) {
+      this.teacherService.toggleSubjectStatus(s.id, s.active).subscribe();
+    }
+  }
+
+  deleteSubject(id: number) {
+    if (confirm('Voulez-vous vraiment supprimer cette matière ?')) {
+      this.teacherService.toggleSubjectStatus(id, true).subscribe();
+    }
   }
 
   logout() {

@@ -51,7 +51,12 @@ export class TeacherProjectsPage implements OnInit {
   }
 
   toggleStatus(p: ProjectResponse) {
-    this.teacherService.toggleProjectStatus(p.id, p.active).subscribe();
+    const msg = p.active
+      ? 'Voulez-vous vraiment passer ce projet en Brouillon ?'
+      : 'Voulez-vous rendre ce projet Public ?';
+    if (confirm(msg)) {
+      this.teacherService.toggleProjectStatus(p.id, p.active).subscribe();
+    }
   }
 
   deleteProject(id: number) {

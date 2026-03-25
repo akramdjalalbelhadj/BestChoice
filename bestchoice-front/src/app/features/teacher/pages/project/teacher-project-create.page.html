@@ -51,10 +51,9 @@
           <p>{{ isEditMode() ? 'Mettez à jour les informations de votre offre.' : 'Décrivez votre projet pour attirer les meilleurs étudiants.' }}</p>
         </div>
         <div class="page-actions">
-          <a [routerLink]="isEditMode() ? ['/app/teacher/projects', projectId()] : ['/app/teacher/projects']"
-             class="btn-ghost">Annuler</a>
+          <a routerLink="/app/teacher/projects" class="btn-ghost">Annuler</a>
           <button type="submit" form="projectForm" class="btn-primary"
-                  [disabled]="isSubmitting() || (isEditMode() ? !isDirty() : form.invalid)">
+                  [disabled]="isSubmitting() || (isEditMode() ? !isDirty() : false)">
             @if (isSubmitting()) { <span class="spinner"></span> }
             {{ isEditMode() ? 'Enregistrer' : 'Publier l\'offre' }}
           </button>
@@ -67,35 +66,46 @@
 
       <form [formGroup]="form" id="projectForm" (ngSubmit)="onSubmit()" class="main-grid">
         <div class="config-col">
+
+          <!-- ── Description ──────────────────────────────────── -->
           <section class="content-card">
             <div class="card-header"><h3>Description</h3></div>
             <div class="form-body">
+
               <div class="field">
-                <label>Titre du projet</label>
-                <input type="text" class="input" formControlName="title">
+                <label>Titre du projet <span class="required-star">*</span></label>
+                <input type="text" class="input" formControlName="title"
+                       [class.input-error]="titleError()"
+                       placeholder="Ex: Application web de gestion...">
+                @if (titleError()) {
+                  <span class="field-warning">⚠ Le titre du projet est obligatoire.</span>
+                }
               </div>
+
               <div class="field">
-                <label>Description détaillée</label>
-                <textarea class="input" formControlName="description" rows="8"></textarea>
+                <label>Description détaillée <span class="required-star">*</span></label>
+                <textarea class="input" formControlName="description" rows="8"
+                          [class.input-error]="descriptionError()"
+                          placeholder="Décrivez le contenu, les objectifs et les livrables attendus..."></textarea>
+                @if (descriptionError()) {
+                  <span class="field-warning">⚠ La description est obligatoire.</span>
+                }
               </div>
+
             </div>
           </section>
 
+          <!-- ── Paramètres ───────────────────────────────────── -->
           <section class="content-card">
             <div class="card-header"><h3>Paramètres</h3></div>
             <div class="form-body">
-              <div class="row">
-                <div class="field">
-                  <label>Crédits ECTS</label>
-                  <input type="number" class="input" formControlName="credits">
-                </div>
-                <div class="field">
-                  <label>Semestre</label>
-                  <select class="input" formControlName="semester">
-                    <option [value]="1">S1</option>
-                    <option [value]="2">S2</option>
-                  </select>
-                </div>
+              <div class="field">
+                <label>Nb étudiants max</label>
+                <input type="number" class="input" formControlName="maxStudents" min="1" placeholder="5"
+                       [class.input-error]="maxStudentsError()">
+                @if (maxStudentsError()) {
+                  <span class="field-warning">⚠ Le nombre maximum d'étudiants doit être au moins 1.</span>
+                }
               </div>
               <div class="field toggle-field">
                 <label class="switch">
@@ -106,11 +116,19 @@
               </div>
             </div>
           </section>
+
         </div>
 
         <div class="selection-col">
-          <section class="content-card highlight">
-            <div class="card-header"><h3>Types de travail</h3></div>
+
+          <!-- ── Types de travail ─────────────────────────────── -->
+          <section class="content-card highlight" [class.card-error]="workTypesError()">
+            <div class="card-header">
+              <h3>Types de travail <span class="required-star">*</span></h3>
+            </div>
+            @if (workTypesError()) {
+              <span class="field-warning" style="padding: 0 1rem 0.5rem;">⚠ Sélectionnez au moins un type de travail.</span>
+            }
             <div class="work-types-grid">
               @for (type of workTypesList; track type) {
                 <div class="picker-item"
@@ -123,29 +141,46 @@
             </div>
           </section>
 
+          <!-- ── Compétences & Tags ───────────────────────────── -->
           <section class="content-card">
             <div class="card-header"><h3>Compétences & Tags</h3></div>
             <div class="form-body">
+
               <div class="field">
-                <label>Compétences (Entrée)</label>
-                <input type="text" class="input" #sIn (keyup.enter)="addTag(sIn, 'skills')" placeholder="Ex: Angular, Java...">
+                <label>Compétences <span class="required-star">*</span></label>
+                <input type="text" class="input" #sIn
+                       (keyup.enter)="addTag(sIn, 'skills')"
+                       [class.input-error]="skillsError()"
+                       placeholder="Ex: Angular, Java... (Appuyez sur Entrée)">
+                @if (skillsError()) {
+                  <span class="field-warning">⚠ Ajoutez au moins une compétence.</span>
+                }
                 <div class="tag-cloud">
                   @for (s of requiredSkills(); track s) {
                     <span class="skill-pill">{{ s }} <button type="button" (click)="removeTag(s, 'skills')">×</button></span>
                   }
                 </div>
               </div>
+
               <div class="field">
-                <label>Mots-clés (Entrée)</label>
-                <input type="text" class="input" #kIn (keyup.enter)="addTag(kIn, 'keywords')" placeholder="Ex: IA, Web...">
+                <label>Mots-clés <span class="required-star">*</span></label>
+                <input type="text" class="input" #kIn
+                       (keyup.enter)="addTag(kIn, 'keywords')"
+                       [class.input-error]="keywordsError()"
+                       placeholder="Ex: IA, Web... (Appuyez sur Entrée)">
+                @if (keywordsError()) {
+                  <span class="field-warning">⚠ Ajoutez au moins un mot-clé.</span>
+                }
                 <div class="tag-cloud">
                   @for (k of keywords(); track k) {
                     <span class="k-tag-pill">#{{ k }} <button type="button" (click)="removeTag(k, 'keywords')">×</button></span>
                   }
                 </div>
               </div>
+
             </div>
           </section>
+
         </div>
       </form>
 

@@ -30,8 +30,8 @@ export class TeacherCampaignCreatePage implements OnInit {
   isSubmitting = signal(false);
 
   availableStudents = this.teacherService.allStudents;
-  availableProjects = this.teacherService.projects;
-  availableSubjects = this.teacherService.subjects;
+  availableProjects = computed(() => this.teacherService.projects().filter(p => p.active));
+  availableSubjects = computed(() => this.teacherService.subjects().filter(s => s.active));
 
   selectedStudentIds = signal<number[]>([]);
   selectedItemIds = signal<number[]>([]);

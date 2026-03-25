@@ -1,0 +1,172 @@
+<div class="app-layout">
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="logo-box">BC</div>
+      <span class="brand-name">Le Bon Choix</span>
+    </div>
+    <nav class="nav-links">
+      <a routerLink="/app/teacher/dashboard" routerLinkActive="active" [routerLinkActiveOptions]="{exact:true}" class="menu-item">
+        <span class="icon">📊</span> Dashboard
+      </a>
+      <a routerLink="/app/teacher/projects" routerLinkActive="active" class="menu-item">
+        <span class="icon">📁</span> Projets
+      </a>
+      <a routerLink="/app/teacher/subjects" routerLinkActive="active" class="menu-item">
+        <span class="icon">📚</span> Options
+      </a>
+      <a routerLink="/app/teacher/campaigns" routerLinkActive="active" class="menu-item">
+        <span class="icon">🎯</span> Campagnes
+      </a>
+      <a routerLink="/app/teacher/matching-control" routerLinkActive="active" class="menu-item">
+        <span class="icon">⚙️</span> Pilotage
+      </a>
+    </nav>
+    <footer class="sidebar-footer">
+      <app-theme-toggle />
+      <button (click)="logout()" class="btn-logout">
+        <span class="icon">🚪</span> Déconnexion
+      </button>
+    </footer>
+  </aside>
+
+  <main class="main-content">
+    <header class="top-nav">
+      <div class="header-titles"><h1>Détail de la Matière</h1></div>
+      <div class="user-control">
+        <div class="user-text">
+          <span class="user-name">{{ auth.displayName() }}</span>
+          <span class="user-role">Enseignant</span>
+        </div>
+        <div class="avatar">{{ initials() }}</div>
+      </div>
+    </header>
+
+    <div class="page-scroll">
+
+      <div class="page-header">
+        <div class="page-titles">
+          <h2>{{ subject()?.title || 'Chargement...' }}</h2>
+          <p>Consultez les informations complètes de cette matière optionnelle.</p>
+        </div>
+        <div class="page-actions">
+          <a routerLink="/app/teacher/subjects" class="btn-ghost">← Retour</a>
+          <button class="btn-primary" [routerLink]="['/app/teacher/subjects/edit', subject()?.id]">
+            ✏️ Modifier
+          </button>
+        </div>
+      </div>
+
+      @if (isLoading()) {
+        <div class="loading-state">
+          <span class="spinner"></span>
+          <p>Chargement des détails...</p>
+        </div>
+      } @else {
+        <div class="detail-grid">
+
+          <!-- ── Informations Générales ──────────────────────── -->
+          <section class="content-card highlight">
+            <div class="card-header">
+              <div class="header-title">
+                <h3>Informations Générales</h3>
+                <span class="count-pill">ID #{{ subject()?.id }}</span>
+              </div>
+              <span class="status-pill" [class.is-active]="subject()?.active">
+                {{ subject()?.active ? 'Public' : 'Brouillon' }}
+              </span>
+            </div>
+
+            <div class="project-main-info">
+              <span class="category-label">MATIÈRE OPTIONNELLE</span>
+              <h2 class="project-title">{{ subject()?.title }}</h2>
+
+              <div class="meta-row">
+                <div class="meta-item">
+                  <span class="meta-label">Capacité max</span>
+                  <span class="meta-val">{{ subject()?.maxStudents }} places</span>
+                </div>
+                <div class="meta-item">
+                  <span class="meta-label">Année</span>
+                  <span class="meta-val">{{ subject()?.academicYear }}</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="info-block">
+              <label>Description</label>
+              <p class="description-text">{{ subject()?.description }}</p>
+            </div>
+
+            @if (subject()?.objectives) {
+              <div class="info-block">
+                <label>Objectifs pédagogiques</label>
+                <p class="description-text">{{ subject()?.objectives }}</p>
+              </div>
+            }
+
+            <div class="info-block">
+              <label>Types de travail</label>
+              <div class="tag-group">
+                @for (type of subject()?.workTypes; track type) {
+                  <span class="type-badge">{{ type }}</span>
+                }
+              </div>
+            </div>
+
+            <div class="info-block">
+              <label>Compétences recherchées</label>
+              <div class="tag-group">
+                @for (skill of subject()?.requiredSkills; track skill) {
+                  <span class="skill-pill">{{ skill }}</span>
+                }
+                @if (!subject()?.requiredSkills?.length) {
+                  <span class="empty-tag">Aucune compétence renseignée</span>
+                }
+              </div>
+            </div>
+
+            <div class="info-block">
+              <label>Mots-clés</label>
+              <div class="tag-group">
+                @for (k of subject()?.keywords; track k) {
+                  <span class="k-tag">#{{ k }}</span>
+                }
+                @if (!subject()?.keywords?.length) {
+                  <span class="empty-tag">Aucun mot-clé renseigné</span>
+                }
+              </div>
+            </div>
+          </section>
+
+          <!-- ── Enseignant & Paramètres ───────────────────── -->
+          <section class="content-card">
+            <div class="card-header">
+              <div class="header-title">
+                <h3>Informations Complémentaires</h3>
+              </div>
+            </div>
+
+            <div class="info-block">
+              <label>Enseignant responsable</label>
+              <p class="description-text">{{ subject()?.teacherName || '—' }}</p>
+            </div>
+
+            <div class="info-block">
+              <label>Statut de publication</label>
+              <div class="params-list">
+                <div class="param-row">
+                  <span class="param-label">Visibilité</span>
+                  <span class="status-pill" [class.is-active]="subject()?.active">
+                    {{ subject()?.active ? 'Public' : 'Brouillon' }}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </section>
+
+        </div>
+      }
+
+    </div>
+  </main>
+</div>

@@ -1,0 +1,72 @@
+@use '../layout' as *;
+
+.detail-grid {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 1.5rem;
+  align-items: start;
+}
+
+// Subject info
+.project-main-info {
+  margin-bottom: 1.5rem;
+  .category-label {
+    font-size: 0.68rem; font-weight: 700;
+    color: var(--bc-text-3); letter-spacing: 0.06em;
+  }
+  .project-title {
+    font-size: 1.4rem; font-weight: 800;
+    color: var(--bc-text); margin: 0.5rem 0 1.25rem;
+  }
+}
+
+.meta-row {
+  display: flex; gap: 2rem;
+  padding: 1rem 0;
+  border-top: 1px solid var(--bc-border);
+  border-bottom: 1px solid var(--bc-border);
+  flex-wrap: wrap;
+}
+
+.meta-item {
+  display: flex; flex-direction: column; gap: 2px;
+  .meta-label { font-size: 0.7rem; color: var(--bc-text-3); font-weight: 600; text-transform: uppercase; }
+  .meta-val   { font-size: 1.1rem; font-weight: 800; color: var(--bc-primary); }
+}
+
+.info-block {
+  margin-top: 1.25rem;
+  label { display: block; font-size: 0.78rem; font-weight: 700; color: var(--bc-text-2); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 0.5rem; }
+  .description-text { color: var(--bc-text-2); line-height: 1.7; font-size: 0.9rem; white-space: pre-wrap; }
+}
+
+.tag-group { display: flex; flex-wrap: wrap; gap: 0.375rem; }
+
+.empty-tag {
+  font-size: 0.8rem; color: var(--bc-text-3); font-style: italic;
+}
+
+// Capacity block
+.capacity-display {
+  display: flex; gap: 1.5rem;
+}
+
+.cap-item {
+  display: flex; flex-direction: column; gap: 2px;
+  .cap-label { font-size: 0.7rem; color: var(--bc-text-3); font-weight: 600; text-transform: uppercase; }
+  .cap-val   { font-size: 1rem; font-weight: 700; color: var(--bc-text); }
+}
+
+// Params list
+.params-list { display: grid; gap: 0.75rem; margin-top: 0.25rem; }
+
+.param-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--bc-border);
+
+  &:last-child { border-bottom: none; }
+
+  .param-label { font-size: 0.875rem; color: var(--bc-text-2); }
+  .param-val   { font-size: 0.875rem; font-weight: 700; color: var(--bc-text); }
+}

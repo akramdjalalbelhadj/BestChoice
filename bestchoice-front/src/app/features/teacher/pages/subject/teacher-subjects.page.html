@@ -99,7 +99,7 @@
                           <span class="type-badge">{{ type }}</span>
                         }
                       </div>
-                      <div class="academic-detail">S{{ s.semester }} • {{ s.credits }} ECTS • {{ s.academicYear }}</div>
+                      <div class="academic-detail">{{ s.academicYear }}</div>
                     </td>
                     <td>
                       <div class="skill-bubbles">
@@ -113,21 +113,19 @@
                     </td>
                     <td>
                       <div class="capacity-info">
-                        <span class="count">{{ s.minStudents }} – {{ s.maxStudents }} étudiants</span>
+                        <span class="count">{{ s.maxStudents }} étudiants max</span>
                       </div>
                     </td>
                     <td>
-                      <span class="status-pill" [class.is-active]="s.active">
+                      <button (click)="toggleStatus(s)" class="status-pill" [class.is-active]="s.active">
                         {{ s.active ? 'Public' : 'Brouillon' }}
-                      </span>
+                      </button>
                     </td>
                     <td>
                       <div class="btn-group">
                         <button class="icon-btn edit" [routerLink]="['/app/teacher/subjects/edit', s.id]" title="Modifier">✏️</button>
-                        <button class="icon-btn" [class.delete]="s.active" (click)="toggleStatus(s)"
-                                [title]="s.active ? 'Désactiver' : 'Activer'">
-                          {{ s.active ? '🚫' : '✅' }}
-                        </button>
+                        <button class="icon-btn" [routerLink]="['/app/teacher/subjects', s.id]" title="Voir le détail">👁️</button>
+                        <button class="icon-btn delete" (click)="deleteSubject(s.id)" title="Supprimer">🗑️</button>
                       </div>
                     </td>
                   </tr>

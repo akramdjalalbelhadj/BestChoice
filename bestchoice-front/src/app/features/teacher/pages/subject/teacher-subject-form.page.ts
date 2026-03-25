@@ -18,18 +18,26 @@ import { finalize } from 'rxjs';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TeacherSubjectFormPage implements OnInit {
-  private readonly fb         = inject(FormBuilder);
+  private readonly fb             = inject(FormBuilder);
   private readonly subjectService = inject(SubjectService);
-  private readonly route      = inject(ActivatedRoute);
-  protected readonly auth     = inject(AuthStore);
-  private readonly router     = inject(Router);
-  private readonly cdr        = inject(ChangeDetectorRef);
+  private readonly route          = inject(ActivatedRoute);
+  protected readonly auth         = inject(AuthStore);
+  private readonly router         = inject(Router);
+  private readonly cdr            = inject(ChangeDetectorRef);
 
   isSubmitting = signal(false);
   isEditMode   = signal(false);
   subjectId    = signal<number | null>(null);
   isDirty      = signal(false);
   errorMsg     = signal<string | null>(null);
+
+  // ── Signaux d'erreur explicites (fiables avec OnPush) ──────────────────────
+  titleError       = signal(false);
+  descriptionError = signal(false);
+  workTypesError   = signal(false);
+  skillsError      = signal(false);
+  keywordsError    = signal(false);
+  maxStudentsError = signal(false);
 
   requiredSkills = signal<string[]>([]);
   keywords       = signal<string[]>([]);
@@ -40,10 +48,7 @@ export class TeacherSubjectFormPage implements OnInit {
     description: ['', [Validators.required, Validators.maxLength(5000)]],
     objectives:  [''],
     workTypes:   [[] as WorkType[], []],
-    minStudents: [1  as number | null],
     maxStudents: [20 as number | null],
-    credits:     [3  as number | null],
-    semester:    [1  as number | null],
     academicYear:['2025-2026']
   });
 
@@ -53,12 +58,20 @@ export class TeacherSubjectFormPage implements OnInit {
   });
 
   ngOnInit() {
-    // Sync isDirty avec n'importe quelle frappe clavier, select, checkbox
+    // Effacer les erreurs dès que l'utilisateur modifie le form
+    this.form.get('title')!.valueChanges.subscribe(v => {
+      if (v?.trim()) { this.titleError.set(false); this.cdr.markForCheck(); }
+    });
+    this.form.get('description')!.valueChanges.subscribe(v => {
+      if (v?.trim()) { this.descriptionError.set(false); this.cdr.markForCheck(); }
+    });
+    this.form.get('maxStudents')!.valueChanges.subscribe(v => {
+      if (v != null && v >= 1) { this.maxStudentsError.set(false); this.cdr.markForCheck(); }
+    });
+
+    // isDirty pour le mode édition
     this.form.valueChanges.subscribe(() => {
-      if (this.form.dirty) {
-        this.isDirty.set(true);
-        this.cdr.markForCheck();
-      }
+      if (this.form.dirty) { this.isDirty.set(true); this.cdr.markForCheck(); }
     });
 
     const id = this.route.snapshot.paramMap.get('id');
@@ -77,10 +90,7 @@ export class TeacherSubjectFormPage implements OnInit {
           description:  subject.description  ?? '',
           objectives:   subject.objectives   ?? '',
           workTypes:    (subject.workTypes   as unknown as WorkType[]) ?? [],
-          minStudents:  subject.minStudents  ?? 1,
           maxStudents:  subject.maxStudents  ?? 20,
-          credits:      subject.credits      ?? 3,
-          semester:     subject.semester     ?? 1,
           academicYear: subject.academicYear ?? '2025-2026'
         });
         this.requiredSkills.set(subject.requiredSkills ?? []);
@@ -104,6 +114,8 @@ export class TeacherSubjectFormPage implements OnInit {
     this.form.patchValue({ workTypes: next });
     this.form.markAsDirty();
     this.isDirty.set(true);
+    // Effacer l'erreur workTypes si au moins un type sélectionné
+    if (next.length > 0) this.workTypesError.set(false);
     this.cdr.markForCheck();
   }
 
@@ -111,46 +123,85 @@ export class TeacherSubjectFormPage implements OnInit {
     const val = input.value.trim();
     if (!val) return;
     if (list === 'skills') {
-      if (!this.requiredSkills().includes(val)) this.requiredSkills.update(s => [...s, val]);
+      if (!this.requiredSkills().includes(val)) {
+        this.requiredSkills.update(s => [...s, val]);
+        this.skillsError.set(false);
+      }
     } else {
-      if (!this.keywords().includes(val)) this.keywords.update(k => [...k, val]);
+      if (!this.keywords().includes(val)) {
+        this.keywords.update(k => [...k, val]);
+        this.keywordsError.set(false);
+      }
     }
     input.value = '';
     this.isDirty.set(true);
     this.form.markAsDirty();
+    this.cdr.markForCheck();
   }
 
   removeTag(val: string, list: 'skills' | 'keywords') {
-    if (list === 'skills') this.requiredSkills.update(s => s.filter(x => x !== val));
-    else this.keywords.update(k => k.filter(x => x !== val));
+    if (list === 'skills') {
+      this.requiredSkills.update(s => s.filter(x => x !== val));
+      if (this.requiredSkills().length === 0) this.skillsError.set(true);
+    } else {
+      this.keywords.update(k => k.filter(x => x !== val));
+      if (this.keywords().length === 0) this.keywordsError.set(true);
+    }
     this.isDirty.set(true);
     this.form.markAsDirty();
+    this.cdr.markForCheck();
   }
 
   onSubmit() {
     this.errorMsg.set(null);
 
-    // Création : titre + description obligatoires
-    if (!this.isEditMode() && this.form.invalid) return;
-    // Édition : sauvegarder uniquement si modifié
     if (this.isEditMode() && !this.isDirty()) return;
+
+    const raw = this.form.getRawValue();
+
+    // ── Validation en création ──────────────────────────────────────────────
+    if (!this.isEditMode()) {
+      const titleOk    = !!raw.title?.trim();
+      const descOk     = !!raw.description?.trim();
+      const workOk     = (raw.workTypes?.length ?? 0) > 0;
+      const skillsOk   = this.requiredSkills().length > 0;
+      const keywordsOk = this.keywords().length > 0;
+      const maxStudOk  = (raw.maxStudents ?? 0) >= 1;
+
+      this.titleError.set(!titleOk);
+      this.descriptionError.set(!descOk);
+      this.workTypesError.set(!workOk);
+      this.skillsError.set(!skillsOk);
+      this.keywordsError.set(!keywordsOk);
+      this.maxStudentsError.set(!maxStudOk);
+      this.cdr.markForCheck();
+
+      if (!titleOk || !descOk || !workOk || !skillsOk || !keywordsOk || !maxStudOk) return;
+    }
+
+    // ── Validation en édition : maxStudents aussi ───────────────────────────
+    if (this.isEditMode()) {
+      const maxStudOk = (raw.maxStudents ?? 0) >= 1;
+      this.maxStudentsError.set(!maxStudOk);
+      this.cdr.markForCheck();
+      if (!maxStudOk) return;
+    }
 
     const user = this.auth.user();
     if (!user) { this.errorMsg.set('Session expirée, veuillez vous reconnecter.'); return; }
 
     this.isSubmitting.set(true);
-    const raw = this.form.getRawValue();
 
     const payload = {
-      title:        raw.title?.trim()  ?? '',
-      description:  raw.description?.trim() ?? '',
-      objectives:   raw.objectives?.trim() ?? '',
-      workTypes:    (raw.workTypes ?? []) as WorkType[],
-      minStudents:  raw.minStudents  ?? 1,
-      maxStudents:  raw.maxStudents  ?? 20,
-      credits:      raw.credits      ?? 3,
-      semester:     raw.semester     ?? 1,
-      academicYear: raw.academicYear ?? '2025-2026',
+      title:          raw.title?.trim()        ?? '',
+      description:    raw.description?.trim()  ?? '',
+      objectives:     raw.objectives?.trim()   ?? '',
+      workTypes:      (raw.workTypes           ?? []) as WorkType[],
+      minStudents:    1,
+      maxStudents:    raw.maxStudents          ?? 20,
+      credits:        3,
+      semester:       1,
+      academicYear:   raw.academicYear         ?? '2025-2026',
       requiredSkills: this.requiredSkills(),
       keywords:       this.keywords()
     };
@@ -160,13 +211,9 @@ export class TeacherSubjectFormPage implements OnInit {
       this.subjectService.update(this.subjectId()!, updatePayload)
         .pipe(finalize(() => { this.isSubmitting.set(false); this.cdr.markForCheck(); }))
         .subscribe({
-          next: () => {
-            this.isDirty.set(false);
-            this.router.navigate(['/app/teacher/subjects']);
-          },
+          next: () => { this.isDirty.set(false); this.router.navigate(['/app/teacher/subjects']); },
           error: (err) => {
-            const msg = err?.error?.message ?? err?.message ?? 'Erreur lors de la mise à jour.';
-            this.errorMsg.set(msg);
+            this.errorMsg.set(err?.error?.message ?? err?.message ?? 'Erreur lors de la mise à jour.');
             this.cdr.markForCheck();
           }
         });
@@ -177,8 +224,7 @@ export class TeacherSubjectFormPage implements OnInit {
         .subscribe({
           next: () => this.router.navigate(['/app/teacher/subjects']),
           error: (err) => {
-            const msg = err?.error?.message ?? err?.message ?? 'Erreur lors de la création.';
-            this.errorMsg.set(msg);
+            this.errorMsg.set(err?.error?.message ?? err?.message ?? 'Erreur lors de la création.');
             this.cdr.markForCheck();
           }
         });
