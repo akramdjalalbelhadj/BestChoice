@@ -5,9 +5,10 @@ import { PreferenceStatus } from '../../../core/models/enums.model';
  */
 export interface PreferenceCreateRequest {
   studentId: number;
+  campaignId: number;
   projectId: number;
+  subjectId: number;
   rank: number;
-  motivation?: string;
   comment?: string;
 }
 
@@ -17,8 +18,9 @@ export interface PreferenceCreateRequest {
 export interface PreferenceResponse {
   id: number;
   studentId: number;
+  campaignId: number;
   projectId: number;
-  projectTitle?: string;
+  subjectId: number;
   rank: number;
   status: PreferenceStatus;
   createdAt: string;

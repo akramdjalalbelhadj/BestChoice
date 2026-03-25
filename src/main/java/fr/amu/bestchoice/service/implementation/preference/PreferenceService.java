@@ -1,12 +1,8 @@
 package fr.amu.bestchoice.service.implementation.preference;
 
-import fr.amu.bestchoice.model.entity.Project;
-import fr.amu.bestchoice.model.entity.Student;
-import fr.amu.bestchoice.model.entity.StudentPreference;
+import fr.amu.bestchoice.model.entity.*;
 import fr.amu.bestchoice.model.enums.PreferenceStatus;
-import fr.amu.bestchoice.repository.ProjectRepository;
-import fr.amu.bestchoice.repository.StudentPreferenceRepository;
-import fr.amu.bestchoice.repository.StudentRepository;
+import fr.amu.bestchoice.repository.*;
 import fr.amu.bestchoice.service.interfaces.IPreferenceService;
 import fr.amu.bestchoice.web.dto.preference.PreferenceCreateRequest;
 import fr.amu.bestchoice.web.dto.preference.PreferenceResponse;
@@ -46,7 +42,10 @@ public class PreferenceService implements IPreferenceService {
     private final StudentPreferenceRepository preferenceRepository;
     private final StudentRepository studentRepository;
     private final ProjectRepository projectRepository;
+    private final SubjectRepository subjectRepository;
+    private final MatchingCampaignRepository campaignRepository;
     private final StudentPreferenceMapper preferenceMapper;
+
 
     // Constante : nombre maximum de préférences par étudiant
     private static final int MAX_PREFERENCES_PER_STUDENT = 10;
@@ -63,90 +62,34 @@ public class PreferenceService implements IPreferenceService {
      */
     @Transactional
     public PreferenceResponse create(PreferenceCreateRequest dto) {
-
-        log.info("Début création préférence : studentId={}, projectId={}, rank={}",
-                dto.studentId(), dto.projectId(), dto.rank());
-
-        // ===== VALIDATION ÉTUDIANT =====
-
-        // Vérifier que l'étudiant existe
+        // 1. Récupération des entités de base
         Student student = studentRepository.findById(dto.studentId())
-                .orElseThrow(() -> {
-                    log.error("Étudiant introuvable : studentId={}", dto.studentId());
-                    return new NotFoundException("Étudiant introuvable avec l'ID : " + dto.studentId());
-                });
+                .orElseThrow(() -> new NotFoundException("Étudiant introuvable"));
 
-        log.debug("Étudiant trouvé : userId={}, email={}", student.getId(), student.getUser().getEmail());
+        // On récupère la campagne (indispensable pour le contexte)
+        MatchingCampaign campaign = campaignRepository.findById(dto.campaignId())
+                .orElseThrow(() -> new NotFoundException("Campagne introuvable"));
 
-        // ===== VALIDATION PROJET =====
-
-        // Vérifier que le projet existe
-        Project project = projectRepository.findById(dto.projectId())
-                .orElseThrow(() -> {
-                    log.error("Projet introuvable : projectId={}", dto.projectId());
-                    return new NotFoundException("Projet introuvable avec l'ID : " + dto.projectId());
-                });
-
-        log.debug("Projet trouvé : title={}", project.getTitle());
-
-        // ===== VALIDATIONS MÉTIER =====
-
-        // 1. Vérifier que le projet est actif
-        if (!project.getActive()) {
-            log.warn("Tentative de sélection d'un projet inactif : projectId={}, title={}",
-                    dto.projectId(), project.getTitle());
-            throw new BusinessException("Ce projet n'est plus disponible");
-        }
-
-        // 2. Vérifier que le projet n'est pas complet
-        if (project.getComplet()) {
-            log.warn("Tentative de sélection d'un projet complet : projectId={}, title={}",
-                    dto.projectId(), project.getTitle());
-            throw new BusinessException("Ce projet est déjà complet");
-        }
-
-        // 3. Vérifier que l'étudiant n'a pas déjà choisi ce projet
-        if (preferenceRepository.existsByStudentIdAndProjectId(dto.studentId(), dto.projectId())) {
-            log.warn("Tentative de sélection d'un projet déjà choisi : studentId={}, projectId={}",
-                    dto.studentId(), dto.projectId());
-            throw new BusinessException("Vous avez déjà sélectionné ce projet");
-        }
-
-        // 4. Vérifier que le rang n'est pas déjà utilisé par cet étudiant
-        if (preferenceRepository.existsByStudentIdAndRank(dto.studentId(), dto.rank())) {
-            log.warn("Tentative d'utilisation d'un rang déjà utilisé : studentId={}, rank={}",
-                    dto.studentId(), dto.rank());
-            throw new BusinessException("Le rang " + dto.rank() + " est déjà utilisé. Veuillez choisir un autre rang.");
-        }
-
-        // 5. Vérifier que l'étudiant n'a pas atteint le maximum de préférences
-        long currentPreferencesCount = preferenceRepository.countByStudentId(dto.studentId());
-        if (currentPreferencesCount >= MAX_PREFERENCES_PER_STUDENT) {
-            log.warn("Étudiant a atteint le maximum de préférences : studentId={}, count={}",
-                    dto.studentId(), currentPreferencesCount);
-            throw new BusinessException("Vous avez atteint le maximum de " + MAX_PREFERENCES_PER_STUDENT + " préférences");
-        }
-
-        log.debug("Toutes les validations métier passées avec succès");
-
-        // ===== MAPPING DTO → ENTITY =====
-
+        // 3. Préparation de l'entité
         StudentPreference preference = preferenceMapper.toEntity(dto);
         preference.setStudent(student);
-        preference.setProject(project);
+        preference.setMatchingCampaign(campaign);
+        preference.setStatus(PreferenceStatus.PENDING);
 
-        log.debug("StudentPreference mappée : rank={}, status={}", preference.getRank(), preference.getStatus());
+        // 4. Gestion de l'item (Projet ou Matière)
+        if (dto.projectId() != null) {
+            Project project = projectRepository.findById(dto.projectId())
+                    .orElseThrow(() -> new NotFoundException("Projet introuvable"));
+            preference.setProject(project);
+        } else if (dto.subjectId() != null) {
+            Subject subject = subjectRepository.findById(dto.subjectId())
+                    .orElseThrow(() -> new NotFoundException("Matière introuvable"));
+            preference.setSubject(subject);
+        } else {
+            throw new BusinessException("Un projet ou une matière doit être sélectionné.");
+        }
 
-        // ===== SAUVEGARDE =====
-
-        StudentPreference savedPreference = preferenceRepository.save(preference);
-
-        log.info("Préférence créée avec succès : id={}, studentId={}, projectId={}, rank={}",
-                savedPreference.getId(), dto.studentId(), dto.projectId(), dto.rank());
-
-        // ===== MAPPING ENTITY → DTO =====
-
-        return preferenceMapper.toResponse(savedPreference);
+        return preferenceMapper.toResponse(preferenceRepository.save(preference));
     }
 
     // ==================== READ ====================
@@ -222,6 +165,23 @@ public class PreferenceService implements IPreferenceService {
                 preference.getStudent().getId(), preference.getProject().getId(), preference.getRank());
 
         return preferenceMapper.toResponse(preference);
+    }
+
+    @Override
+    public List<PreferenceResponse> findByStudentIdAndCampaignId(Long studentId, Long campaignId) {
+        log.debug("Recherche des vœux pour l'étudiant {} dans la campagne {}", studentId, campaignId);
+
+        // Vérification rapide de l'existence de l'étudiant (optionnel mais recommandé)
+        if (!studentRepository.existsById(studentId)) {
+            throw new NotFoundException("Étudiant introuvable");
+        }
+
+        List<StudentPreference> preferences = preferenceRepository
+                .findByStudentIdAndMatchingCampaignIdOrderByRankAsc(studentId, campaignId);
+
+        log.info("{} vœux trouvés pour la campagne {}", preferences.size(), campaignId);
+
+        return preferenceMapper.toResponseList(preferences);
     }
 
     // ==================== DELETE ====================

@@ -20,6 +20,7 @@ export class StudentService {
   private projectService = inject(ProjectService);
   private subjectService = inject(SubjectService);
   private readonly API = `${environment.apiBaseUrl}/api/students`;
+  private readonly PREF_API = `${environment.apiBaseUrl}/api/preferences`;
 
   // --- ÉTAT DU SERVICE (SIGNALS PRIVÉS) ---
   private readonly _studentProfile = signal<StudentResponse | null>(null);
@@ -86,7 +87,7 @@ export class StudentService {
   /** Ajoute un projet aux vœux de l'étudiant */
   addToPreferences(studentId: number, projectId: number, rank: number) {
     const request = { studentId, projectId, rank, motivation: "Choix via catalogue" };
-    return this.http.post(`${this.API}/preferences`, request);
+    return this.http.post(`${this.PREF_API}`, request);
   }
 
   /** Récupère un projet spécifique par ID */
@@ -100,19 +101,14 @@ export class StudentService {
     return this.subjectService.getById(id);
   }
 
-  /** Crée une préférence (vœu) */
-  submitPreference(request: PreferenceCreateRequest) {
-    return this.http.post<PreferenceResponse>(`${this.API}/preferences`, request);
-  }
-
   /** Récupère les préférences d'un étudiant */
   getPreferences(studentId: number) {
-    return this.http.get<PreferenceResponse[]>(`${this.API}/preferences/student/${studentId}`);
+    return this.http.get<PreferenceResponse[]>(`${this.PREF_API}/student/${studentId}`);
   }
 
   /** Supprime une préférence */
   deletePreference(id: number) {
-    return this.http.delete(`${this.API}/preferences/${id}`);
+    return this.http.delete(`${this.PREF_API}/${id}`);
   }
 
   // --- MISE À JOUR PROFIL ---
@@ -131,4 +127,18 @@ export class StudentService {
   getAllActiveKeywords() {
     return this.http.get<any[]>(`${this.API}/keywords/active`);
   }
+
+
+  updatePreferencesOrder(updates: {id: number, rank: number}[]): Observable<void> {
+    return this.http.put<void>(`${this.PREF_API}/preferences/bulk-rank`, updates);
+  }
+
+  submitPreference(request: any): Observable<any> {
+    return this.http.post(`${this.PREF_API}`, request);
+  }
+
+  getPreferencesByCampaign(studentId: number, campaignId: number): Observable<PreferenceResponse[]> {
+    return this.http.get<PreferenceResponse[]>(`${this.PREF_API}/student/${studentId}/campaign/${campaignId}`);
+  }
+
 }

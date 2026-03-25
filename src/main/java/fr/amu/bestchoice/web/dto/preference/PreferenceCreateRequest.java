@@ -16,8 +16,12 @@ public record PreferenceCreateRequest(
         @NotNull(message = "L'ID de l'étudiant est obligatoire")
         Long studentId,
 
-        @NotNull(message = "Le projectId est obligatoire")
+        @NotNull(message = "L'ID de la campagne est obligatoire")
+        Long campaignId,
+
         Long projectId,
+
+        Long subjectId,
 
         @NotNull(message = "Le rank est obligatoire")
         @Min(value = 1, message = "Le rank doit être >= 1")

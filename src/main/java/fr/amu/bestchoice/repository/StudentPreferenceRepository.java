@@ -73,4 +73,15 @@ public interface StudentPreferenceRepository extends JpaRepository<StudentPrefer
      * Supprime toutes les préférences d'un étudiant
      */
     void deleteByStudentId(Long studentId);
+
+
+    @Query("SELECT sp FROM StudentPreference sp " +
+            "WHERE sp.student.id = :studentId " +
+            "AND sp.matchingCampaign.id = :campaignId " +
+            "ORDER BY sp.rank ASC")
+    List<StudentPreference> findByStudentIdAndMatchingCampaignIdOrderByRankAsc(
+            @Param("studentId") Long studentId,
+            @Param("campaignId") Long campaignId);
+
+    boolean existsByStudentIdAndMatchingCampaignIdAndRank(Long studentId, Long campaignId, Integer rank);
 }

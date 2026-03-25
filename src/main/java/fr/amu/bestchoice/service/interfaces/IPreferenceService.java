@@ -74,4 +74,6 @@ public interface IPreferenceService {
      * @return La préférence rejetée
      */
     PreferenceResponse reject(Long id);
+
+    List<PreferenceResponse> findByStudentIdAndCampaignId(Long studentId, Long campaignId);
 }

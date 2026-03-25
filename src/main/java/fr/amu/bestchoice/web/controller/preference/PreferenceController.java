@@ -88,6 +88,18 @@ public class PreferenceController {
         return ResponseEntity.ok(preference);
     }
 
+    @GetMapping("/student/{studentId}/campaign/{campaignId}")
+    public ResponseEntity<List<PreferenceResponse>> getPreferencesByStudentAndCampaign(
+            @PathVariable Long studentId,
+            @PathVariable Long campaignId) {
+
+        log.debug("Requête GET classement campagne {} pour étudiant {}", campaignId, studentId);
+
+        List<PreferenceResponse> preferences = preferenceService.findByStudentIdAndCampaignId(studentId, campaignId);
+
+        return ResponseEntity.ok(preferences);
+    }
+
     // ==================== CREATE ====================
 
     /**
@@ -134,6 +146,8 @@ public class PreferenceController {
 
         return ResponseEntity.noContent().build();
     }
+
+
 
     // ==================== CHANGEMENT DE STATUT ====================
 

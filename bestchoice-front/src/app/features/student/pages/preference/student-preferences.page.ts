@@ -1,129 +1,88 @@
-import { Component, inject, OnInit, signal, ChangeDetectionStrategy } from '@angular/core';
+import { Component, inject, OnInit, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterLink, RouterLinkActive } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { CdkDragDrop, DragDropModule, moveItemInArray } from '@angular/cdk/drag-drop';
 import { StudentService } from '../../services/student.service';
+import { CampaignService } from '../../../campaign/services/campaign.service';
 import { AuthStore } from '../../../../core/auth/auth.store';
-import { PreferenceResponse } from '../../models/preference.model';
-import { finalize } from 'rxjs';
-import { ThemeToggleComponent } from '../../../../shared/theme-toggle.component';
+import {finalize, forkJoin, delay, tap, switchMap, of} from 'rxjs';
 
 @Component({
   selector: 'app-student-preferences',
   standalone: true,
-  imports: [CommonModule, RouterLink, RouterLinkActive, ThemeToggleComponent],
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  template: `
-    <div class="app-layout">
-      <aside class="sidebar">
-        <div class="brand">BC</div>
-        <nav class="nav-links">
-          <a routerLink="/app/student/dashboard" routerLinkActive="active" class="menu-item">📊 Dashboard</a>
-          <a routerLink="/app/student/projects" routerLinkActive="active" class="menu-item">🔍 Projets</a>
-          <a routerLink="/app/student/preferences" routerLinkActive="active" class="menu-item">⭐ Mes Choix</a>
-          <a routerLink="/app/student/profile" routerLinkActive="active" class="menu-item">👤 Mon Profil</a>
-        </nav>
-        <footer class="sidebar-footer">
-          <app-theme-toggle />
-          <button (click)="logout()" class="btn-logout">🚪 Déconnexion</button>
-        </footer>
-      </aside>
-
-      <main class="main-content">
-        <header class="page-header">
-          <a routerLink="../dashboard" class="btn-retour">← Retour au Dashboard</a>
-          <h1>Mes Vœux Classés</h1>
-          <p class="text-muted">Vous pouvez classer jusqu'à 10 projets par ordre de priorité.</p>
-        </header>
-
-        <div class="preferences-container">
-          @if (isLoading()) {
-            <p>Chargement de vos choix...</p>
-          } @else {
-            <div class="pref-list">
-              @for (pref of preferences(); track pref.id) {
-                <div class="pref-card" [class.accepted]="pref.status === 'ACCEPTED'">
-                  <div class="rank-badge">#{{ pref.rank }}</div>
-
-                  <div class="pref-info">
-                    <h3>Projet ID: {{ pref.projectId }}</h3>
-                    <span class="status-tag" [attr.data-status]="pref.status">
-                      {{ pref.status }}
-                    </span>
-                    <p class="text-xs text-muted">Ajouté le {{ pref.createdAt | date:'shortDate' }}</p>
-                  </div>
-
-                  <div class="pref-actions">
-                    <button class="btn-icon" [routerLink]="['/app/student/projects', pref.projectId]">👁️</button>
-                    @if (pref.status === 'PENDING') {
-                      <button class="btn-icon danger" (click)="removePreference(pref.id)">🗑️</button>
-                    }
-                  </div>
-                </div>
-              } @empty {
-                <div class="empty-state">
-                  <p>Vous n'avez pas encore exprimé de vœux.</p>
-                  <button class="btn-primary" routerLink="/app/student/projects">Explorer le catalogue</button>
-                </div>
-              }
-            </div>
-
-            @if (preferences().length > 0) {
-              <div class="limit-info">
-                {{ preferences().length }} / 10 vœux utilisés
-              </div>
-            }
-          }
-        </div>
-      </main>
-    </div>
-  `,
+  imports: [CommonModule, RouterLink, DragDropModule],
+  templateUrl: './student-preferences.page.html',
   styleUrl: './student-preferences.page.scss'
 })
 export class StudentPreferencesPage implements OnInit {
+  private readonly route = inject(ActivatedRoute);
   private readonly studentService = inject(StudentService);
+  private readonly campaignService = inject(CampaignService);
   protected readonly auth = inject(AuthStore);
   private readonly router = inject(Router);
 
-  preferences = signal<PreferenceResponse[]>([]);
+  itemsToRank = signal<any[]>([]);
   isLoading = signal(true);
+  isSubmitting = signal(false);
+  isSuccess = signal(false);
+  campaignId: number | null = null;
+  campaignType: string | null = null;
 
   ngOnInit() {
-    const user = this.auth.user();
+    this.campaignId = Number(this.route.snapshot.queryParamMap.get('campaignId'));
 
-    if (user?.userId) {
-      // 🛡️ SÉCURITÉ : On s'assure d'avoir le profil avant de charger les vœux
-      this.studentService.loadProfile(user.userId).subscribe({
-        next: (student) => {
-          if (student.id) this.fetchPreferences(student.id);
-        },
-        error: () => this.isLoading.set(false)
-      });
+    if (!this.campaignId) {
+      this.router.navigate(['/app/student/campaigns']);
+      return;
     }
+
+    this.loadCampaignData();
   }
 
-  private fetchPreferences(studentId: number) {
-    this.studentService.getPreferences(studentId)
-      .pipe(finalize(() => this.isLoading.set(false)))
-      .subscribe(res => {
-        // On trie par rang côté front pour être sûr de l'affichage
-        const sorted = res.sort((a, b) => a.rank - b.rank);
-        this.preferences.set(sorted);
-      });
+  private loadCampaignData() {
+    this.isLoading.set(true);
+    this.campaignService.getCompleteCampaign(this.campaignId!).pipe(
+      finalize(() => this.isLoading.set(false))
+    ).subscribe(data => {
+      this.campaignType = data.campaign.campaignType;
+      this.itemsToRank.set(data.items.map((item, index) => ({
+        ...item,
+        tempRank: index + 1
+      })));
+    });
   }
 
-  removePreference(id: number) {
-    if (confirm('Voulez-vous vraiment supprimer ce vœu ? cette action est irréversible.')) {
-      this.studentService.deletePreference(id).subscribe({
+  drop(event: CdkDragDrop<string[]>) {
+    const list = [...this.itemsToRank()];
+    moveItemInArray(list, event.previousIndex, event.currentIndex);
+
+    this.itemsToRank.set(list.map((item, index) => ({
+      ...item,
+      tempRank: index + 1
+    })));
+  }
+
+  /**
+   * ACTION ONE-SHOT : On envoie tout au backend
+   */
+  submitAllPreferences() {
+    const studentId = this.studentService.studentProfile()?.id;
+    this.isSubmitting.set(true);
+
+    const requests = this.itemsToRank().map(item => ({
+      studentId,
+      campaignId: this.campaignId,
+      projectId: this.campaignType === 'PROJECT' ? item.id : null,
+      rank: item.tempRank
+    }));
+
+    forkJoin(requests.map(req => this.studentService.submitPreference(req)))
+      .subscribe({
         next: () => {
-          this.preferences.update(list => list.filter(p => p.id !== id));
+          this.isSuccess.set(true);
+          setTimeout(() => this.router.navigate(['/app/student/dashboard']), 2000);
         },
-        error: (err) => alert("Impossible de supprimer : le vœu n'est peut-être plus en attente.")
+        error: (err) => alert(err.error.message)
       });
-    }
-  }
-
-  logout() {
-    this.auth.logout();
-    this.router.navigateByUrl('/auth/login');
   }
 }

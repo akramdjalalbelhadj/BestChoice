@@ -10,14 +10,28 @@
       </div>
     } @else if (campaign()) {
       <header class="detail-header">
-        <a routerLink="/app/student/campaigns" class="back-link">
-          ← Retour aux campagnes
-        </a>
+        <div class="header-top">
+          <a routerLink="/app/student/campaigns" class="back-link">← Retour aux campagnes</a>
+
+          @if (isStableAlgorithm()) {
+              <button class="btn-preference-ranking"
+                      [routerLink]="['/app/student/preferences']"
+                      [queryParams]="{ campaignId: campaign()?.id }">
+                  <span class="icon"></span> Classer mes vœux
+              </button>
+          }
+        </div>
+
         <div class="header-main">
           <h1>{{ campaign()?.name }}</h1>
-          <p class="subtitle">
-            <strong>{{ items().length }}</strong> {{ isProjectCampaign() ? 'projets innovants' : 'matières' }} à découvrir pour votre cursus.
-          </p>
+          <div class="header-info">
+            <p class="subtitle">
+              <strong>{{ items().length }}</strong> {{ isProjectCampaign() ? 'projets innovants' : 'matières' }} disponibles
+            </p>
+            <span class="algo-badge" [class.hybrid]="isStableAlgorithm()">
+        Mode : {{ campaign()?.algorithmType }}
+      </span>
+          </div>
         </div>
       </header>
 
@@ -66,7 +80,7 @@
           </div>
         } @empty {
           <div class="empty-state">
-            <p>🚀 Aucune offre n'est encore rattachée à cette campagne.</p>
+            <p>Aucune offre n'est encore rattachée à cette campagne.</p>
             <small>Revenez un peu plus tard ou contactez votre responsable.</small>
           </div>
         }

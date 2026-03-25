@@ -8,6 +8,7 @@ import { CampaignService } from '../../../campaign/services/campaign.service';
 import { finalize, switchMap } from 'rxjs';
 import { ThemeToggleComponent } from '../../../../shared/theme-toggle.component';
 import { MatchingCampaignType } from '../../../campaign/models/matching-campaign-type.model';
+import { forkJoin, map, of } from 'rxjs';
 
 @Component({
   selector: 'app-student-item-detail',
@@ -24,11 +25,13 @@ export class StudentItemDetailPage implements OnInit {
   private campaignService = inject(CampaignService);
   protected auth = inject(AuthStore);
 
+  userPreferences = signal<Map<number, number>>(new Map());
   campaign = signal<CampaignResponse | null>(null);
   items = signal<any[]>([]);
   isLoading = signal(true);
 
   isProjectCampaign = computed(() => this.campaign()?.campaignType === MatchingCampaignType.PROJECT);
+  isStableAlgorithm = computed(() => this.campaign()?.algorithmType === 'STABLE');
 
   ngOnInit() {
     const campaignId = this.route.snapshot.paramMap.get('id');

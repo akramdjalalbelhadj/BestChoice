@@ -1,6 +1,5 @@
 import { Routes } from '@angular/router';
 import { StudentDashboardPage } from './pages/dashboard/student-dashboard.page';
-import { StudentProjectDetailPage } from './pages/item/student-project-detail.page';
 import { StudentPreferencesPage } from './pages/preference/student-preferences.page';
 import {StudentProfilePage} from './pages/profil/student-profile.page';
 import { StudentCampaignPage } from './pages/campaign/student-campaign.page';
@@ -14,9 +13,6 @@ export const STUDENT_ROUTES: Routes = [
 
       // Page d'accueil avec KPIs et Top Matching
       { path: 'dashboard', component: StudentDashboardPage },
-
-      // Détails d'un projet spécifique + Formulaire de vœux
-      { path: 'projects/:id', component: StudentProjectDetailPage },
 
       // Gestion du classement des vœux (Rank 1-10)
       { path: 'preferences', component: StudentPreferencesPage },

@@ -1,0 +1,76 @@
+<div class="preferences-wrapper">
+  <header class="pref-header">
+    <div class="header-left">
+      <a routerLink="/app/student/campaigns" [queryParams]="{ id: campaignId }" class="back-link">← Retour à la campagne</a>
+      <h1>Classement de mes vœux</h1>
+      <p class="subtitle">Organisez vos choix par ordre de priorité. Votre <strong>n°1</strong> est votre choix favori.</p>
+    </div>
+
+    <button class="btn-submit"
+            [disabled]="isSubmitting() || itemsToRank().length === 0"
+            (click)="submitAllPreferences()">
+      @if (isSubmitting()) {
+        <span class="spinner"></span> Enregistrement...
+      } @else {
+        Valider mes {{ itemsToRank().length }} vœux
+      }
+    </button>
+  </header>
+
+  <div class="main-container">
+    @if (isLoading()) {
+      <div class="skeleton-list">
+        <div class="skeleton-item" *ngFor="let i of [1,2,3]"></div>
+      </div>
+    } @else {
+      <div class="drag-container" cdkDropList (cdkDropListDropped)="drop($event)">
+        @for (item of itemsToRank(); track item.id; let i = $index) {
+          <div class="rank-row" cdkDrag>
+            <div class="drag-placeholder" *cdkDragPlaceholder></div>
+
+            <div class="rank-number" [class.top-choice]="i === 0">
+              {{ i + 1 }}
+            </div>
+
+            <div class="pref-card">
+              <div class="drag-handle" cdkDragHandle>
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M11 18c0 1.1-.9 2-2 2s-2-.9-2-2 .9-2 2-2 2 .9 2 2zm-2-8c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0-6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm6 4c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg>
+              </div>
+
+              <div class="card-body">
+                <div class="title-row">
+                  <h3>{{ item.title }}</h3>
+                  <span class="badge" [class.project]="campaignType === 'PROJECT'">
+                    {{ campaignType === 'PROJECT' ? 'PFE' : 'Option' }}
+                  </span>
+                </div>
+                <p class="description">{{ item.description | slice:0:140 }}...</p>
+
+                <div class="card-meta">
+                  <span *ngIf="item.teacherName">👤 {{ item.teacherName }}</span>
+                  <span *ngIf="item.credits">💎 {{ item.credits }} ECTS</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        } @empty {
+          <div class="empty-state">
+            <div class="icon">🔍</div>
+            <p>Aucun projet sélectionné pour le moment.</p>
+            <small>Retournez sur la page de la campagne pour ajouter des projets à votre liste.</small>
+          </div>
+        }
+      </div>
+    }
+  </div>
+  @if (isSuccess()) {
+    <div class="success-overlay">
+      <div class="success-card">
+        <div class="success-icon">✓</div>
+        <h2>Vœux enregistrés !</h2>
+        <p>Votre classement a été transmis avec succès. Vous allez être redirigé vers votre tableau de bord...</p>
+        <div class="loading-bar"></div>
+      </div>
+    </div>
+  }
+</div>
