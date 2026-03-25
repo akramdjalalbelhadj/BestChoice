@@ -16,37 +16,11 @@
       </header>
 
       <div class="items-grid">
-        @for (it of items(); track it.id) {
+        @for (it of (items() || []); track it.id) {
           <div class="item-card">
-            <div class="item-header">
-              <span class="id-badge">#{{ it.id }}</span>
-              <h3>{{ it.title }}</h3>
-            </div>
-
-            <p class="item-desc">{{ it.description | slice:0:120 }}...</p>
-
-            <div class="tag-row">
-              @if (isProjectCampaign()) {
-                @for (skill of it.requiredSkills?.slice(0,3); track skill) {
-                  <span class="mini-tag skill">{{ skill }}</span>
-                }
-              } @else {
-                @for (pre of it.prerequisites?.slice(0,3); track pre) {
-                  <span class="mini-tag subject">{{ pre }}</span>
-                }
-              }
-            </div>
-
-            <div class="item-footer">
-              <button class="btn-action"
-                      [routerLink]="isProjectCampaign() ? ['/app/student/projects', it.id] : ['/app/student/subjects', it.id]"
-                      [queryParams]="{ campaignId: campaign()?.id }">
-                Détails & Voter
-              </button>
-            </div>
           </div>
         } @empty {
-          <div class="empty-state">Aucun contenu trouvé pour cette campagne.</div>
+          <div class="empty-state">Aucun contenu trouvé.</div>
         }
       </div>
     }

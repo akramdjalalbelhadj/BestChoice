@@ -25,6 +25,7 @@ public interface SubjectMapper {
     @Mapping(target = "requiredSkills", ignore = true)
     @Mapping(target = "targetSkills", ignore = true)
     @Mapping(target = "keywords", ignore = true)
+    @Mapping(target = "matchingCampaigns", ignore = true)
     Subject toEntity(SubjectCreateRequest request);
 
     // ==================== READ ====================
