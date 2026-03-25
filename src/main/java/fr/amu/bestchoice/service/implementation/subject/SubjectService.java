@@ -113,6 +113,14 @@ public class SubjectService {
                 .collect(Collectors.toList());
     }
 
+
+    @Transactional
+    public List<SubjectResponse> findByCampaignId(Long campaignId) {
+        return subjectRepository.findByCampaignId(campaignId).stream()
+                .map(subjectMapper::toResponse)
+                .collect(Collectors.toList());
+    }
+
     // ==================== ACTIVATION / DÉSACTIVATION ====================
 
     @Transactional

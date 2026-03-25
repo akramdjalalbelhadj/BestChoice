@@ -1,0 +1,76 @@
+<div class="app-layout">
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="logo-box">BC</div>
+      <span class="brand-name">Le Bon Choix</span>
+    </div>
+    <nav class="nav-links">
+      <a routerLink="/app/student/dashboard" routerLinkActive="active" class="menu-item"><span class="icon">📊</span> Dashboard</a>
+      <a routerLink="/app/student/campaigns" routerLinkActive="active" class="menu-item"><span class="icon">🚀</span> Mes Campagnes</a>
+      <a routerLink="/app/student/preferences" routerLinkActive="active" class="menu-item"><span class="icon">⭐</span> Mes Vœux</a>
+    </nav>
+    <footer class="sidebar-footer">
+      <app-theme-toggle />
+      <button (click)="logout()" class="btn-logout"><span class="icon">🚪</span> Déconnexion</button>
+    </footer>
+  </aside>
+
+  <main class="main-content">
+    @if (isLoading()) {
+      <div class="loading-state">Chargement des opportunités...</div>
+    } @else if (campaign()) {
+      <header class="detail-header">
+        <a routerLink="/app/student/campaigns" class="back-link">← Retour aux campagnes</a>
+        <div class="header-main">
+          <div class="title-area">
+            <h1>{{ campaign()?.name }}</h1>
+            <p class="subtitle">
+              {{ items().length }} {{ isProjectCampaign() ? 'projets disponibles' : 'matières disponibles' }}
+              • S{{ campaign()?.semester }}
+            </p>
+          </div>
+        </div>
+      </header>
+
+      <div class="items-grid">
+        @for (it of items(); track it.id) {
+          <div class="item-card">
+            <div class="item-header">
+              <span class="id-badge">#{{ it.id }}</span>
+              <h3>{{ it.title }}</h3>
+            </div>
+
+            <p class="item-desc">{{ it.description | slice:0:120 }}{{ it.description.length > 120 ? '...' : '' }}</p>
+
+            <div class="item-meta">
+              <div class="meta">
+                <span class="label">Places</span>
+                <span class="val">{{ it.maxStudents }}</span>
+              </div>
+              @if (isProjectCampaign()) {
+                <div class="meta">
+                  <span class="label">Remote</span>
+                  <span class="val">{{ it.remotePossible ? 'Oui' : 'Non' }}</span>
+                </div>
+              }
+            </div>
+
+            <div class="tag-row">
+              @for (tag of (isProjectCampaign() ? it.requiredSkills?.slice(0,3) : it.prerequisites?.slice(0,3)); track tag) {
+                <span class="mini-tag">{{ tag }}</span>
+              }
+            </div>
+
+            <div class="item-footer">
+              <button class="btn-action" [routerLink]="['/app/student/projects', it.id]" [queryParams]="{ campaignId: campaign()?.id }">
+                Voir & Voter
+              </button>
+            </div>
+          </div>
+        } @empty {
+          <div class="empty-state">Aucun contenu n'est rattaché à cette campagne pour le moment.</div>
+        }
+      </div>
+    }
+  </main>
+</div>

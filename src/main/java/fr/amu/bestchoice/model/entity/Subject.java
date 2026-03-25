@@ -163,4 +163,15 @@ public class Subject {
     @OneToMany(mappedBy = "subject", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private List<StudentPreference> preferences = new ArrayList<>();
+
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "subject_matching_campaigns",
+            joinColumns = @JoinColumn(name = "subject_id"),
+            inverseJoinColumns = @JoinColumn(name = "matching_campaign_id")
+    )
+    @Builder.Default
+    private Set<MatchingCampaign> matchingCampaigns = new HashSet<>();
+
 }

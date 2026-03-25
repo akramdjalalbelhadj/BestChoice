@@ -196,5 +196,13 @@ public class Project {
     @Builder.Default
     private List<Student> assignedStudents = new ArrayList<>();
 
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "project_matching_campaigns",
+            joinColumns = @JoinColumn(name = "project_id"),
+            inverseJoinColumns = @JoinColumn(name = "matching_campaign_id")
+    )
+    @Builder.Default
+    private Set<MatchingCampaign> matchingCampaigns = new HashSet<>();
 
 }

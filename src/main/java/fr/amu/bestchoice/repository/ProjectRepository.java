@@ -121,4 +121,4 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
 
     List<Project> findAllByActiveTrue();
 
-}
+    List<Project> findByCampaignId(Long campaignId);}

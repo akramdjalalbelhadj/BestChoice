@@ -220,6 +220,15 @@ public class ProjectService implements IProjectService {
                 .collect(Collectors.toList());
     }
 
+    public List<ProjectResponse> findByCampaignId(Long campaignId) {
+        log.debug("Récupération des projets pour la campagne ID : {}", campaignId);
+        List<Project> projects = projectRepository.findByCampaignId(campaignId);
+        log.info("Nombre de projets trouvés pour la campagne ID {} : {}", campaignId, projects.size());
+        return projects.stream()
+                .map(this::toProjectResponse)
+                .collect(Collectors.toList());
+    }
+
     // ==================== ACTIVATION / DÉSACTIVATION ====================
 
     @Transactional

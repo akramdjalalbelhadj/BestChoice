@@ -151,4 +151,10 @@ public class ProjectController {
         List<ProjectResponse> projects = projectService.findByTeacherId(teacherId);
         return ResponseEntity.ok(projects);
     }
+
+    @GetMapping("/campaign/{campaignId}")
+    public ResponseEntity<List<ProjectResponse>> getProjectsByCampaign(@PathVariable Long campaignId) {
+        List<ProjectResponse> projects = projectService.findByCampaignId(campaignId);
+        return ResponseEntity.ok(projects);
+    }
 }

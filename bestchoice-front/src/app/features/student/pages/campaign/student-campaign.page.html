@@ -42,9 +42,9 @@
 
           <footer class="card-footer">
             <button class="btn-primary"
-                    [routerLink]="c.campaignType === 'PROJECT' ? '/app/student/projects' : '/app/student/subjects'"
+                    [routerLink]="['/app/student/items']"
                     [queryParams]="{ campaignId: c.id }">
-              Explorer les offres
+              Explorer l'offre
             </button>
           </footer>
         </div>

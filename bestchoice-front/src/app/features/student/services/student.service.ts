@@ -6,6 +6,9 @@ import { StudentResponse, StudentUpdateRequest } from '../models/student.model';
 import { MatchingResultResponse } from '../../matching/models/matching.model';
 import { PreferenceCreateRequest, PreferenceResponse } from '../models/preference.model';
 import { CampaignService } from '../../campaign/services/campaign.service';
+import { ProjectService } from '../../project/services/project.service';
+import { SubjectService } from '../../subject/services/subject.service';
+import { SubjectResponse } from '../../subject/models/subject.model';
 import {Observable, of, switchMap, tap} from 'rxjs';
 import {CampaignResponse} from '../../campaign/models/campaign.model';
 import {catchError} from 'rxjs/operators';
@@ -14,6 +17,8 @@ import {catchError} from 'rxjs/operators';
 export class StudentService {
   private http = inject(HttpClient);
   private campaignService = inject(CampaignService);
+  private projectService = inject(ProjectService);
+  private subjectService = inject(SubjectService);
   private readonly API = `${environment.apiBaseUrl}/api/students`;
 
   // --- ÉTAT DU SERVICE (SIGNALS PRIVÉS) ---
@@ -87,6 +92,12 @@ export class StudentService {
   /** Récupère un projet spécifique par ID */
   getProjectById(id: number) {
     return this.http.get<ProjectResponse>(`${this.API}/projects/${id}`);
+  }
+
+  /** * Récupère une matière spécifique via le SubjectService
+   */
+  getSubjectById(id: number): Observable<SubjectResponse> {
+    return this.subjectService.getById(id);
   }
 
   /** Crée une préférence (vœu) */

@@ -1,9 +1,10 @@
 import { Routes } from '@angular/router';
 import { StudentDashboardPage } from './pages/dashboard/student-dashboard.page';
-import { StudentProjectDetailPage } from './pages/project/student-project-detail.page';
+import { StudentProjectDetailPage } from './pages/item/student-project-detail.page';
 import { StudentPreferencesPage } from './pages/preference/student-preferences.page';
 import {StudentProfilePage} from './pages/profil/student-profile.page';
 import { StudentCampaignPage } from './pages/campaign/student-campaign.page';
+import {StudentItemDetailPage} from './pages/item/student-item-detail.page';
 
 export const STUDENT_ROUTES: Routes = [
   {
@@ -24,6 +25,8 @@ export const STUDENT_ROUTES: Routes = [
       { path: 'profile', component: StudentProfilePage },
 
       { path: 'campaigns', component: StudentCampaignPage },
+
+      {path: 'items/:id', component: StudentItemDetailPage}
     ]
   }
 ];
