@@ -28,6 +28,6 @@ public interface MatchingCampaignRepository extends JpaRepository<MatchingCampai
      */
     List<MatchingCampaign> findByTeacherId(Long teacherId);
 
-    @Query("SELECT DISTINCT c FROM MatchingCampaign c JOIN c.students s WHERE s.id = :studentId")
-    List<MatchingCampaign> findAllByStudentIdInTable(Long studentId);
+    @Query("SELECT c FROM MatchingCampaign c JOIN c.students s WHERE s.id = :studentId")
+    List<MatchingCampaign> findAllByStudentIdInTable(@Param("studentId") Long studentId);
 }

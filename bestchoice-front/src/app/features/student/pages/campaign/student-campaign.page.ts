@@ -2,7 +2,7 @@ import { Component, inject, OnInit, signal, ChangeDetectionStrategy } from '@ang
 import { CommonModule } from '@angular/common';
 import { StudentService } from '../../services/student.service';
 import { AuthStore } from '../../../../core/auth/auth.store';
-import {finalize, switchMap} from 'rxjs';
+import { finalize } from 'rxjs';
 import { RouterLink } from '@angular/router';
 
 @Component({
@@ -23,12 +23,15 @@ export class StudentCampaignPage implements OnInit {
   ngOnInit() {
     const user = this.auth.user();
     if (user?.userId) {
-      this.studentService.loadProfile(user.userId).pipe(
-        switchMap(profile => this.studentService.loadMyCampaigns(profile.id)),
-        finalize(() => this.isLoading.set(false))
-      ).subscribe({
-        error: (err) => console.error('Erreur lors du chargement des campagnes', err)
-      });
+      this.isLoading.set(true);
+
+      // On utilise la nouvelle méthode centralisée
+      this.studentService.loadInitialData(user.userId)
+        .pipe(finalize(() => this.isLoading.set(false)))
+        .subscribe({
+          next: (data) => console.log(`${data.length} campagnes chargées.`),
+          error: (err) => console.error('Erreur chargement page campagnes', err)
+        });
     }
   }
 }

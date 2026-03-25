@@ -6,7 +6,9 @@ import { StudentResponse, StudentUpdateRequest } from '../models/student.model';
 import { MatchingResultResponse } from '../../matching/models/matching.model';
 import { PreferenceCreateRequest, PreferenceResponse } from '../models/preference.model';
 import { CampaignService } from '../../campaign/services/campaign.service';
-import {Observable, tap} from 'rxjs';
+import {Observable, of, switchMap, tap} from 'rxjs';
+import {CampaignResponse} from '../../campaign/models/campaign.model';
+import {catchError} from 'rxjs/operators';
 
 @Injectable({ providedIn: 'root' })
 export class StudentService {
@@ -14,10 +16,49 @@ export class StudentService {
   private campaignService = inject(CampaignService);
   private readonly API = `${environment.apiBaseUrl}/api/students`;
 
-  studentProfile = signal<StudentResponse | null>(null);
-  availableProjects = signal<ProjectResponse[]>([]);
-  topMatches = signal<MatchingResultResponse[]>([]);
-  campaigns = this.campaignService.campaigns;
+  // --- ÉTAT DU SERVICE (SIGNALS PRIVÉS) ---
+  private readonly _studentProfile = signal<StudentResponse | null>(null);
+  private readonly _campaigns = signal<CampaignResponse[]>([]);
+  private readonly _topMatches = signal<MatchingResultResponse[]>([]);
+
+  // --- EXPOSITION PUBLIQUE ---
+  readonly studentProfile = this._studentProfile.asReadonly();
+  readonly campaigns = this._campaigns.asReadonly();
+  readonly topMatches = this._topMatches.asReadonly();
+
+
+  /**
+   * Reset complet des données (Appelé lors de la déconnexion)
+   */
+  clearData() {
+    this._studentProfile.set(null);
+    this._campaigns.set([]);
+    this._topMatches.set([]);
+  }
+
+  /**
+   * Charge le profil ET les campagnes de l'étudiant de manière atomique
+   */
+  loadInitialData(userId: number): Observable<CampaignResponse[]> {
+    return this.http.get<StudentResponse>(`${this.API}/user/${userId}`).pipe(
+      tap(student => this._studentProfile.set(student)),
+      switchMap(student => {
+        if (!student.id) return of([]);
+        return this.loadMyCampaigns(student.id);
+      }),
+      catchError(err => {
+        console.error('Erreur initialisation étudiant', err);
+        return of([]);
+      })
+    );
+  }
+
+  /** Charge les campagnes via le CampaignService spécialisé */
+  loadMyCampaigns(studentId: number): Observable<CampaignResponse[]> {
+    return this.campaignService.loadByStudent(studentId).pipe(
+      tap(list => this._campaigns.set(list))
+    );
+  }
 
   getAllStudents(): Observable<StudentResponse[]> {
     return this.http.get<StudentResponse[]>(this.API);
@@ -26,21 +67,14 @@ export class StudentService {
   /** Récupère le profil complet de l'étudiant */
   loadProfile(userId: number) {
     return this.http.get<StudentResponse>(`${this.API}/students/user/${userId}`).pipe(
-      tap(res => this.studentProfile.set(res))
+      tap(res => this._studentProfile.set(res))
     );
   }
 
-  /** Récupère les projets disponibles pour le matching */
-  loadAvailableProjects() {
-    return this.http.get<ProjectResponse[]>(`${this.API}/projects/available`).pipe(
-      tap(res => this.availableProjects.set(res))
-    );
-  }
-
-  /** Récupère les top recommandations de matching */
+  /** Récupère les top recommandations */
   loadTopMatches(studentId: number) {
-    return this.http.get<MatchingResultResponse[]>(`${this.API}/matching/student/${studentId}`).pipe(
-      tap(res => this.topMatches.set(res))
+    return this.http.get<MatchingResultResponse[]>(`${environment.apiBaseUrl}/api/matching/student/${studentId}`).pipe(
+      tap(res => this._topMatches.set(res))
     );
   }
 
@@ -70,10 +104,10 @@ export class StudentService {
     return this.http.delete(`${this.API}/preferences/${id}`);
   }
 
-  /** Met à jour le profil étudiant */
+  // --- MISE À JOUR PROFIL ---
   updateProfile(studentId: number, request: StudentUpdateRequest) {
-    return this.http.put<StudentResponse>(`${this.API}/students/${studentId}`, request).pipe(
-      tap(res => this.studentProfile.set(res))
+    return this.http.put<StudentResponse>(`${this.API}/${studentId}`, request).pipe(
+      tap(res => this._studentProfile.set(res))
     );
   }
 
@@ -85,9 +119,5 @@ export class StudentService {
   /** Récupère tous les mots-clés actifs du catalogue */
   getAllActiveKeywords() {
     return this.http.get<any[]>(`${this.API}/keywords/active`);
-  }
-
-  loadMyCampaigns(studentId: number) {
-    return this.campaignService.loadByStudent(studentId);
   }
 }

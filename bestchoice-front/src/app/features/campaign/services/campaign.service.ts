@@ -63,8 +63,13 @@ export class CampaignService {
   }
 
   loadByStudent(studentId: number): Observable<CampaignResponse[]> {
+    this._campaigns.set([]);
+
     return this.http.get<CampaignResponse[]>(`${this.API}/student/${studentId}`).pipe(
-      tap(list => this._campaigns.set(list))
+      tap(list => {
+        console.log('Données reçues pour l\'étudiant:', list);
+        this._campaigns.set(list);
+      })
     );
   }
 

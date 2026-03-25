@@ -17,16 +17,16 @@
       @for (c of campaigns(); track c.id) {
         <div class="campaign-card">
           <div class="card-badge" [class.project]="c.campaignType === 'PROJECT'">
-            {{ c.campaignType === 'PROJECT' ? '🚀 Projets' : '📚 Matières' }}
+            {{ c.campaignType === 'PROJECT' ? '🚀 Projets (PFE)' : '📚 Matières Optionnelles' }}
           </div>
 
           <div class="card-content">
             <h3 class="name">{{ c.name }}</h3>
-            <p class="description">{{ c.description || 'Aucune description fournie.' }}</p>
+            <p class="description">{{ c.description || 'Aucune description spécifiée pour cette campagne.' }}</p>
 
             <div class="meta-info">
               <div class="info-item">
-                <span class="label">Période</span>
+                <span class="label">Période Académique</span>
                 <span class="value">{{ c.academicYear }} • Semestre {{ c.semester }}</span>
               </div>
               <div class="info-item">
@@ -34,23 +34,25 @@
                 <span class="value">{{ c.teacherName }}</span>
               </div>
               <div class="info-item">
-                <span class="label">Offres disponibles</span>
+                <span class="label">Offres à pourvoir</span>
                 <span class="value">{{ c.itemsCount }}</span>
               </div>
             </div>
           </div>
 
           <footer class="card-footer">
-            <button class="btn-primary" [routerLink]="c.campaignType === 'PROJECT' ? '/app/student/projects' : '/app/student/subjects'">
-              Voir les offres
+            <button class="btn-primary"
+                    [routerLink]="c.campaignType === 'PROJECT' ? '/app/student/projects' : '/app/student/subjects'"
+                    [queryParams]="{ campaignId: c.id }">
+              Explorer les offres
             </button>
           </footer>
         </div>
       } @empty {
         <div class="empty-state">
           <div class="icon">📁</div>
-          <p>Vous n'êtes actuellement inscrit dans aucune campagne de matching.</p>
-          <small>Contactez votre responsable pédagogique si cela vous semble anormal.</small>
+          <p>Vous n'êtes inscrit dans aucune campagne de matching pour le moment.</p>
+          <small>Si vous pensez qu'il s'agit d'une erreur, contactez votre scolarité.</small>
         </div>
       }
     </div>
