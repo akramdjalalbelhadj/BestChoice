@@ -51,7 +51,7 @@
         <div class="page-actions">
           <button type="button" class="btn-ghost" routerLink="/app/teacher/campaigns">Annuler</button>
           <button type="button" class="btn-primary"
-                  [disabled]="isSubmitting() || form.invalid || selectedStudentIds().length === 0 || selectedItemIds().length === 0"
+                  [disabled]="isSubmitting()"
                   (click)="onSubmit()">
             @if (isSubmitting()) { <span class="spinner"></span> }
             Publier la campagne
@@ -65,13 +65,26 @@
             <div class="card-header"><h3>Configuration Générale</h3></div>
             <div class="form-body">
               <div class="field">
-                <label>Nom de la campagne</label>
-                <input type="text" class="input" formControlName="name" placeholder="Ex: Master Informatique">
+                <label>Nom de la campagne <span class="required-star">*</span></label>
+                <input type="text" class="input" formControlName="name"
+                       [class.input-error]="nameError()"
+                       placeholder="Ex: Master Informatique">
+                @if (nameError()) {
+                  <span class="field-warning">⚠ Le nom de la campagne est obligatoire.</span>
+                }
               </div>
               <div class="row">
                 <div class="field">
-                  <label>Année</label>
-                  <input type="text" class="input" formControlName="academicYear">
+                  <label>Année <span class="required-star">*</span></label>
+                  <input type="text" class="input" formControlName="academicYear"
+                         [class.input-error]="yearEmptyError() || yearFormatError()"
+                         placeholder="Ex: 2025-2026">
+                  @if (yearEmptyError()) {
+                    <span class="field-warning">⚠ L'année est obligatoire.</span>
+                  }
+                  @if (yearFormatError()) {
+                    <span class="field-warning">⚠ L'année doit être au format AAAA-AAAA (ex: 2025-2026).</span>
+                  }
                 </div>
                 <div class="field">
                   <label>Semestre</label>
@@ -142,16 +155,25 @@
         </div>
 
         <div class="selection-col">
-          <section class="content-card">
+          <section class="content-card" [class.card-error]="studentsError()">
             <div class="card-header">
               <div class="header-title">
-                <h3>Étudiants</h3>
+                <h3>Étudiants <span class="required-star">*</span></h3>
                 <span class="count-pill">{{ selectedStudentIds().length }}</span>
               </div>
               <button type="button" class="btn-link" (click)="selectAllStudents()">Tout cocher</button>
             </div>
+            @if (studentsError()) {
+              <span class="field-warning" style="padding: 0 1rem 0.5rem; display:block;">⚠ Sélectionnez au moins un étudiant.</span>
+            }
+            <div class="picker-search">
+              <input type="text" class="picker-search-input"
+                     [value]="studentSearch()"
+                     (input)="studentSearch.set($any($event.target).value)"
+                     placeholder="🔍 Rechercher un étudiant...">
+            </div>
             <div class="picker-list">
-              @for (s of availableStudents(); track s.id) {
+              @for (s of filteredStudents(); track s.id) {
                 <div class="picker-item" [class.selected]="selectedStudentIds().includes(s.id)" (click)="toggleStudent(s.id)">
                   <div class="custom-checkbox" [class.checked]="selectedStudentIds().includes(s.id)"></div>
                   <div class="item-text">
@@ -163,16 +185,27 @@
             </div>
           </section>
 
-          <section class="content-card">
+          <section class="content-card" [class.card-error]="itemsError()">
             <div class="card-header">
               <div class="header-title">
-                <h3>{{ isProjectType() ? 'Projets' : 'Matières' }}</h3>
+                <h3>{{ isProjectType() ? 'Projets' : 'Matières' }} <span class="required-star">*</span></h3>
                 <span class="count-pill">{{ selectedItemIds().length }}</span>
               </div>
             </div>
+            @if (itemsError()) {
+              <span class="field-warning" style="padding: 0 1rem 0.5rem; display:block;">
+                ⚠ Sélectionnez au moins {{ isProjectType() ? 'un projet' : 'une matière' }}.
+              </span>
+            }
+            <div class="picker-search">
+              <input type="text" class="picker-search-input"
+                     [value]="itemSearch()"
+                     (input)="itemSearch.set($any($event.target).value)"
+                     placeholder="🔍 Rechercher {{ isProjectType() ? 'un projet' : 'une matière' }}...">
+            </div>
             <div class="picker-list">
               @if (isProjectType()) {
-                @for (p of availableProjects(); track p.id) {
+                @for (p of filteredItems(); track p.id) {
                   <div class="picker-item" [class.selected]="selectedItemIds().includes(p.id)" (click)="toggleItem(p.id)">
                     <div class="custom-checkbox" [class.checked]="selectedItemIds().includes(p.id)"></div>
                     <div class="item-text">
@@ -182,7 +215,7 @@
                   </div>
                 }
               } @else {
-                @for (sb of availableSubjects(); track sb.id) {
+                @for (sb of filteredItems(); track sb.id) {
                   <div class="picker-item" [class.selected]="selectedItemIds().includes(sb.id)" (click)="toggleItem(sb.id)">
                     <div class="custom-checkbox" [class.checked]="selectedItemIds().includes(sb.id)"></div>
                     <div class="item-text">

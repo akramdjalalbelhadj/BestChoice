@@ -2,6 +2,48 @@
 
 .main-grid { grid-template-columns: 1fr 1fr; }
 
+// ── Bannière erreur globale ─────────────────────────────────────────────────
+.error-banner {
+  background: #fef2f2;
+  border: 1px solid #fca5a5;
+  color: #dc2626;
+  border-radius: var(--bc-radius-md);
+  padding: 0.75rem 1rem;
+  margin-bottom: 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+// ── Champ obligatoire ───────────────────────────────────────────────────────
+.required-star {
+  color: #dc2626;
+  font-weight: 700;
+  margin-left: 2px;
+}
+
+// ── Message d'avertissement sous un champ ───────────────────────────────────
+.field-warning {
+  display: block;
+  margin-top: 0.35rem;
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: #d97706;
+}
+
+// ── Bordure rouge sur l'input invalide ──────────────────────────────────────
+.input-error {
+  border-color: #fca5a5 !important;
+  background: #fff7f7 !important;
+
+  &:focus { outline-color: #dc2626; }
+}
+
+// ── Carte avec erreur (types de travail) ────────────────────────────────────
+.card-error {
+  border: 1.5px solid #fca5a5 !important;
+}
+
+// Work types
 .work-types-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -48,6 +90,7 @@
   }
 }
 
+// Tags
 .tag-cloud { display: flex; flex-wrap: wrap; gap: 0.375rem; margin-top: 0.5rem; }
 
 .skill-pill {

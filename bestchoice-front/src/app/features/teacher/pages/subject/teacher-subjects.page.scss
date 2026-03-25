@@ -18,6 +18,61 @@
   padding: 2px 7px; border-radius: var(--bc-radius-full);
 }
 
+// ── Pagination ───────────────────────────────────────────────────────────────
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.875rem 1.25rem;
+  border-top: 1px solid var(--bc-border);
+}
+
+.page-info {
+  font-size: 0.78rem;
+  color: var(--bc-text-3);
+  font-weight: 500;
+}
+
+.page-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.page-btn {
+  min-width: 32px;
+  height: 32px;
+  padding: 0 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--bc-border);
+  border-radius: var(--bc-radius);
+  background: var(--bc-card);
+  color: var(--bc-text-2);
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--bc-transition);
+
+  &:hover:not(:disabled) {
+    border-color: var(--bc-primary-border);
+    color: var(--bc-primary);
+    background: var(--bc-primary-soft, rgba(99,102,241,0.08));
+  }
+
+  &.active {
+    background: var(--bc-primary);
+    color: #fff;
+    border-color: var(--bc-primary);
+  }
+
+  &:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+  }
+}
+
 .capacity-info {
   .count { display: block; font-size: 0.875rem; font-weight: 700; color: var(--bc-text); }
 }

@@ -7,7 +7,7 @@
   align-items: start;
 }
 
-// Project info
+// Subject info
 .project-main-info {
   margin-bottom: 1.5rem;
   .category-label {
@@ -25,6 +25,7 @@
   padding: 1rem 0;
   border-top: 1px solid var(--bc-border);
   border-bottom: 1px solid var(--bc-border);
+  flex-wrap: wrap;
 }
 
 .meta-item {
@@ -41,12 +42,31 @@
 
 .tag-group { display: flex; flex-wrap: wrap; gap: 0.375rem; }
 
-.params-list { display: flex; flex-direction: column; gap: 0.5rem; margin-top: 0.25rem; }
+.empty-tag {
+  font-size: 0.8rem; color: var(--bc-text-3); font-style: italic;
+}
+
+// Capacity block
+.capacity-display {
+  display: flex; gap: 1.5rem;
+}
+
+.cap-item {
+  display: flex; flex-direction: column; gap: 2px;
+  .cap-label { font-size: 0.7rem; color: var(--bc-text-3); font-weight: 600; text-transform: uppercase; }
+  .cap-val   { font-size: 1rem; font-weight: 700; color: var(--bc-text); }
+}
+
+// Params list
+.params-list { display: grid; gap: 0.75rem; margin-top: 0.25rem; }
 
 .param-row {
   display: flex; justify-content: space-between; align-items: center;
   padding: 0.5rem 0;
   border-bottom: 1px solid var(--bc-border);
+
   &:last-child { border-bottom: none; }
-  .param-label { font-size: 0.85rem; color: var(--bc-text-2); }
+
+  .param-label { font-size: 0.875rem; color: var(--bc-text-2); }
+  .param-val   { font-size: 0.875rem; font-weight: 700; color: var(--bc-text); }
 }

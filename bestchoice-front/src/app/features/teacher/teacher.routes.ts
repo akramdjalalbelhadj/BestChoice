@@ -9,6 +9,7 @@ import { TeacherCampaignsPage } from './pages/campaign/teacher-campaigns.page';
 import { MatchingResultsViewPage } from './pages/matching/teacher-matching.page';
 import { TeacherSubjectsPage } from './pages/subject/teacher-subjects.page';
 import { TeacherSubjectFormPage } from './pages/subject/teacher-subject-form.page';
+import { TeacherSubjectDetailPage } from './pages/subject/teacher-subject-detail.page';
 
 export const TEACHER_ROUTES: Routes = [
   {
@@ -27,6 +28,7 @@ export const TEACHER_ROUTES: Routes = [
       { path: 'subjects', component: TeacherSubjectsPage },
       { path: 'subjects/create', component: TeacherSubjectFormPage },
       { path: 'subjects/edit/:id', component: TeacherSubjectFormPage },
+      { path: 'subjects/:id', component: TeacherSubjectDetailPage },
 
       // --- SECTION CAMPAGNES ---
       { path: 'campaigns', component: TeacherCampaignsPage },

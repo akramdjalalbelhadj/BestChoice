@@ -62,9 +62,15 @@
 
       <div class="stats-grid">
         <div class="stat-card">
-          <span class="stat-label">Capacité d'accueil</span>
-          <div class="stat-value">{{ totalCapacity() }}</div>
-          <div class="stat-unit">places disponibles</div>
+          <span class="stat-label">Capacité d'accueil — Options</span>
+          <div class="stat-value">{{ subjectCapacity() }}</div>
+          <div class="stat-unit">places disponibles (matières)</div>
+        </div>
+
+        <div class="stat-card">
+          <span class="stat-label">Capacité d'accueil — Projets</span>
+          <div class="stat-value">{{ projectCapacity() }}</div>
+          <div class="stat-unit">places disponibles (projets)</div>
         </div>
 
         <div class="stat-card highlight">

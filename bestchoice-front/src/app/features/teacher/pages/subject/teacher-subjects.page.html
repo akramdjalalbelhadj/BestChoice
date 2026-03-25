@@ -59,7 +59,7 @@
           <input
             type="text"
             [ngModel]="searchQuery()"
-            (ngModelChange)="searchQuery.set($event)"
+            (ngModelChange)="onSearch($event)"
             placeholder="Rechercher par titre, compétence, mot-clé..." />
         </div>
       </div>
@@ -83,7 +83,7 @@
                   <tr><td colspan="6"><div class="skeleton-bar"></div></td></tr>
                 }
               } @else {
-                @for (s of filteredSubjects(); track s.id) {
+                @for (s of paginatedSubjects(); track s.id) {
                   <tr>
                     <td class="col-main">
                       <span class="s-title">{{ s.title }}</span>
@@ -99,7 +99,6 @@
                           <span class="type-badge">{{ type }}</span>
                         }
                       </div>
-                      <div class="academic-detail">S{{ s.semester }} • {{ s.credits }} ECTS • {{ s.academicYear }}</div>
                     </td>
                     <td>
                       <div class="skill-bubbles">
@@ -113,21 +112,19 @@
                     </td>
                     <td>
                       <div class="capacity-info">
-                        <span class="count">{{ s.minStudents }} – {{ s.maxStudents }} étudiants</span>
+                        <span class="count">{{ s.maxStudents }} étudiants max</span>
                       </div>
                     </td>
                     <td>
-                      <span class="status-pill" [class.is-active]="s.active">
+                      <button (click)="toggleStatus(s)" class="status-pill" [class.is-active]="s.active">
                         {{ s.active ? 'Public' : 'Brouillon' }}
-                      </span>
+                      </button>
                     </td>
                     <td>
                       <div class="btn-group">
                         <button class="icon-btn edit" [routerLink]="['/app/teacher/subjects/edit', s.id]" title="Modifier">✏️</button>
-                        <button class="icon-btn" [class.delete]="s.active" (click)="toggleStatus(s)"
-                                [title]="s.active ? 'Désactiver' : 'Activer'">
-                          {{ s.active ? '🚫' : '✅' }}
-                        </button>
+                        <button class="icon-btn" [routerLink]="['/app/teacher/subjects', s.id]" title="Voir le détail">👁️</button>
+                        <button class="icon-btn delete" (click)="deleteSubject(s.id)" title="Supprimer">🗑️</button>
                       </div>
                     </td>
                   </tr>
@@ -142,6 +139,19 @@
             </tbody>
           </table>
         </div>
+
+        @if (filteredSubjects().length > 0) {
+          <div class="pagination">
+            <span class="page-info">{{ paginationInfo() }}</span>
+            <div class="page-controls">
+              <button class="page-btn" (click)="prevPage()" [disabled]="currentPage() === 1">‹</button>
+              @for (n of pageNumbers(); track n) {
+                <button class="page-btn" [class.active]="n === currentPage()" (click)="goToPage(n)">{{ n }}</button>
+              }
+              <button class="page-btn" (click)="nextPage()" [disabled]="currentPage() === totalPages()">›</button>
+            </div>
+          </div>
+        }
       </div>
 
     </div>
