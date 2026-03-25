@@ -51,8 +51,10 @@ export class StudentItemDetailPage implements OnInit {
       finalize(() => this.isLoading.set(false))
     ).subscribe({
       next: (data) => {
+        console.log('Campagne reçue:', data.campaign);
+        console.log('Items reçus (Tableau):', data.items);
         this.campaign.set(data.campaign);
-        this.items.set(data.items);
+        this.items.set(Array.isArray(data.items) ? data.items : []);
       },
       error: (err) => {
         console.error('Erreur lors du chargement des données de campagne', err);

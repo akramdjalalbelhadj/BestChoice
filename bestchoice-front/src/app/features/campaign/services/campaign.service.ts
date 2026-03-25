@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import {Observable, tap, switchMap, forkJoin, of} from 'rxjs';
 import { environment } from '../../../../environments/environment';
 import { CampaignResponse, CampaignRequest } from '../models/campaign.model';
+import {catchError, map} from 'rxjs/operators';
 
 @Injectable({ providedIn: 'root' })
 export class CampaignService {
@@ -89,12 +90,18 @@ export class CampaignService {
   getCompleteCampaign(campaignId: number): Observable<{ campaign: CampaignResponse, items: any[] }> {
     return this.getById(campaignId).pipe(
       switchMap(campaign => {
-        const itemsUrl = campaign.campaignType === 'PROJECT'
-          ? `${environment.apiBaseUrl}/api/projects/campaign/${campaignId}`
-          : `${environment.apiBaseUrl}/api/subjects/campaign/${campaignId}`;
+        const endpoint = campaign.campaignType === 'PROJECT' ? 'projects' : 'subjects';
+        const itemsUrl = `${environment.apiBaseUrl}/api/${endpoint}/campaign/${campaignId}`;
 
         return this.http.get<any[]>(itemsUrl).pipe(
-          switchMap(items => of({ campaign, items }))
+          map(items => ({
+            campaign,
+            items: Array.isArray(items) ? items : []
+          })),
+          catchError(err => {
+            console.error('Erreur lors de la récupération des items', err);
+            return of({ campaign, items: [] });
+          })
         );
       })
     );

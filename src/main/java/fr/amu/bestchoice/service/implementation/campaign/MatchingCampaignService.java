@@ -1,9 +1,6 @@
 package fr.amu.bestchoice.service.implementation.campaign;
 
-import fr.amu.bestchoice.model.entity.MatchingCampaign;
-import fr.amu.bestchoice.model.entity.MatchingCampaignType;
-import fr.amu.bestchoice.model.entity.Student;
-import fr.amu.bestchoice.model.entity.Teacher;
+import fr.amu.bestchoice.model.entity.*;
 import fr.amu.bestchoice.repository.*;
 import fr.amu.bestchoice.service.interfaces.IMatchingCampaignService;
 import fr.amu.bestchoice.web.dto.campaign.MatchingCampaignRequest;
@@ -44,10 +41,19 @@ public class MatchingCampaignService implements IMatchingCampaignService
 
         if (request.campaignType() == MatchingCampaignType.PROJECT
                 && request.projectIds() != null && !request.projectIds().isEmpty()) {
-            campaign.getProjects().addAll(projectRepository.findAllById(request.projectIds()));
+
+            List<Project> projects = projectRepository.findAllById(request.projectIds());
+            campaign.getProjects().addAll(projects);
+
+            projects.forEach(project -> project.getMatchingCampaigns().add(campaign));
+
         } else if (request.campaignType() == MatchingCampaignType.SUBJECT
                 && request.subjectIds() != null && !request.subjectIds().isEmpty()) {
-            campaign.getSubjects().addAll(subjectRepository.findAllById(request.subjectIds()));
+
+            List<Subject> subjects = subjectRepository.findAllById(request.subjectIds());
+            campaign.getSubjects().addAll(subjects);
+
+            subjects.forEach(subject -> subject.getMatchingCampaigns().add(campaign));
         }
 
         MatchingCampaign saved = campaignRepository.save(campaign);
