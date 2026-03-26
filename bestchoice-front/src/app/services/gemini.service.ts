@@ -4,7 +4,6 @@ import { Injectable } from '@angular/core';
   providedIn: 'root'
 })
 export class GeminiService {
-  // 1. COLLE TA CLÉ GROQ ICI
   private apiKey = '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';
   private apiUrl = 'https://api.groq.com/openai/v1/chat/completions';
 
