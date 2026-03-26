@@ -66,6 +66,14 @@ public class PreferenceService implements IPreferenceService {
         Student student = studentRepository.findById(dto.studentId())
                 .orElseThrow(() -> new NotFoundException("Étudiant introuvable"));
 
+        // 2. Vérification des règles métier
+        if (preferenceRepository.existsByStudentIdAndRank(dto.studentId(), dto.rank())) {
+            throw new BusinessException("Ce rang est déjà utilisé par l'étudiant");
+        }
+        if (dto.projectId() != null && preferenceRepository.existsByStudentIdAndProjectId(dto.studentId(), dto.projectId())) {
+            throw new BusinessException("L'étudiant a déjà soumis un vœu pour ce projet");
+        }
+
         // On récupère la campagne (indispensable pour le contexte)
         MatchingCampaign campaign = campaignRepository.findById(dto.campaignId())
                 .orElseThrow(() -> new NotFoundException("Campagne introuvable"));

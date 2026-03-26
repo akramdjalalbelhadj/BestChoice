@@ -79,7 +79,7 @@ class ProjectServiceTest {
     void create_ShouldReturnProjectResponse_WhenValidRequest() {
         // Given
         Long teacherId = 1L;
-        when(teacherRepository.findById(teacherId)).thenReturn(Optional.of(teacher));
+        when(teacherRepository.findByUserId(teacherId)).thenReturn(Optional.of(teacher));
         when(projectMapper.toEntity(createRequest)).thenReturn(project);
         
         Skill skill = new Skill();
@@ -105,7 +105,7 @@ class ProjectServiceTest {
     void create_ShouldThrowNotFoundException_WhenTeacherDoesNotExist() {
         // Given
         Long teacherId = 1L;
-        when(teacherRepository.findById(teacherId)).thenReturn(Optional.empty());
+        when(teacherRepository.findByUserId(teacherId)).thenReturn(Optional.empty());
 
         // When & Then
         assertThatThrownBy(() -> projectService.create(teacherId, createRequest))

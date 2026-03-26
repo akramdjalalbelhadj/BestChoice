@@ -47,7 +47,7 @@ class MatchingResultControllerTest {
 
     @Test
     void getResultsByCampaign_ShouldReturnList() throws Exception {
-        MatchingResultResponse result = new MatchingResultResponse(1L, 1L, 1L, 1L, null, new BigDecimal("0.8"), new BigDecimal("0.7"), new BigDecimal("0.9"), 1, MatchingAlgorithmType.WEIGHTED, LocalDateTime.now());
+        MatchingResultResponse result = new MatchingResultResponse(1L, 1L, 1L, 1L, null, new BigDecimal("0.8"), new BigDecimal("0.7"), new BigDecimal("0.9"), 1, MatchingAlgorithmType.WEIGHTED, LocalDateTime.now(), null, null);
         when(matchingResultService.findByCampaignId(1L)).thenReturn(List.of(result));
 
         mockMvc.perform(get("/api/matching/campaign/1"))
@@ -64,7 +64,7 @@ class MatchingResultControllerTest {
 
     @Test
     void getResultsByStudent_ShouldReturnList() throws Exception {
-        MatchingResultResponse result = new MatchingResultResponse(1L, 1L, 1L, 1L, null, new BigDecimal("0.8"), new BigDecimal("0.7"), new BigDecimal("0.9"), 1, MatchingAlgorithmType.WEIGHTED, LocalDateTime.now());
+        MatchingResultResponse result = new MatchingResultResponse(1L, 1L, 1L, 1L, null, new BigDecimal("0.8"), new BigDecimal("0.7"), new BigDecimal("0.9"), 1, MatchingAlgorithmType.WEIGHTED, LocalDateTime.now(), null, null);
         when(matchingResultService.findByCampaignAndStudent(1L, 1L)).thenReturn(List.of(result));
 
         mockMvc.perform(get("/api/matching/campaign/1/student/1"))
@@ -74,7 +74,7 @@ class MatchingResultControllerTest {
 
     @Test
     void getTopForStudent_ShouldReturnList() throws Exception {
-        MatchingResultResponse result = new MatchingResultResponse(1L, 1L, 1L, 1L, null, new BigDecimal("0.8"), new BigDecimal("0.7"), new BigDecimal("0.9"), 1, MatchingAlgorithmType.WEIGHTED, LocalDateTime.now());
+        MatchingResultResponse result = new MatchingResultResponse(1L, 1L, 1L, 1L, null, new BigDecimal("0.8"), new BigDecimal("0.7"), new BigDecimal("0.9"), 1, MatchingAlgorithmType.WEIGHTED, LocalDateTime.now(), null, null);
         when(matchingResultService.findTopResultsForStudent(anyLong(), anyLong(), anyInt())).thenReturn(List.of(result));
 
         mockMvc.perform(get("/api/matching/campaign/1/student/1/top/5"))
@@ -84,7 +84,7 @@ class MatchingResultControllerTest {
 
     @Test
     void getResultsByProject_ShouldReturnList() throws Exception {
-        MatchingResultResponse result = new MatchingResultResponse(1L, 1L, 1L, 1L, null, new BigDecimal("0.8"), new BigDecimal("0.7"), new BigDecimal("0.9"), 1, MatchingAlgorithmType.WEIGHTED, LocalDateTime.now());
+        MatchingResultResponse result = new MatchingResultResponse(1L, 1L, 1L, 1L, null, new BigDecimal("0.8"), new BigDecimal("0.7"), new BigDecimal("0.9"), 1, MatchingAlgorithmType.WEIGHTED, LocalDateTime.now(), null, null);
         when(matchingResultService.findByCampaignAndProject(1L, 1L)).thenReturn(List.of(result));
 
         mockMvc.perform(get("/api/matching/campaign/1/project/1"))
@@ -94,7 +94,7 @@ class MatchingResultControllerTest {
 
     @Test
     void getById_ShouldReturnResult() throws Exception {
-        MatchingResultResponse result = new MatchingResultResponse(1L, 1L, 1L, 1L, null, new BigDecimal("0.8"), new BigDecimal("0.7"), new BigDecimal("0.9"), 1, MatchingAlgorithmType.WEIGHTED, LocalDateTime.now());
+        MatchingResultResponse result = new MatchingResultResponse(1L, 1L, 1L, 1L, null, new BigDecimal("0.8"), new BigDecimal("0.7"), new BigDecimal("0.9"), 1, MatchingAlgorithmType.WEIGHTED, LocalDateTime.now(), null, null);
         when(matchingResultService.findById(1L)).thenReturn(result);
 
         mockMvc.perform(get("/api/matching/1"))

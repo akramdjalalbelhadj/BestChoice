@@ -46,6 +46,7 @@ class PreferenceServiceTest {
 
     private Student student;
     private Project project;
+    private MatchingCampaign campaign;
     private StudentPreference preference;
     private PreferenceCreateRequest createRequest;
     private PreferenceResponse preferenceResponse;
@@ -65,6 +66,9 @@ class PreferenceServiceTest {
         project.setComplet(false);
         project.setAssignedStudents(new ArrayList<>());
 
+        campaign = new MatchingCampaign();
+        campaign.setId(1L);
+
         preference = new StudentPreference();
         preference.setId(1L);
         preference.setStudent(student);
@@ -80,9 +84,10 @@ class PreferenceServiceTest {
     void create_ShouldReturnPreferenceResponse_WhenValidRequest() {
         // Given
         when(studentRepository.findById(1L)).thenReturn(Optional.of(student));
-        when(projectRepository.findById(1L)).thenReturn(Optional.of(project));
-        when(preferenceRepository.existsByStudentIdAndProjectId(1L, 1L)).thenReturn(false);
         when(preferenceRepository.existsByStudentIdAndRank(1L, 1)).thenReturn(false);
+        when(preferenceRepository.existsByStudentIdAndProjectId(1L, 1L)).thenReturn(false);
+        when(campaignRepository.findById(1L)).thenReturn(Optional.of(campaign));
+        when(projectRepository.findById(1L)).thenReturn(Optional.of(project));
         when(preferenceMapper.toEntity(createRequest)).thenReturn(preference);
         when(preferenceRepository.save(any(StudentPreference.class))).thenReturn(preference);
         when(preferenceMapper.toResponse(any())).thenReturn(preferenceResponse);
@@ -99,7 +104,6 @@ class PreferenceServiceTest {
     void create_ShouldThrowBusinessException_WhenRankAlreadyUsed() {
         // Given
         when(studentRepository.findById(1L)).thenReturn(Optional.of(student));
-        when(projectRepository.findById(1L)).thenReturn(Optional.of(project));
         when(preferenceRepository.existsByStudentIdAndRank(1L, 1)).thenReturn(true);
 
         // When & Then

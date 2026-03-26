@@ -40,7 +40,7 @@ class MatchingResultServiceTest {
         matchingResult = new MatchingResult();
         matchingResult.setId(1L);
 
-        matchingResultResponse = new MatchingResultResponse(1L, 1L, 1L, 1L, null, BigDecimal.ONE, BigDecimal.ONE, BigDecimal.ONE, 1, null, LocalDateTime.now());
+        matchingResultResponse = new MatchingResultResponse(1L, 1L, 1L, 1L, null, BigDecimal.ONE, BigDecimal.ONE, BigDecimal.ONE, 1, null, LocalDateTime.now(), null, null);
     }
 
     @Test

@@ -2,6 +2,7 @@ package fr.amu.bestchoice.service.implementation.algorithmes;
 
 import fr.amu.bestchoice.model.entity.*;
 import fr.amu.bestchoice.repository.MatchingResultRepository;
+import fr.amu.bestchoice.repository.StudentPreferenceRepository;
 import fr.amu.bestchoice.web.dto.matching.MatchingRunResult;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,6 +25,8 @@ class StableMatchingStrategyTest {
     private MatchingResultRepository resultRepository;
     @Mock
     private MatchingScoringService scoringService;
+    @Mock
+    private StudentPreferenceRepository preferenceRepository;
 
     @InjectMocks
     private StableMatchingStrategy strategy;
