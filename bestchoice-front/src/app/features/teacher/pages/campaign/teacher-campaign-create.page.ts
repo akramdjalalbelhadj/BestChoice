@@ -71,8 +71,7 @@ export class TeacherCampaignCreatePage implements OnInit {
 
   algorithmTypes = [
     MatchingAlgorithmType.WEIGHTED,
-    MatchingAlgorithmType.STABLE,
-    MatchingAlgorithmType.HYBRID
+    MatchingAlgorithmType.STABLE
   ];
   campaignTypes = [
     { label: 'Projets (PFE/Tutorés)', value: MatchingCampaignType.PROJECT },
@@ -85,7 +84,7 @@ export class TeacherCampaignCreatePage implements OnInit {
     academicYear: ['2025-2026', [Validators.required, Validators.pattern(/^\d{4}-\d{4}$/)]],
     semester: [1, [Validators.required]],
     campaignType: [MatchingCampaignType.PROJECT, [Validators.required]],
-    algorithmType: ['HYBRID' as MatchingAlgorithmType, [Validators.required]],
+    algorithmType: [MatchingAlgorithmType.WEIGHTED, [Validators.required]],
     skillsWeight: [34],
     interestsWeight: [33],
     workTypeWeight: [33]
