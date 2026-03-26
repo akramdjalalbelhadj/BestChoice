@@ -133,4 +133,10 @@
       }
     </div>
   </main>
+
+  <app-chatbot [contextData]="{
+    campagne: campaign(),
+    liste_items: items(),
+    user: auth.displayName()
+}"></app-chatbot>
 </div>

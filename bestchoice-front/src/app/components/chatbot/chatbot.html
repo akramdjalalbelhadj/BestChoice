@@ -1,0 +1,20 @@
+<div class="chat-wrapper">
+  <button class="fab" (click)="toggleChat()">
+    <span *ngIf="!isOpen">🤖</span>
+    <span *ngIf="isOpen">✖</span>
+  </button>
+
+  <div class="chat-window" *ngIf="isOpen">
+    <div class="chat-header">Assistant "Le Bon Choix"</div>
+    <div class="chat-body">
+      <div *ngFor="let msg of messages" [ngClass]="msg.type" class="message">
+        {{ msg.text }}
+      </div>
+      <div *ngIf="isLoading" class="message bot">En train de réfléchir...</div>
+    </div>
+    <div class="chat-footer">
+      <input [(ngModel)]="userInput" (keyup.enter)="send()" placeholder="Posez votre question...">
+      <button (click)="send()">🚀</button>
+    </div>
+  </div>
+</div>

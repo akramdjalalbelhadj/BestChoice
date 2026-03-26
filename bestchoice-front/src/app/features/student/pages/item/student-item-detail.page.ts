@@ -8,12 +8,14 @@ import { CampaignService } from '../../../campaign/services/campaign.service';
 import { finalize, switchMap } from 'rxjs';
 import { ThemeToggleComponent } from '../../../../shared/theme-toggle.component';
 import { MatchingCampaignType } from '../../../campaign/models/matching-campaign-type.model';
+import { Chatbot } from '../../../../components/chatbot/chatbot';
+import { FormsModule } from '@angular/forms';
 import { forkJoin, map, of } from 'rxjs';
 
 @Component({
   selector: 'app-student-item-detail',
   standalone: true,
-  imports: [CommonModule, RouterLink, RouterLinkActive, ThemeToggleComponent],
+  imports: [CommonModule, RouterLink, RouterLinkActive, ThemeToggleComponent, Chatbot, FormsModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './student-item-detail.page.html',
   styleUrl: './student-item-detail.page.scss'
