@@ -22,19 +22,21 @@ public class MatchingScoringService {
                 .setScale(4, RoundingMode.HALF_UP);
     }
 
-    private BigDecimal computeSkillsScore(Student s, Project p, Subject sub) {
+    public BigDecimal computeSkillsScore(Student s, Project p, Subject sub) {
         Set<Skill> required = (p != null) ? p.getRequiredSkills() : sub.getRequiredSkills();
         if (required == null || required.isEmpty()) return new BigDecimal("0.5");
 
-        long match = s.getSkills().stream().filter(required::contains).count();
+        Set<Long> requiredIds = required.stream().map(Skill::getId).collect(java.util.stream.Collectors.toSet());
+        long match = s.getSkills().stream().filter(sk -> requiredIds.contains(sk.getId())).count();
         return BigDecimal.valueOf(match).divide(BigDecimal.valueOf(required.size()), 4, RoundingMode.HALF_UP);
     }
 
-    private BigDecimal computeInterestsScore(Student s, Project p, Subject sub) {
+    public BigDecimal computeInterestsScore(Student s, Project p, Subject sub) {
         Set<Keyword> keywords = (p != null) ? p.getKeywords() : sub.getKeywords();
         if (keywords == null || keywords.isEmpty()) return new BigDecimal("0.5");
 
-        long match = s.getInterests().stream().filter(keywords::contains).count();
+        Set<Long> keywordIds = keywords.stream().map(Keyword::getId).collect(java.util.stream.Collectors.toSet());
+        long match = s.getInterests().stream().filter(kw -> keywordIds.contains(kw.getId())).count();
         return BigDecimal.valueOf(match).divide(BigDecimal.valueOf(keywords.size()), 4, RoundingMode.HALF_UP);
     }
 

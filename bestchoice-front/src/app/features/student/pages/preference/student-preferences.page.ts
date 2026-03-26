@@ -44,16 +44,20 @@ export class StudentPreferencesPage implements OnInit {
   });
 
   ngOnInit() {
-    const campaignIdParam = this.route.snapshot.queryParamMap.get('campaignId');
-    this.campaignId = campaignIdParam ? Number(campaignIdParam) : null;
+    // On s'abonne à l'observable pour réagir aux changements de queryParams
+    // (navigation interne depuis le mode summary → ranking sans détruire le composant)
+    this.route.queryParamMap.subscribe(params => {
+      const campaignIdParam = params.get('campaignId');
+      this.campaignId = campaignIdParam ? Number(campaignIdParam) : null;
 
-    if (this.campaignId) {
-      this.mode = 'ranking';
-      this.loadCampaignData();
-    } else {
-      this.mode = 'summary';
-      this.loadMyPreferences();
-    }
+      if (this.campaignId) {
+        this.mode = 'ranking';
+        this.loadCampaignData();
+      } else {
+        this.mode = 'summary';
+        this.loadMyPreferences();
+      }
+    });
   }
 
   // ── Mode résumé ───────────────────────────────────────────────────────────

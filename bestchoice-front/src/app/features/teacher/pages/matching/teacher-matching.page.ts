@@ -1,10 +1,11 @@
 import { Component, inject, OnInit, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { finalize } from 'rxjs';
 import { MatchingService } from '../../../matching/services/matching.service';
 import { TeacherService } from '../../services/teacher.service';
 import { AuthStore } from '../../../../core/auth/auth.store';
+import { ThemeToggleComponent } from '../../../../shared/theme-toggle.component';
 import { MatchingResultResponse } from '../../../matching/models/matching.model';
 
 interface ProjectGroup {
@@ -17,12 +18,13 @@ interface ProjectGroup {
 @Component({
   selector: 'app-matching-results-view',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, RouterLinkActive, ThemeToggleComponent],
   templateUrl: './teacher-matching.page.html',
   styleUrl: './teacher-matching.page.scss'
 })
 export class MatchingResultsViewPage implements OnInit {
   private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
   private readonly matchingService = inject(MatchingService);
   private readonly teacherService = inject(TeacherService);
   protected readonly auth = inject(AuthStore);
@@ -31,20 +33,23 @@ export class MatchingResultsViewPage implements OnInit {
   results = signal<MatchingResultResponse[]>([]);
   isLoading = signal(true);
 
-  // --- SIGNALS CALCULÉS ---
   campaign = computed(() => this.teacherService.campaigns().find(c => c.id === this.campaignId()));
 
-  // C'est ici que la magie du groupement opère
+  initials = computed(() => {
+    const name = this.auth.displayName();
+    return name ? name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) : '?';
+  });
+
   groupedResults = computed(() => {
     const data = this.results();
     const groups: Record<string, ProjectGroup> = {};
 
     data.forEach(r => {
-      const key = r.projectId?.toString() || 'no-project';
+      const key = r.projectId?.toString() ?? r.subjectId?.toString() ?? 'unknown';
       if (!groups[key]) {
         groups[key] = {
           projectId: r.projectId,
-          projectName: r.projectName || r.subjectName || 'Non assigné',
+          projectName: r.projectName || r.subjectName || `Projet #${r.projectId ?? r.subjectId}`,
           results: [],
           avgScore: 0
         };
@@ -53,12 +58,11 @@ export class MatchingResultsViewPage implements OnInit {
     });
 
     return Object.values(groups).map(group => {
-      const total = group.results.reduce((acc, curr) => acc + curr.globalScore, 0);
+      const total = group.results.reduce((acc, curr) => acc + +curr.globalScore, 0);
       group.avgScore = (total / group.results.length) * 100;
-      // Tri par rang de recommandation (le 1er en haut)
-      group.results.sort((a, b) => a.recommendationRank - b.recommendationRank);
+      group.results.sort((a, b) => (a.recommendationRank ?? 99) - (b.recommendationRank ?? 99));
       return group;
-    });
+    }).sort((a, b) => b.avgScore - a.avgScore);
   });
 
   ngOnInit() {
@@ -77,11 +81,11 @@ export class MatchingResultsViewPage implements OnInit {
         next: (data) => {
           const enriched = data.map(result => {
             const student = this.teacherService.allStudents().find(s => s.id === result.studentId);
-            const project = this.teacherService.projects().find(p => p.id === result.projectId);
             return {
               ...result,
-              studentName: student ? `${student.firstName} ${student.lastName}` : `Étudiant #${result.studentId}`,
-              projectName: project?.title
+              studentName: student
+                ? `${student.firstName} ${student.lastName}`
+                : `Étudiant #${result.studentId}`
             };
           });
           this.results.set(enriched);
@@ -90,8 +94,13 @@ export class MatchingResultsViewPage implements OnInit {
   }
 
   getScoreClass(score: number): string {
-    if (score >= 0.8) return 'high';
-    if (score >= 0.5) return 'medium';
+    if (score >= 0.7) return 'high';
+    if (score >= 0.4) return 'medium';
     return 'low';
+  }
+
+  logout() {
+    this.auth.logout();
+    this.router.navigateByUrl('/auth/login');
   }
 }

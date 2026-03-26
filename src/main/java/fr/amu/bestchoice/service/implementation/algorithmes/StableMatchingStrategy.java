@@ -1,7 +1,9 @@
 package fr.amu.bestchoice.service.implementation.algorithmes;
 
 import fr.amu.bestchoice.model.entity.*;
+import fr.amu.bestchoice.model.enums.PreferenceStatus;
 import fr.amu.bestchoice.repository.MatchingResultRepository;
+import fr.amu.bestchoice.repository.StudentPreferenceRepository;
 
 import fr.amu.bestchoice.web.dto.matching.MatchingRunResult;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +26,7 @@ public class StableMatchingStrategy implements MatchingStrategy {
 
     private final MatchingResultRepository resultRepository;
     private final MatchingScoringService scoringService;
+    private final StudentPreferenceRepository preferenceRepository;
 
     @Override
     public MatchingAlgorithmType getAlgorithmType() {
@@ -80,6 +83,9 @@ public class StableMatchingStrategy implements MatchingStrategy {
         List<MatchingResult> toSave = buildFinalResults(assignments, campaign, itemScores);
         resultRepository.saveAll(toSave);
 
+        // Mettre à jour les statuts : ACCEPTED pour les étudiants assignés
+        updatePreferenceStatuses(toSave, campaign);
+
         return new MatchingRunResult(
                 campaign.getId(),
                 MatchingAlgorithmType.STABLE,
@@ -126,17 +132,51 @@ public class StableMatchingStrategy implements MatchingStrategy {
                 Project project = isProject ? camp.getProjects().stream().filter(p -> p.getId().equals(itemId)).findFirst().orElse(null) : null;
                 Subject subject = !isProject ? camp.getSubjects().stream().filter(s -> s.getId().equals(itemId)).findFirst().orElse(null) : null;
 
+                BigDecimal sScore = scoringService.computeSkillsScore(student, project, subject);
+                BigDecimal iScore = scoringService.computeInterestsScore(student, project, subject);
+
                 results.add(MatchingResult.builder()
                         .matchingCampaign(camp)
                         .student(student)
                         .project(project)
                         .subject(subject)
                         .globalScore(itemScores.get(itemId).get(sId))
+                        .skillsScore(sScore)
+                        .interestsScore(iScore)
+                        .skillsWeight(camp.getSkillsWeight())
+                        .interestsWeight(camp.getInterestsWeight())
+                        .workTypeWeight(camp.getWorkTypeWeight())
                         .algorithmUsed(MatchingAlgorithmType.STABLE)
                         .build());
             }
         });
         return results;
+    }
+
+    /**
+     * Met à jour le statut des préférences pour les étudiants acceptés (Stable Matching).
+     * ACCEPTED = étudiant définitivement assigné à ce projet/matière.
+     */
+    private void updatePreferenceStatuses(List<MatchingResult> assignedResults, MatchingCampaign campaign) {
+        Long campaignId = campaign.getId();
+        assignedResults.forEach(r -> {
+            Long studentId = r.getStudent().getId();
+            if (r.getProject() != null) {
+                preferenceRepository
+                    .findByStudentIdAndProjectIdAndMatchingCampaignId(studentId, r.getProject().getId(), campaignId)
+                    .ifPresent(pref -> {
+                        pref.setStatus(PreferenceStatus.ACCEPTED);
+                        preferenceRepository.save(pref);
+                    });
+            } else if (r.getSubject() != null) {
+                preferenceRepository
+                    .findByStudentIdAndSubjectIdAndMatchingCampaignId(studentId, r.getSubject().getId(), campaignId)
+                    .ifPresent(pref -> {
+                        pref.setStatus(PreferenceStatus.ACCEPTED);
+                        preferenceRepository.save(pref);
+                    });
+            }
+        });
     }
 
     private int getCapacity(Long itemId, MatchingCampaign camp) {

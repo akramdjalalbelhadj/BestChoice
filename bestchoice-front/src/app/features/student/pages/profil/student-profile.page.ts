@@ -1,18 +1,19 @@
-import { Component, inject, OnInit, signal, computed, ChangeDetectionStrategy } from '@angular/core';
+import { Component, inject, OnInit, signal, computed, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { FormsModule, ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { StudentService } from '../../services/student.service';
 import { AuthStore } from '../../../../core/auth/auth.store';
 import { WorkType } from '../../../../core/models/enums.model';
-import { finalize } from 'rxjs';
+import { finalize, forkJoin, of } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 import { ThemeToggleComponent } from '../../../../shared/theme-toggle.component';
 
 @Component({
   selector: 'app-student-profile',
   standalone: true,
   imports: [CommonModule, RouterLink, RouterLinkActive, FormsModule, ReactiveFormsModule, ThemeToggleComponent],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  changeDetection: ChangeDetectionStrategy.Default,
   template: `
     <div class="app-layout">
       <aside class="sidebar">
@@ -79,7 +80,7 @@ import { ThemeToggleComponent } from '../../../../shared/theme-toggle.component'
         @if (isLoading()) {
           <div class="loading-state">Chargement de vos données...</div>
         } @else {
-          <div class="profile-grid">
+          <div class="profile-grid" [formGroup]="profileForm">
 
             <section class="card">
               <div class="user-identity">
@@ -103,7 +104,7 @@ import { ThemeToggleComponent } from '../../../../shared/theme-toggle.component'
                   @if (!isEditing()) {
                     <span class="work-type-badge">{{ profile()?.preferredWorkTypes }}</span>
                   } @else {
-                    <select formControlName="preferredWorkType">
+                    <select formControlName="preferredWorkTypes">
                       @for (type of workTypes; track type) {
                         <option [value]="type">{{ type }}</option>
                       }
@@ -118,51 +119,83 @@ import { ThemeToggleComponent } from '../../../../shared/theme-toggle.component'
               <p class="text-xs text-muted mb-4">Utilisez le catalogue pour garantir votre éligibilité au matching.</p>
 
               <div class="tag-section">
-                <label>Mes Compétences</label>
+                <label>
+                  Mes Compétences
+                  @if (isEditing() && allSkills().length > 0) {
+                    <span class="catalog-count">({{ availableSkills().length }} disponible{{ availableSkills().length > 1 ? 's' : '' }} sur {{ allSkills().length }})</span>
+                  }
+                </label>
                 @if (isEditing()) {
                   <div class="suggestion-container">
-                    <select #skillSelect (change)="addSkill(skillSelect.value); skillSelect.value = ''">
-                      <option value="">+ Ajouter une compétence du catalogue</option>
-                      @for (s of availableSkills(); track s.id) {
-                        <option [value]="s.name">{{ s.name }} ({{ s.category }})</option>
-                      }
-                    </select>
+                    @if (allSkills().length === 0) {
+                      <p class="catalog-empty">⏳ Chargement du catalogue...</p>
+                    } @else if (availableSkills().length === 0) {
+                      <p class="catalog-empty">✅ Vous avez déjà toutes les compétences du catalogue.</p>
+                    } @else {
+                      <select #skillSelect (change)="addSkill(skillSelect.value); skillSelect.value = ''">
+                        <option value="">+ Ajouter une compétence du catalogue</option>
+                        @for (s of availableSkills(); track s.id) {
+                          <option [value]="s.name">{{ s.name }}{{ s.category ? ' (' + s.category + ')' : '' }}</option>
+                        }
+                      </select>
+                    }
                   </div>
                 }
                 <div class="tag-cloud">
                   @for (s of editedSkills(); track s) {
                     <span class="tag-skill">
                       {{ s }}
-                      <button *ngIf="isEditing()" (click)="removeSkill(s)">×</button>
+                      @if (isEditing()) {
+                        <button (click)="removeSkill(s)">×</button>
+                      }
                     </span>
+                  }
+                  @if (editedSkills().length === 0) {
+                    <span class="tag-empty">Aucune compétence ajoutée</span>
                   }
                 </div>
               </div>
 
               <div class="tag-section mt-4">
-                <label>Centres d'intérêt</label>
+                <label>
+                  Centres d'intérêt
+                  @if (isEditing() && allKeywords().length > 0) {
+                    <span class="catalog-count">({{ availableKeywords().length }} disponible{{ availableKeywords().length > 1 ? 's' : '' }} sur {{ allKeywords().length }})</span>
+                  }
+                </label>
                 @if (isEditing()) {
                   <div class="suggestion-container">
-                    <select #keySelect (change)="addInterest(keySelect.value); keySelect.value = ''">
-                      <option value="">+ Ajouter un mot-clé du catalogue</option>
-                      @for (k of availableKeywords(); track k.id) {
-                        <option [value]="k.label">#{{ k.label }}</option>
-                      }
-                    </select>
+                    @if (allKeywords().length === 0) {
+                      <p class="catalog-empty">⏳ Chargement du catalogue...</p>
+                    } @else if (availableKeywords().length === 0) {
+                      <p class="catalog-empty">✅ Vous avez déjà tous les mots-clés du catalogue.</p>
+                    } @else {
+                      <select #keySelect (change)="addInterest(keySelect.value); keySelect.value = ''">
+                        <option value="">+ Ajouter un mot-clé du catalogue</option>
+                        @for (k of availableKeywords(); track k.id) {
+                          <option [value]="k.label">#{{ k.label }}</option>
+                        }
+                      </select>
+                    }
                   </div>
                 }
                 <div class="tag-cloud">
                   @for (k of editedInterests(); track k) {
                     <span class="tag-interest">
                       #{{ k }}
-                      <button *ngIf="isEditing()" (click)="removeInterest(k)">×</button>
+                      @if (isEditing()) {
+                        <button (click)="removeInterest(k)">×</button>
+                      }
                     </span>
+                  }
+                  @if (editedInterests().length === 0) {
+                    <span class="tag-empty">Aucun centre d'intérêt ajouté</span>
                   }
                 </div>
               </div>
             </section>
 
-            <section class="card full-width" [formGroup]="profileForm">
+            <section class="card full-width">
               <h3>Présence en ligne</h3>
               <div class="links-edit-grid">
                 <div class="field">
@@ -188,6 +221,7 @@ export class StudentProfilePage implements OnInit {
   protected auth = inject(AuthStore);
   private studentService = inject(StudentService);
   private router = inject(Router);
+  private cdr = inject(ChangeDetectorRef);
 
   isLoading = signal(true);
   isEditing = signal(false);
@@ -231,19 +265,36 @@ export class StudentProfilePage implements OnInit {
 
   loadInitialData() {
     const user = this.auth.user();
-    if (user?.userId) {
-      // 1. Charger catalogues
-      this.studentService.getAllActiveSkills().subscribe(res => this.allSkills.set(res));
-      this.studentService.getAllActiveKeywords().subscribe(res => this.allKeywords.set(res));
+    if (!user?.userId) return;
 
-      // 2. Charger profil
-      this.studentService.loadProfile(user.userId)
-        .pipe(finalize(() => this.isLoading.set(false)))
-        .subscribe(res => {
-          this.editedSkills.set([...(res.skill || [])]);
-          this.editedInterests.set([...(res.interestKeyword || [])]);
-        });
-    }
+    this.isLoading.set(true);
+
+    // Charger tout en parallèle : profil + catalogue compétences + catalogue mots-clés
+    forkJoin({
+      profile: this.studentService.loadProfile(user.userId).pipe(
+        catchError(err => { console.error('Erreur chargement profil:', err); return of(null); })
+      ),
+      skills: this.studentService.getAllActiveSkills().pipe(
+        catchError(err => { console.error('Erreur chargement compétences:', err); return of([]); })
+      ),
+      keywords: this.studentService.getAllActiveKeywords().pipe(
+        catchError(err => { console.error('Erreur chargement mots-clés:', err); return of([]); })
+      )
+    })
+    .pipe(finalize(() => { this.isLoading.set(false); this.cdr.detectChanges(); }))
+    .subscribe(({ profile, skills, keywords }) => {
+      if (skills && skills.length > 0) {
+        this.allSkills.set(skills);
+      }
+      if (keywords && keywords.length > 0) {
+        this.allKeywords.set(keywords);
+      }
+      if (profile) {
+        this.editedSkills.set([...(profile.skill || [])]);
+        this.editedInterests.set([...(profile.interestKeyword || [])]);
+      }
+      this.cdr.detectChanges();
+    });
   }
 
   enableEdit() {
@@ -284,17 +335,20 @@ export class StudentProfilePage implements OnInit {
     if (studentId && this.profileForm.valid) {
       this.isSaving.set(true);
 
+      const workTypeValue = this.profileForm.value.preferredWorkTypes;
       const request = {
         studyYear: Number(this.profileForm.value.studyYear),
-        preferredWorkType: this.profileForm.value.preferredWorkTypes,
+        preferredWorkTypes: workTypeValue
+          ? (Array.isArray(workTypeValue) ? workTypeValue : [workTypeValue])
+          : [],
         skill: this.editedSkills(),
         interestKeyword: this.editedInterests(),
         githubUrl: this.profileForm.value.githubUrl || '',
         linkedinUrl: this.profileForm.value.linkedinUrl || '',
-        portfolioUrl: '' // Obligatoire dans ton DTO
+        portfolioUrl: ''
       };
 
-      this.studentService.updateProfile(studentId, request as any)
+      this.studentService.updateProfile(studentId, request)
         .pipe(finalize(() => {
           this.isSaving.set(false);
           this.isEditing.set(false);

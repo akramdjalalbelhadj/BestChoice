@@ -87,13 +87,40 @@ select option { background: var(--bc-card); }
 // ── Tags ──────────────────────────────────────────────────────────────────
 .tag-section { margin-bottom: 1.25rem; }
 .tag-section label {
-  display: block;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
   font-size: 0.72rem;
   text-transform: uppercase;
   letter-spacing: 0.06em;
   color: var(--bc-text-3);
   font-weight: 700;
   margin-bottom: 8px;
+}
+
+.catalog-count {
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: var(--bc-primary);
+  background: var(--bc-primary-dim);
+  padding: 2px 7px;
+  border-radius: var(--bc-radius-full);
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.catalog-empty {
+  font-size: 0.8rem;
+  color: var(--bc-text-3);
+  font-style: italic;
+  margin: 0;
+  padding: 6px 0;
+}
+
+.tag-empty {
+  font-size: 0.8rem;
+  color: var(--bc-text-3);
+  font-style: italic;
 }
 
 .tag-cloud { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }

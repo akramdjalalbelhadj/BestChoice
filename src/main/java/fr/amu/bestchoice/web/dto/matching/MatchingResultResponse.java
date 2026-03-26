@@ -15,5 +15,8 @@ public record MatchingResultResponse(
         BigDecimal interestsScore,
         Integer recommendationRank,
         MatchingAlgorithmType algorithmUsed,
-        LocalDateTime calculationDate
+        LocalDateTime calculationDate,
+        // Noms enrichis pour l'affichage côté client
+        String projectName,
+        String subjectName
 ) {}

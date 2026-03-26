@@ -67,6 +67,13 @@ public class MatchingResultService implements IMatchingResultService {
     }
 
     @Override
+    public List<MatchingResultResponse> findByStudentId(Long studentId) {
+        log.debug("Récupération de tous les résultats pour l'étudiant ID : {}", studentId);
+        List<MatchingResult> results = matchingResultRepository.findByStudentIdOrderByGlobalScoreDesc(studentId);
+        return matchingResultMapper.toResponseList(results);
+    }
+
+    @Override
     @Transactional
     public void deleteByCampaignId(Long campaignId) {
         log.warn("Suppression des résultats de la campagne : {}", campaignId);

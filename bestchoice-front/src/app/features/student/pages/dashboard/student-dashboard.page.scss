@@ -23,6 +23,17 @@
   }
 }
 
+.rank-badge {
+  font-size: 0.7rem;
+  font-weight: 800;
+  color: var(--bc-primary);
+  background: var(--bc-primary-dim);
+  padding: 2px 8px;
+  border-radius: var(--bc-radius-sm);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
 .score-pill {
   width: 52px;
   height: 52px;
@@ -35,6 +46,14 @@
   color: var(--bc-primary);
   background: var(--bc-primary-dim);
   flex-shrink: 0;
+
+  &.high   { border-color: var(--bc-success); color: var(--bc-success); background: var(--bc-success-dim); }
+  &.medium { border-color: var(--bc-warn);    color: var(--bc-warn);    background: var(--bc-warn-dim); }
+}
+
+.top-match {
+  border-left: 3px solid var(--bc-success);
+  background: var(--bc-success-dim);
 }
 
 .item-main {
@@ -57,6 +76,8 @@
 }
 
 .btn-secondary-action {
+  display: inline-block;
+  text-decoration: none;
   background: var(--bc-card);
   color: var(--bc-primary);
   border: 1px solid var(--bc-primary-border);

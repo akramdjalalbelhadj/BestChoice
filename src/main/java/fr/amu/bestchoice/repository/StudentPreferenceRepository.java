@@ -84,4 +84,16 @@ public interface StudentPreferenceRepository extends JpaRepository<StudentPrefer
             @Param("campaignId") Long campaignId);
 
     boolean existsByStudentIdAndMatchingCampaignIdAndRank(Long studentId, Long campaignId, Integer rank);
+
+    /**
+     * Récupère la préférence d'un étudiant pour un projet dans une campagne donnée
+     */
+    Optional<StudentPreference> findByStudentIdAndProjectIdAndMatchingCampaignId(
+            Long studentId, Long projectId, Long campaignId);
+
+    /**
+     * Récupère la préférence d'un étudiant pour une matière dans une campagne donnée
+     */
+    Optional<StudentPreference> findByStudentIdAndSubjectIdAndMatchingCampaignId(
+            Long studentId, Long subjectId, Long campaignId);
 }

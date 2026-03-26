@@ -20,6 +20,9 @@ public interface IMatchingResultService {
 
     MatchingResultResponse findById(Long id);
 
+    /** Tous les résultats d'un étudiant (toutes campagnes) */
+    List<MatchingResultResponse> findByStudentId(Long studentId);
+
     void deleteByCampaignId(Long campaignId);
 
     long countByCampaignId(Long campaignId);

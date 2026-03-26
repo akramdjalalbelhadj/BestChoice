@@ -94,19 +94,22 @@
             </div>
           } @else {
             @for (match of topMatches(); track match.id) {
-              <div class="match-item">
-                <div class="score-pill">{{ (match.globalScore * 100).toFixed(0) }}%</div>
+              <div class="match-item" [class.top-match]="$index === 0">
+                <div class="rank-badge">#{{ match.recommendationRank ?? ($index + 1) }}</div>
+                <div class="score-pill" [class.high]="(+match.globalScore) >= 0.7"
+                                        [class.medium]="(+match.globalScore) >= 0.4 && (+match.globalScore) < 0.7">
+                  {{ (+match.globalScore * 100).toFixed(0) }}%
+                </div>
                 <div class="item-main">
-                  <span class="title">Projet #{{ match.projectId }}</span>
+                  <span class="title">{{ match.projectName || match.subjectName || ('Projet #' + match.projectId) }}</span>
                   <div class="score-breakdown">
-                    <span class="badge">💻 Skills : {{ (match.skillsScore * 100).toFixed(0) }}%</span>
-                    <span class="badge">🌟 Intérêts : {{ (match.interestsScore * 100).toFixed(0) }}%</span>
+                    <span class="badge">💻 Skills : {{ (+match.skillsScore * 100).toFixed(0) }}%</span>
+                    <span class="badge">🌟 Intérêts : {{ (+match.interestsScore * 100).toFixed(0) }}%</span>
                   </div>
                 </div>
-                <button class="btn-secondary-action"
-                        [routerLink]="['/app/student/campaigns']">
-                  Voir mes campagnes
-                </button>
+                <a routerLink="/app/student/preferences" class="btn-secondary-action">
+                  Mes vœux
+                </a>
               </div>
             } @empty {
               <div class="empty-state">

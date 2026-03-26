@@ -41,6 +41,15 @@ public class MatchingResultController {
     // ==================== READ - STUDENT ====================
 
     /**
+     * Tous les résultats de matching d'un étudiant (toutes campagnes).
+     * Utilisé par le tableau de bord étudiant.
+     */
+    @GetMapping("/student/{studentId}")
+    public ResponseEntity<List<MatchingResultResponse>> getAllResultsForStudent(@PathVariable Long studentId) {
+        return ResponseEntity.ok(matchingResultService.findByStudentId(studentId));
+    }
+
+    /**
      * Résultats d'un étudiant spécifique au sein d'une campagne.
      */
     @GetMapping("/campaign/{campaignId}/student/{studentId}")

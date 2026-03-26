@@ -1,56 +1,134 @@
 <div class="app-layout">
+
+  <!-- ── Sidebar ──────────────────────────────────────────────────────────── -->
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="logo-box">BC</div>
+      <span class="brand-name">Le Bon Choix</span>
+    </div>
+
+    <nav class="nav-links">
+      <a routerLink="/app/teacher/dashboard" routerLinkActive="active"
+         [routerLinkActiveOptions]="{exact:true}" class="menu-item">
+        <span class="icon">📊</span> Dashboard
+      </a>
+      <a routerLink="/app/teacher/projects" routerLinkActive="active" class="menu-item">
+        <span class="icon">📁</span> Projets
+      </a>
+      <a routerLink="/app/teacher/subjects" routerLinkActive="active" class="menu-item">
+        <span class="icon">📚</span> Options
+      </a>
+      <a routerLink="/app/teacher/campaigns" routerLinkActive="active" class="menu-item">
+        <span class="icon">🎯</span> Campagnes
+      </a>
+      <a routerLink="/app/teacher/matching-control" routerLinkActive="active" class="menu-item">
+        <span class="icon">⚙️</span> Pilotage
+      </a>
+    </nav>
+
+    <footer class="sidebar-footer">
+      <app-theme-toggle />
+      <button (click)="logout()" class="btn-logout">
+        <span class="icon">🚪</span> Déconnexion
+      </button>
+    </footer>
+  </aside>
+
+  <!-- ── Main ─────────────────────────────────────────────────────────────── -->
   <main class="main-content">
     <header class="top-nav">
       <div class="header-titles">
-        <div class="breadcrumb">Enseignant / Campagnes / Résultats</div>
-        <h1>Analyse par Projet</h1>
-        <span class="campaign-pill">{{ campaign()?.name }}</span>
+        <h1>Résultats de matching</h1>
       </div>
-      <div class="header-actions">
-        <button class="btn-refresh" (click)="loadResults(campaignId()!)" [class.spinning]="isLoading()">🔄</button>
+      <div class="user-control">
+        <div class="user-text">
+          <span class="user-name">{{ auth.displayName() }}</span>
+          <span class="user-role">Enseignant</span>
+        </div>
+        <div class="avatar">{{ initials() }}</div>
       </div>
     </header>
 
-    @if (isLoading()) {
-      <div class="skeleton-loader">Chargement des affectations...</div>
-    } @else {
-      <div class="projects-grid">
-        @for (group of groupedResults(); track group.projectId) {
-          <section class="project-card">
-            <div class="project-header">
-              <div class="title-area">
-                <span class="icon">🚀</span>
-                <h3>{{ group.projectName }}</h3>
-              </div>
-              <div class="project-stats">
-                {{ group.results.length }} étudiants • <strong>{{ group.avgScore.toFixed(0) }}% fit</strong>
-              </div>
-            </div>
+    <div class="page-scroll">
 
-            <div class="students-list">
-              @for (r of group.results; track r.id) {
-                <div class="student-item" [class]="getScoreClass(r.globalScore)">
-                  <div class="rank-label">Rang #{{ r.recommendationRank }}</div>
+      <div class="page-header">
+        <div class="page-titles">
+          <a routerLink="/app/teacher/campaigns" class="btn-retour">← Retour aux campagnes</a>
+          <h2>{{ campaign()?.name || 'Analyse par Projet' }}</h2>
+          <p>Classement des étudiants par affinité avec chaque offre.</p>
+        </div>
+        <div class="page-actions">
+          <button class="btn-ghost" (click)="loadResults(campaignId()!)" [class.spinning]="isLoading()">
+            🔄 Actualiser
+          </button>
+        </div>
+      </div>
 
-                  <div class="student-info">
-                    <span class="name">{{ r.studentName }}</span>
-                    <div class="mini-bars">
-                      <div class="bar-wrap"><div class="bar skills" [style.width]="(r.skillsScore * 100) + '%'"></div></div>
-                      <div class="bar-wrap"><div class="bar interests" [style.width]="(r.interestsScore * 100) + '%'"></div></div>
+      @if (isLoading()) {
+        <div class="loading-state">
+          <span class="spinner"></span>
+          Chargement des résultats de matching...
+        </div>
+      } @else {
+        <div class="results-grid">
+          @for (group of groupedResults(); track group.projectId) {
+            <section class="result-card content-card no-padding">
+              <div class="result-header">
+                <div class="header-title">
+                  <span class="type-icon">🚀</span>
+                  <h3>{{ group.projectName }}</h3>
+                </div>
+                <div class="result-meta">
+                  <span class="count-pill">{{ group.results.length }} étudiant{{ group.results.length > 1 ? 's' : '' }}</span>
+                  <span class="score-avg" [class.high]="group.avgScore >= 70" [class.medium]="group.avgScore >= 40 && group.avgScore < 70">
+                    {{ group.avgScore.toFixed(0) }}% fit moy.
+                  </span>
+                </div>
+              </div>
+
+              <div class="students-list">
+                @for (r of group.results; track r.id) {
+                  <div class="student-row" [class]="getScoreClass(+r.globalScore)">
+                    <div class="rank-tag">#{{ r.recommendationRank }}</div>
+
+                    <div class="student-body">
+                      <span class="s-name">{{ r.studentName }}</span>
+                      <div class="score-bars">
+                        <div class="bar-item">
+                          <span class="bar-label">Skills</span>
+                          <div class="bar-track">
+                            <div class="bar-fill skills" [style.width]="(+r.skillsScore * 100) + '%'"></div>
+                          </div>
+                          <span class="bar-val">{{ (+r.skillsScore * 100).toFixed(0) }}%</span>
+                        </div>
+                        <div class="bar-item">
+                          <span class="bar-label">Intérêts</span>
+                          <div class="bar-track">
+                            <div class="bar-fill interests" [style.width]="(+r.interestsScore * 100) + '%'"></div>
+                          </div>
+                          <span class="bar-val">{{ (+r.interestsScore * 100).toFixed(0) }}%</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="global-score" [class]="getScoreClass(+r.globalScore)">
+                      {{ (+r.globalScore * 100).toFixed(0) }}%
                     </div>
                   </div>
-
-                  <div class="score-badge">
-                    {{ (r.globalScore * 100).toFixed(0) }}%
-                  </div>
-                </div>
-              }
+                }
+              </div>
+            </section>
+          } @empty {
+            <div class="empty-placeholder">
+              <div class="icon">🔍</div>
+              <h3>Aucun résultat</h3>
+              <p>Lancez d'abord le matching depuis la page de pilotage.</p>
+              <a routerLink="/app/teacher/matching-control" class="btn-link">Aller au pilotage →</a>
             </div>
-          </section>
-        } @empty {
-          <div class="empty-state">Aucun résultat trouvé.</div>
-        }
-      </div>
-    }
+          }
+        </div>
+      }
+
+    </div>
   </main>
 </div>

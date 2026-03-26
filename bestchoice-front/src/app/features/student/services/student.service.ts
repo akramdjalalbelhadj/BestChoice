@@ -72,7 +72,7 @@ export class StudentService {
 
   /** Récupère le profil complet de l'étudiant */
   loadProfile(userId: number) {
-    return this.http.get<StudentResponse>(`${this.API}/students/user/${userId}`).pipe(
+    return this.http.get<StudentResponse>(`${this.API}/user/${userId}`).pipe(
       tap(res => this._studentProfile.set(res))
     );
   }
@@ -120,12 +120,12 @@ export class StudentService {
 
   /** Récupère toutes les compétences actives du catalogue */
   getAllActiveSkills() {
-    return this.http.get<any[]>(`${this.API}/skills/active`);
+    return this.http.get<any[]>(`${environment.apiBaseUrl}/api/skills/active`);
   }
 
   /** Récupère tous les mots-clés actifs du catalogue */
   getAllActiveKeywords() {
-    return this.http.get<any[]>(`${this.API}/keywords/active`);
+    return this.http.get<any[]>(`${environment.apiBaseUrl}/api/keywords/active`);
   }
 
 

@@ -20,7 +20,7 @@ export interface StudentResponse {
 
 export interface StudentUpdateRequest {
   studyYear: number;
-  preferredWorkType: WorkType;
+  preferredWorkTypes: WorkType[];
   skill: string[];
   interestKeyword: string[];
   githubUrl: string;

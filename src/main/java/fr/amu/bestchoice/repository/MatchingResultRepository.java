@@ -24,4 +24,7 @@ public interface MatchingResultRepository extends JpaRepository<MatchingResult, 
     List<MatchingResult> findByMatchingCampaignIdAndSubjectIdOrderByGlobalScoreDesc(Long campaignId, Long subjectId);
 
     long countByMatchingCampaignId(Long campaignId);
+
+    /** Tous les résultats d'un étudiant (toutes campagnes confondues) */
+    List<MatchingResult> findByStudentIdOrderByGlobalScoreDesc(Long studentId);
 }
