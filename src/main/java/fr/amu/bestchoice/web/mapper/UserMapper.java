@@ -38,7 +38,8 @@ public interface UserMapper {
 
     // Si l'utilisateur est un enseignant, on créera l'entité Teacher séparément
     @Mapping(target = "teacher", ignore = true)
-
+    @Mapping(target = "resetToken", ignore = true)
+    @Mapping(target = "resetTokenExpiry", ignore = true)
 
     User toEntity(RegisterRequest dto);
 
@@ -68,6 +69,8 @@ public interface UserMapper {
     // On ne touche pas aux relations Student/Teacher ici
     @Mapping(target = "student", ignore = true)
     @Mapping(target = "teacher", ignore = true)
+    @Mapping(target = "resetToken", ignore = true)
+    @Mapping(target = "resetTokenExpiry", ignore = true)
 
     void updateEntityFromDto(UserUpdateRequest dto, @MappingTarget User entity);
 

@@ -76,6 +76,9 @@ public class RegisterService implements IRegisterService {
 
         User user = userMapper.toEntity(dto);
 
+        // Normaliser l'email en minuscules
+        user.setEmail(dto.email().trim().toLowerCase());
+
         // Hasher le mot de passe
         String hashedPassword = passwordEncoder.encode(dto.password());
         user.setPasswordHash(hashedPassword);
@@ -143,9 +146,8 @@ public class RegisterService implements IRegisterService {
         log.debug("Création du profil étudiant pour l'utilisateur : userId={}", user.getId());
 
         Student student = Student.builder()
-                .id(user.getId())  // L'ID du Student = ID du User (@MapsId)
                 .user(user)
-                .profileComplete(false)  // Profil incomplet par défaut
+                .profileComplete(false)
                 .build();
 
         studentRepository.save(student);
@@ -165,7 +167,6 @@ public class RegisterService implements IRegisterService {
         log.debug("Création du profil enseignant pour l'utilisateur : userId={}", user.getId());
 
         Teacher teacher = Teacher.builder()
-                .id(user.getId())  // L'ID du Teacher = ID du User (@MapsId)
                 .user(user)
                 .build();
 

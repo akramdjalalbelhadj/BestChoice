@@ -1,9 +1,12 @@
 package fr.amu.bestchoice.web.controller.auth;
 
 import fr.amu.bestchoice.service.implementation.auth.AuthService;
+import fr.amu.bestchoice.service.implementation.auth.PasswordResetService;
 import fr.amu.bestchoice.service.interfaces.IAuthService;
+import fr.amu.bestchoice.web.dto.auth.ForgotPasswordRequest;
 import fr.amu.bestchoice.web.dto.auth.LoginRequest;
 import fr.amu.bestchoice.web.dto.auth.LoginResponse;
+import fr.amu.bestchoice.web.dto.auth.ResetPasswordRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
@@ -28,6 +31,7 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
 
     private final IAuthService authService;
+    private final PasswordResetService passwordResetService;
 
     @Operation(
             summary = "Connexion utilisateur",
@@ -134,6 +138,24 @@ public class AuthController {
         LoginResponse response = authService.login(request);
         log.info("POST /api/auth/login - Login réussi pour l'utilisateur ID : {}", response.userId());
         return ResponseEntity.ok(response);
+    }
+
+    @Operation(summary = "Demande de réinitialisation de mot de passe",
+               description = "Envoie un email avec un lien de réinitialisation si l'email existe.")
+    @PostMapping("/forgot-password")
+    public ResponseEntity<Void> forgotPassword(@Valid @RequestBody ForgotPasswordRequest request) {
+        log.info("POST /api/auth/forgot-password - Demande pour : {}", request.email());
+        passwordResetService.forgotPassword(request);
+        return ResponseEntity.ok().build();
+    }
+
+    @Operation(summary = "Réinitialisation du mot de passe",
+               description = "Réinitialise le mot de passe avec un token valide.")
+    @PostMapping("/reset-password")
+    public ResponseEntity<Void> resetPassword(@Valid @RequestBody ResetPasswordRequest request) {
+        log.info("POST /api/auth/reset-password - Réinitialisation avec token");
+        passwordResetService.resetPassword(request);
+        return ResponseEntity.ok().build();
     }
 
     @Operation(

@@ -49,9 +49,14 @@ export class ForgotPasswordPage {
     this.success.set(null);
 
     this.api.forgotPassword(this.form.value.email!).subscribe({
-      next: () => this.success.set('Si le compte existe, un email a été envoyé.'),
-      error: (err) => this.error.set(err?.error?.message ?? 'Action impossible.'),
-      complete: () => this.loading.set(false)
+      next: () => {
+        this.success.set('Demande envoyée ! Si un email ne vous parvient pas dans quelques minutes, contactez l\'administrateur.');
+        this.loading.set(false);
+      },
+      error: (err) => {
+        this.error.set(err?.error?.message ?? 'Une erreur est survenue.');
+        this.loading.set(false);
+      }
     });
   }
 }
