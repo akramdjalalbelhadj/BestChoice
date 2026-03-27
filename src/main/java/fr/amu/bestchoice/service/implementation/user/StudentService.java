@@ -111,6 +111,12 @@ public class StudentService implements IStudentService {
         log.debug("Profil étudiant trouvé : userId={}", student.getId());
         studentMapper.updateEntityFromDto(dto, student);
 
+        // Application manuelle des types de travail (ignorés par le mapper)
+        if (dto.preferredWorkTypes() != null) {
+            student.setPreferredWorkTypes(dto.preferredWorkTypes());
+            log.debug("Types de travail mis à jour : {}", dto.preferredWorkTypes());
+        }
+
         if (dto.skill() != null) {
             if (!dto.skill().isEmpty()) {
                 log.debug("Mise à jour des compétences : {} compétences", dto.skill().size());
@@ -203,7 +209,8 @@ public class StudentService implements IStudentService {
     private Set<Skill> resolveSkills(Set<String> skillNames) {
         Set<Skill> skills = new HashSet<>();
         for (String skillName : skillNames) {
-            Skill skill = skillRepository.findByName(skillName)
+            // Recherche insensible à la casse pour éviter les doublons Java/java
+            Skill skill = skillRepository.findByNameIgnoreCase(skillName.trim())
                     .orElseThrow(() -> {
                         log.error("Compétence introuvable : name={}", skillName);
                         return new NotFoundException("Compétence introuvable : " + skillName);
@@ -217,7 +224,8 @@ public class StudentService implements IStudentService {
     private Set<Keyword> resolveKeywords(Set<String> keywordLabels) {
         Set<Keyword> keywords = new HashSet<>();
         for (String label : keywordLabels) {
-            Keyword keyword = keywordRepository.findByLabel(label)
+            // Recherche insensible à la casse pour éviter les doublons
+            Keyword keyword = keywordRepository.findByLabelIgnoreCase(label.trim())
                     .orElseThrow(() -> {
                         log.error("Mot-clé introuvable : label={}", label);
                         return new NotFoundException("Mot-clé introuvable : " + label);

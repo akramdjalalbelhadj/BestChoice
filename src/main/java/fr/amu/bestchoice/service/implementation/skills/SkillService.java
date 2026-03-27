@@ -33,15 +33,18 @@ public class SkillService implements ISkillService {
 
     @Transactional
     public SkillResponse create(SkillCreateRequest dto) {
-        log.info("Début création compétence : name={}", dto.name());
+        // Normalisation : trim + première lettre majuscule, reste inchangé
+        String normalizedName = normalize(dto.name());
+        log.info("Début création compétence : name={}", normalizedName);
 
-        // Vérifier que le nom n'existe pas déjà
-        if (skillRepository.existsByName(dto.name())) {
-            log.warn("Tentative de création d'une compétence existante : name={}", dto.name());
-            throw new BusinessException("Une compétence avec le nom '" + dto.name() + "' existe déjà");
+        // Vérifier que le nom n'existe pas déjà (insensible à la casse)
+        if (skillRepository.existsByNameIgnoreCase(normalizedName)) {
+            log.warn("Tentative de création d'une compétence existante : name={}", normalizedName);
+            throw new BusinessException("Une compétence avec le nom '" + normalizedName + "' existe déjà");
         }
 
         Skill skill = skillMapper.toEntity(dto);
+        skill.setName(normalizedName);
         log.debug("Skill mappé : name={}", skill.getName());
 
         Skill savedSkill = skillRepository.save(skill);
@@ -64,16 +67,19 @@ public class SkillService implements ISkillService {
 
         log.debug("Compétence trouvée : name={}", skill.getName());
 
-        // Si le nom change, vérifier qu'il n'existe pas déjà
-        if (dto.name() != null && !dto.name().equals(skill.getName())) {
-            if (skillRepository.existsByName(dto.name())) {
+        // Si le nom change, normaliser et vérifier qu'il n'existe pas déjà (insensible à la casse)
+        if (dto.name() != null && !dto.name().equalsIgnoreCase(skill.getName())) {
+            String normalizedName = normalize(dto.name());
+            if (skillRepository.existsByNameIgnoreCase(normalizedName)) {
                 log.warn("Tentative de modifier vers un nom existant : oldName={}, newName={}",
-                        skill.getName(), dto.name());
-                throw new BusinessException("Une compétence avec le nom '" + dto.name() + "' existe déjà");
+                        skill.getName(), normalizedName);
+                throw new BusinessException("Une compétence avec le nom '" + normalizedName + "' existe déjà");
             }
         }
 
         skillMapper.updateEntityFromDto(dto, skill);
+        // Appliquer la normalisation après mapping
+        if (skill.getName() != null) skill.setName(normalize(skill.getName()));
         log.debug("Compétence après mise à jour : name={}", skill.getName());
 
         Skill updatedSkill = skillRepository.save(skill);
@@ -185,5 +191,19 @@ public class SkillService implements ISkillService {
 
         Sort sort = Sort.by(direction, sortBy);
         return PageRequest.of(page, size, sort);
+    }
+
+    /**
+     * Normalise un nom de compétence :
+     * - supprime les espaces en début/fin
+     * - première lettre en majuscule, reste inchangé
+     * Ex: "  java  " → "Java", "JAVA" → "JAVA" (inchangé sauf trim)
+     * Pour forcer title-case : "java" → "Java"
+     */
+    private String normalize(String name) {
+        if (name == null) return null;
+        String trimmed = name.trim();
+        if (trimmed.isEmpty()) return trimmed;
+        return Character.toUpperCase(trimmed.charAt(0)) + trimmed.substring(1);
     }
 }

@@ -87,12 +87,19 @@
               </div>
 
               <div class="students-list">
-                @for (r of group.results; track r.id) {
+                @for (r of group.results; track r.id; let rank = $index) {
                   <div class="student-row" [class]="getScoreClass(+r.globalScore)">
-                    <div class="rank-tag">#{{ r.recommendationRank }}</div>
+                    <div class="rank-tag">#{{ rank + 1 }}</div>
 
                     <div class="student-body">
-                      <span class="s-name">{{ r.studentName }}</span>
+                      <div class="s-name-row">
+                        <span class="s-name">{{ r.studentName }}</span>
+                        @if (r.accepted) {
+                          <span class="badge-accepted">Accepté</span>
+                        } @else {
+                          <span class="badge-waitlist">Hors capacité</span>
+                        }
+                      </div>
                       <div class="score-bars">
                         <div class="bar-item">
                           <span class="bar-label">Skills</span>

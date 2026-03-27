@@ -113,6 +113,16 @@ public class MatchingResult {
     private Integer recommendationRank;
 
     /**
+     * Indique si l'étudiant est accepté dans ce projet/option
+     * (dans les limites de la capacité maxStudents).
+     * true  → dans les X meilleurs, place disponible
+     * false → classé mais hors capacité
+     */
+    @Column(name = "accepted", nullable = false)
+    @Builder.Default
+    private Boolean accepted = false;
+
+    /**
      * Algorithme utilisé pour ce calcul
      */
     @Enumerated(EnumType.STRING)

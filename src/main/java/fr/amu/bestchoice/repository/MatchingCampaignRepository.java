@@ -25,9 +25,12 @@ public interface MatchingCampaignRepository extends JpaRepository<MatchingCampai
     Optional<MatchingCampaign> findWithDetailsById(@Param("id") Long id);
 
     /**
-     *Renvoie une Liste de MatchingCampaign associées à un enseignant donné.
+     * Renvoie les campagnes d'un enseignant via son userId (User.id).
+     * On navigue teacher.user.id pour être cohérent avec le frontend
+     * qui transmet toujours l'userId du compte connecté.
      */
-    List<MatchingCampaign> findByTeacherId(Long teacherId);
+    @Query("SELECT c FROM MatchingCampaign c WHERE c.teacher.user.id = :userId")
+    List<MatchingCampaign> findByTeacherId(@Param("userId") Long userId);
 
     @Query("SELECT c FROM MatchingCampaign c JOIN c.students s WHERE s.id = :studentId")
     List<MatchingCampaign> findAllByStudentIdInTable(@Param("studentId") Long studentId);

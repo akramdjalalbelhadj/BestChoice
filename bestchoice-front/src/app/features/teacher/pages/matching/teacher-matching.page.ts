@@ -60,7 +60,8 @@ export class MatchingResultsViewPage implements OnInit {
     return Object.values(groups).map(group => {
       const total = group.results.reduce((acc, curr) => acc + +curr.globalScore, 0);
       group.avgScore = (total / group.results.length) * 100;
-      group.results.sort((a, b) => (a.recommendationRank ?? 99) - (b.recommendationRank ?? 99));
+      // Tri par score global décroissant → position = rang de l'étudiant dans ce projet
+      group.results.sort((a, b) => +b.globalScore - +a.globalScore);
       return group;
     }).sort((a, b) => b.avgScore - a.avgScore);
   });

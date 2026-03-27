@@ -14,6 +14,7 @@ public record MatchingResultResponse(
         BigDecimal skillsScore,
         BigDecimal interestsScore,
         Integer recommendationRank,
+        Boolean accepted,
         MatchingAlgorithmType algorithmUsed,
         LocalDateTime calculationDate,
         // Noms enrichis pour l'affichage côté client

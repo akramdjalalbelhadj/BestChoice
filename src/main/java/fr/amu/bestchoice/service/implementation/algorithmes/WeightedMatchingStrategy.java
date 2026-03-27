@@ -54,11 +54,35 @@ public class WeightedMatchingStrategy implements MatchingStrategy {
                 }
             }
 
+            // Rang par étudiant : quel projet/option est le mieux adapté pour lui
             studentResults.sort((a, b) -> b.getGlobalScore().compareTo(a.getGlobalScore()));
             for (int i = 0; i < studentResults.size(); i++) {
                 studentResults.get(i).setRecommendationRank(i + 1);
             }
             allResults.addAll(studentResults);
+        }
+
+        // ── Calcul de l'acceptance par capacité ──────────────────────────────
+        // Pour chaque projet/option, trier les étudiants par score DESC
+        // et marquer les X premiers (maxStudents) comme accepted = true
+        if (campaign.getCampaignType() == MatchingCampaignType.PROJECT) {
+            for (Project p : campaign.getProjects()) {
+                int capacity = p.getMaxStudents() != null ? p.getMaxStudents() : 1;
+                allResults.stream()
+                    .filter(r -> r.getProject() != null && r.getProject().getId().equals(p.getId()))
+                    .sorted((a, b) -> b.getGlobalScore().compareTo(a.getGlobalScore()))
+                    .limit(capacity)
+                    .forEach(r -> r.setAccepted(true));
+            }
+        } else {
+            for (Subject s : campaign.getSubjects()) {
+                int capacity = s.getMaxStudents() != null ? s.getMaxStudents() : 1;
+                allResults.stream()
+                    .filter(r -> r.getSubject() != null && r.getSubject().getId().equals(s.getId()))
+                    .sorted((a, b) -> b.getGlobalScore().compareTo(a.getGlobalScore()))
+                    .limit(capacity)
+                    .forEach(r -> r.setAccepted(true));
+            }
         }
 
         resultRepository.saveAll(allResults);

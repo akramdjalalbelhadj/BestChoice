@@ -300,13 +300,15 @@ public class ProjectService implements IProjectService {
     private Set<Skill> resolveSkills(Set<String> skillNames) {
         Set<Skill> skills = new HashSet<>();
         for (String skillName : skillNames) {
-            Skill skill = skillRepository.findByName(skillName)
+            String normalized = normalizeSkill(skillName);
+            // Lookup insensible à la casse pour éviter les doublons Java/java
+            Skill skill = skillRepository.findByNameIgnoreCase(normalized)
                     .orElseGet(() -> {
-                        log.info("Création d'une nouvelle compétence : {}", skillName);
-                        return skillRepository.save(Skill.builder().name(skillName).build());
+                        log.info("Création d'une nouvelle compétence : {}", normalized);
+                        return skillRepository.save(Skill.builder().name(normalized).active(true).build());
                     });
             skills.add(skill);
-            log.debug("Compétence résolue : name={}, id={}", skillName, skill.getId());
+            log.debug("Compétence résolue : name={}, id={}", normalized, skill.getId());
         }
         return skills;
     }
@@ -314,15 +316,29 @@ public class ProjectService implements IProjectService {
     private Set<Keyword> resolveKeywords(Set<String> keywordLabels) {
         Set<Keyword> keywords = new HashSet<>();
         for (String label : keywordLabels) {
-            Keyword keyword = keywordRepository.findByLabel(label)
+            String normalized = normalizeKeyword(label);
+            // Lookup insensible à la casse pour éviter les doublons
+            Keyword keyword = keywordRepository.findByLabelIgnoreCase(normalized)
                     .orElseGet(() -> {
-                        log.info("Création d'un nouveau mot-clé : {}", label);
-                        return keywordRepository.save(Keyword.builder().label(label).build());
+                        log.info("Création d'un nouveau mot-clé : {}", normalized);
+                        return keywordRepository.save(Keyword.builder().label(normalized).active(true).build());
                     });
             keywords.add(keyword);
-            log.debug("Mot-clé résolu : label={}, id={}", label, keyword.getId());
+            log.debug("Mot-clé résolu : label={}, id={}", normalized, keyword.getId());
         }
         return keywords;
+    }
+
+    private String normalizeSkill(String name) {
+        if (name == null) return null;
+        String t = name.trim();
+        return t.isEmpty() ? t : Character.toUpperCase(t.charAt(0)) + t.substring(1);
+    }
+
+    private String normalizeKeyword(String label) {
+        if (label == null) return null;
+        String t = label.trim();
+        return t.isEmpty() ? t : Character.toUpperCase(t.charAt(0)) + t.substring(1);
     }
 
     private ProjectResponse toProjectResponse(Project project) {

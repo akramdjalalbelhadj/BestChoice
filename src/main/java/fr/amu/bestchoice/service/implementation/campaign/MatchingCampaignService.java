@@ -29,7 +29,7 @@ public class MatchingCampaignService implements IMatchingCampaignService
     @Override
     @Transactional
     public MatchingCampaignResponse create(MatchingCampaignRequest request) {
-        Teacher teacher = teacherRepository.findById(request.teacherId())
+        Teacher teacher = teacherRepository.findByUserId(request.teacherId())
                 .orElseThrow(() -> new NotFoundException("Enseignant introuvable"));
 
         MatchingCampaign campaign = mapper.toEntity(request);

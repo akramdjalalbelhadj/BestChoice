@@ -16,8 +16,9 @@ import java.util.Optional;
 public interface KeywordRepository extends JpaRepository<Keyword, Long> {
 
     Optional<Keyword> findByLabel(String label);
-    
+    Optional<Keyword> findByLabelIgnoreCase(String label);
     boolean existsByLabel(String label);
+    boolean existsByLabelIgnoreCase(String label);
     
     List<Keyword> findByActiveTrue();
     

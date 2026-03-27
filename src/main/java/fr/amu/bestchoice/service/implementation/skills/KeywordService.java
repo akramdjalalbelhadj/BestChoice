@@ -33,15 +33,17 @@ public class KeywordService implements IKeywordService {
 
     @Transactional
     public KeywordResponse create(KeywordCreateRequest dto) {
-        log.info("Début création mot-clé : label={}", dto.label());
+        String normalizedLabel = normalize(dto.label());
+        log.info("Début création mot-clé : label={}", normalizedLabel);
 
-        // Vérifier que le label n'existe pas déjà
-        if (keywordRepository.existsByLabel(dto.label())) {
-            log.warn("Tentative de création d'un mot-clé existant : label={}", dto.label());
-            throw new BusinessException("Un mot-clé avec le label '" + dto.label() + "' existe déjà");
+        // Vérifier que le label n'existe pas déjà (insensible à la casse)
+        if (keywordRepository.existsByLabelIgnoreCase(normalizedLabel)) {
+            log.warn("Tentative de création d'un mot-clé existant : label={}", normalizedLabel);
+            throw new BusinessException("Un mot-clé avec le label '" + normalizedLabel + "' existe déjà");
         }
 
         Keyword keyword = keywordMapper.toEntity(dto);
+        keyword.setLabel(normalizedLabel);
         log.debug("Keyword mappé : label={}", keyword.getLabel());
 
         Keyword savedKeyword = keywordRepository.save(keyword);
@@ -64,16 +66,18 @@ public class KeywordService implements IKeywordService {
 
         log.debug("Mot-clé trouvé : label={}", keyword.getLabel());
 
-        // Si le label change, vérifier qu'il n'existe pas déjà
-        if (dto.label() != null && !dto.label().equals(keyword.getLabel())) {
-            if (keywordRepository.existsByLabel(dto.label())) {
+        // Si le label change, normaliser et vérifier qu'il n'existe pas déjà (insensible à la casse)
+        if (dto.label() != null && !dto.label().equalsIgnoreCase(keyword.getLabel())) {
+            String normalizedLabel = normalize(dto.label());
+            if (keywordRepository.existsByLabelIgnoreCase(normalizedLabel)) {
                 log.warn("Tentative de modifier vers un label existant : oldLabel={}, newLabel={}",
-                        keyword.getLabel(), dto.label());
-                throw new BusinessException("Un mot-clé avec le label '" + dto.label() + "' existe déjà");
+                        keyword.getLabel(), normalizedLabel);
+                throw new BusinessException("Un mot-clé avec le label '" + normalizedLabel + "' existe déjà");
             }
         }
 
         keywordMapper.updateEntityFromDto(dto, keyword);
+        if (keyword.getLabel() != null) keyword.setLabel(normalize(keyword.getLabel()));
         log.debug("Mot-clé après mise à jour : label={}", keyword.getLabel());
 
         Keyword updatedKeyword = keywordRepository.save(keyword);
@@ -185,5 +189,15 @@ public class KeywordService implements IKeywordService {
 
         Sort sort = Sort.by(direction, sortBy);
         return PageRequest.of(page, size, sort);
+    }
+
+    /**
+     * Normalise un label de mot-clé : trim + première lettre majuscule.
+     */
+    private String normalize(String label) {
+        if (label == null) return null;
+        String trimmed = label.trim();
+        if (trimmed.isEmpty()) return trimmed;
+        return Character.toUpperCase(trimmed.charAt(0)) + trimmed.substring(1);
     }
 }

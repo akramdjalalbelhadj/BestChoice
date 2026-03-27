@@ -147,6 +147,7 @@ public class StableMatchingStrategy implements MatchingStrategy {
                         .interestsWeight(camp.getInterestsWeight())
                         .workTypeWeight(camp.getWorkTypeWeight())
                         .algorithmUsed(MatchingAlgorithmType.STABLE)
+                        .accepted(true)  // Stable matching : assigné = accepté par définition
                         .build());
             }
         });

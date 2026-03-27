@@ -197,10 +197,11 @@ public class SubjectService {
     private Set<Skill> resolveSkills(Set<String> names) {
         Set<Skill> skills = new HashSet<>();
         for (String name : names) {
-            Skill skill = skillRepository.findByName(name)
+            String normalized = normalize(name);
+            Skill skill = skillRepository.findByNameIgnoreCase(normalized)
                     .orElseGet(() -> {
-                        log.info("Création d'une nouvelle compétence : {}", name);
-                        return skillRepository.save(Skill.builder().name(name).build());
+                        log.info("Création d'une nouvelle compétence : {}", normalized);
+                        return skillRepository.save(Skill.builder().name(normalized).active(true).build());
                     });
             skills.add(skill);
         }
@@ -213,14 +214,21 @@ public class SubjectService {
     private Set<Keyword> resolveKeywords(Set<String> names) {
         Set<Keyword> keywords = new HashSet<>();
         for (String name : names) {
-            Keyword keyword = keywordRepository.findByLabel(name)
+            String normalized = normalize(name);
+            Keyword keyword = keywordRepository.findByLabelIgnoreCase(normalized)
                     .orElseGet(() -> {
-                        log.info("Création d'un nouveau mot-clé : {}", name);
-                        return keywordRepository.save(Keyword.builder().label(name).build());
+                        log.info("Création d'un nouveau mot-clé : {}", normalized);
+                        return keywordRepository.save(Keyword.builder().label(normalized).active(true).build());
                     });
             keywords.add(keyword);
         }
         return keywords;
+    }
+
+    private String normalize(String value) {
+        if (value == null) return null;
+        String t = value.trim();
+        return t.isEmpty() ? t : Character.toUpperCase(t.charAt(0)) + t.substring(1);
     }
 
     /**

@@ -84,8 +84,42 @@
   flex: 1;
   min-width: 0;
 
+  .s-name-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.25rem;
+  }
+
+  .badge-accepted {
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    padding: 0.15rem 0.5rem;
+    border-radius: 999px;
+    background: #d1fae5;
+    color: #065f46;
+    border: 1px solid #6ee7b7;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .badge-waitlist {
+    font-size: 0.65rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    padding: 0.15rem 0.5rem;
+    border-radius: 999px;
+    background: #fee2e2;
+    color: #991b1b;
+    border: 1px solid #fca5a5;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
   .s-name {
-    display: block;
     font-weight: 600;
     font-size: 0.875rem;
     color: var(--bc-text);

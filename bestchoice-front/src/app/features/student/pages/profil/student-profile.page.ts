@@ -301,10 +301,10 @@ export class StudentProfilePage implements OnInit {
     const p = this.profile();
     if (p) {
       this.profileForm.patchValue({
-        studyYear: p.studyYear,
+        studyYear: p.studyYear ?? 1,
         preferredWorkTypes: p.preferredWorkTypes,
-        githubUrl: p.githubUrl,
-        linkedinUrl: p.linkedinUrl
+        githubUrl: p.githubUrl ?? '',
+        linkedinUrl: p.linkedinUrl ?? ''
       });
       this.isEditing.set(true);
     }
@@ -331,7 +331,10 @@ export class StudentProfilePage implements OnInit {
   }
 
   saveProfile() {
+    this.profileForm.markAllAsTouched();
     const studentId = this.profile()?.id;
+    if (!studentId) { alert('Profil étudiant non chargé. Rechargez la page.'); return; }
+    if (!this.profileForm.valid) { alert('Veuillez corriger les erreurs du formulaire (ex: année d\'étude invalide).'); return; }
     if (studentId && this.profileForm.valid) {
       this.isSaving.set(true);
 

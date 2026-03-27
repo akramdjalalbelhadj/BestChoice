@@ -12,6 +12,7 @@ export interface MatchingResultResponse {
   skillsScore: number;
   interestsScore: number;
   recommendationRank: number;
+  accepted: boolean;
   algorithmUsed: MatchingAlgorithmType;
   calculationDate: string;
   studentName?: string;

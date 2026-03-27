@@ -46,34 +46,30 @@
           <p>Chargement des statistiques…</p>
         </div>
       } @else if (errorMsg()) {
-        <div class="error-banner">⚠️ {{ errorMsg() }}</div>
+        <div class="error-banner">{{ errorMsg() }}</div>
       } @else if (stats()) {
 
         <!-- ── KPI Row ──────────────────────────────────────── -->
         <div class="kpi-row">
           <div class="kpi-card proj">
-            <div class="kpi-icon">📁</div>
             <div class="kpi-body">
               <span class="kpi-value">{{ stats()!.totalProjects }}</span>
               <span class="kpi-label">Projets</span>
             </div>
           </div>
           <div class="kpi-card subj">
-            <div class="kpi-icon">📋</div>
             <div class="kpi-body">
               <span class="kpi-value">{{ stats()!.totalSubjects }}</span>
               <span class="kpi-label">Options</span>
             </div>
           </div>
           <div class="kpi-card teach">
-            <div class="kpi-icon">👨‍🏫</div>
             <div class="kpi-body">
               <span class="kpi-value">{{ stats()!.totalTeachers }}</span>
               <span class="kpi-label">Enseignants</span>
             </div>
           </div>
           <div class="kpi-card stud">
-            <div class="kpi-icon">🎓</div>
             <div class="kpi-body">
               <span class="kpi-value">{{ stats()!.totalStudents }}</span>
               <span class="kpi-label">Étudiants</span>
@@ -87,7 +83,6 @@
             class="tab-btn"
             [class.active]="activeTab() === 'projects'"
             (click)="activeTab.set('projects')">
-            <span class="tab-icon">📁</span>
             <span class="tab-label">Statistiques Projets</span>
             <span class="tab-badge">{{ stats()!.totalProjects }}</span>
           </button>
@@ -95,7 +90,6 @@
             class="tab-btn"
             [class.active]="activeTab() === 'subjects'"
             (click)="activeTab.set('subjects')">
-            <span class="tab-icon">📋</span>
             <span class="tab-label">Statistiques Options</span>
             <span class="tab-badge subj">{{ stats()!.totalSubjects }}</span>
           </button>
@@ -176,7 +170,7 @@
 
             <!-- Détail enseignants & leurs projets -->
             <div class="section-header sub-header" (click)="teacherProjOpen.set(!teacherProjOpen())">
-              <h3>👨‍🏫 Détail des projets par enseignant</h3>
+              <h3>Détail des projets par enseignant</h3>
               <span class="chevron" [class.open]="teacherProjOpen()">›</span>
             </div>
 
@@ -210,7 +204,7 @@
                             }
                             @if (proj.requiredSkills?.length) {
                               <div class="chip-row">
-                                <span class="chip-section-label">🛠</span>
+                                <span class="chip-section-label">Compétences</span>
                                 @for (sk of proj.requiredSkills; track sk) {
                                   <span class="chip chip-skill">{{ sk }}</span>
                                 }
@@ -218,7 +212,7 @@
                             }
                             @if (proj.keywords?.length) {
                               <div class="chip-row">
-                                <span class="chip-section-label">🏷</span>
+                                <span class="chip-section-label">Mots-clés</span>
                                 @for (kw of proj.keywords; track kw) {
                                   <span class="chip chip-keyword">{{ kw }}</span>
                                 }
@@ -310,7 +304,7 @@
 
             <!-- Détail enseignants & leurs options -->
             <div class="section-header sub-header" (click)="teacherSubjOpen.set(!teacherSubjOpen())">
-              <h3>👨‍🏫 Détail des options par enseignant</h3>
+              <h3>Détail des options par enseignant</h3>
               <span class="chevron" [class.open]="teacherSubjOpen()">›</span>
             </div>
 
@@ -344,7 +338,7 @@
                             }
                             @if (subj.requiredSkills?.length) {
                               <div class="chip-row">
-                                <span class="chip-section-label">🛠</span>
+                                <span class="chip-section-label">Compétences</span>
                                 @for (sk of subj.requiredSkills; track sk) {
                                   <span class="chip chip-skill">{{ sk }}</span>
                                 }
@@ -352,7 +346,7 @@
                             }
                             @if (subj.keywords?.length) {
                               <div class="chip-row">
-                                <span class="chip-section-label">🏷</span>
+                                <span class="chip-section-label">Mots-clés</span>
                                 @for (kw of subj.keywords; track kw) {
                                   <span class="chip chip-keyword">{{ kw }}</span>
                                 }
