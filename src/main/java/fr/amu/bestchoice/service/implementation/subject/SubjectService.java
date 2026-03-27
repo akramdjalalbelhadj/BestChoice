@@ -10,6 +10,7 @@ import fr.amu.bestchoice.repository.SubjectRepository;
 import fr.amu.bestchoice.repository.TeacherRepository;
 import fr.amu.bestchoice.web.dto.subject.SubjectCreateRequest;
 import fr.amu.bestchoice.web.dto.subject.SubjectResponse;
+import fr.amu.bestchoice.web.dto.subject.SubjectUpdateRequest;
 import fr.amu.bestchoice.web.exception.BusinessException;
 import fr.amu.bestchoice.web.exception.NotFoundException;
 import fr.amu.bestchoice.web.mapper.SubjectMapper;
@@ -75,6 +76,41 @@ public class SubjectService {
         log.info("Matière créée avec succès : id={}, title={}", savedSubject.getId(), savedSubject.getTitle());
 
         return subjectMapper.toResponse(savedSubject);
+    }
+
+    // ==================== UPDATE ====================
+
+    @Transactional
+    public SubjectResponse update(Long id, SubjectUpdateRequest dto) {
+        log.info("Mise à jour matière : id={}, title={}", id, dto.title());
+
+        Subject subject = subjectRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Matière introuvable avec l'ID : " + id));
+
+        if (dto.minStudents() != null && dto.maxStudents() != null && dto.minStudents() > dto.maxStudents()) {
+            throw new BusinessException("Le nombre minimum d'étudiants ne peut pas être supérieur au nombre maximum");
+        }
+
+        subject.setTitle(dto.title());
+        subject.setDescription(dto.description());
+        subject.setObjectives(dto.objectives());
+        subject.setWorkTypes(dto.workTypes());
+        subject.setMaxStudents(dto.maxStudents());
+        subject.setMinStudents(dto.minStudents());
+        subject.setCredits(dto.credits());
+        subject.setSemester(dto.semester());
+        subject.setAcademicYear(dto.academicYear());
+
+        if (dto.requiredSkills() != null) {
+            subject.setRequiredSkills(resolveSkills(dto.requiredSkills()));
+        }
+        if (dto.keywords() != null) {
+            subject.setKeywords(resolveKeywords(dto.keywords()));
+        }
+
+        Subject saved = subjectRepository.save(subject);
+        log.info("Matière mise à jour avec succès : id={}", saved.getId());
+        return subjectMapper.toResponse(saved);
     }
 
     // ==================== READ ====================

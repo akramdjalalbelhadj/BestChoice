@@ -248,3 +248,220 @@
   font-size: 0.82rem; color: var(--bc-text-3);
   text-align: center; padding: 1.5rem 0;
 }
+
+
+// ── Sous-header collapsible ─────────────────────────────────────────────────
+.sub-header {
+  margin-top: 1rem;
+  background: var(--bc-bg);
+  border: 1px solid var(--bc-border);
+  border-radius: 10px;
+  h3 { font-size: 0.95rem; margin: 0; }
+}
+
+// ── Grille enseignants / projets ────────────────────────────────────────────
+.teacher-proj-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.25rem;
+  margin-top: 0.75rem;
+}
+
+.teacher-proj-card {
+  background: var(--bc-card);
+  border: 1px solid var(--bc-border);
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,.05);
+}
+
+.teacher-proj-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.9rem 1rem;
+  background: var(--bc-primary-subtle);
+  border-bottom: 1px solid var(--bc-border);
+}
+
+.teacher-avatar {
+  width: 38px; height: 38px;
+  background: var(--bc-primary);
+  color: white;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 800; font-size: 1rem;
+  flex-shrink: 0;
+}
+
+.teacher-proj-name {
+  font-weight: 700;
+  font-size: 0.92rem;
+  color: var(--bc-text);
+}
+
+.teacher-proj-count {
+  font-size: 0.75rem;
+  color: var(--bc-text-2);
+}
+
+// ── Liste projets dans la card ───────────────────────────────────────────────
+.proj-list {
+  padding: 0.5rem 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.proj-item {
+  padding: 0.6rem 0.75rem;
+  border-radius: 10px;
+  background: var(--bc-bg);
+  border: 1px solid var(--bc-border);
+
+  &.inactive {
+    opacity: 0.55;
+  }
+}
+
+.proj-item-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  font-size: 0.83rem;
+  color: var(--bc-text);
+  margin-bottom: 0.4rem;
+}
+
+.proj-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--bc-text-3);
+  flex-shrink: 0;
+  &.active { background: #10b981; }
+}
+
+// ── Chips ────────────────────────────────────────────────────────────────────
+.chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.3rem;
+  margin-top: 0.25rem;
+}
+
+.chip-section-label {
+  font-size: 0.72rem;
+  color: var(--bc-text-3);
+}
+
+.chip {
+  font-size: 0.68rem;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 99px;
+  white-space: nowrap;
+}
+
+.chip-work {
+  background: #ede9fe;
+  color: #6d28d9;
+}
+
+.chip-skill {
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+
+.chip-keyword {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+// ── Variante verte pour les options ──────────────────────────────────────────
+.teacher-proj-header.subj-header {
+  background: #d1fae5;
+}
+
+.teacher-avatar.subj-avatar {
+  background: #10b981;
+}
+
+// ── Tab Bar ──────────────────────────────────────────────────────────────────
+.tab-bar {
+  display: flex;
+  gap: 1rem;
+  margin: 1.5rem 0 0.5rem;
+}
+
+.tab-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  padding: 0.9rem 1.5rem;
+  border-radius: 14px;
+  border: 2px solid var(--bc-border);
+  background: var(--bc-card);
+  cursor: pointer;
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--bc-text-2);
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 6px rgba(0,0,0,.04);
+
+  &:hover {
+    border-color: var(--bc-primary);
+    color: var(--bc-primary);
+    background: var(--bc-primary-subtle);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(98,0,238,.1);
+  }
+
+  &.active {
+    border-color: var(--bc-primary);
+    background: var(--bc-primary);
+    color: white;
+    box-shadow: 0 4px 16px rgba(98,0,238,.3);
+    transform: translateY(-1px);
+
+    .tab-badge {
+      background: rgba(255,255,255,0.25);
+      color: white;
+    }
+  }
+}
+
+.tab-icon {
+  font-size: 1.1rem;
+}
+
+.tab-label {
+  letter-spacing: 0.01em;
+}
+
+.tab-badge {
+  background: var(--bc-primary-subtle);
+  color: var(--bc-primary);
+  font-size: 0.72rem;
+  font-weight: 800;
+  padding: 2px 8px;
+  border-radius: 99px;
+  transition: all 0.2s;
+
+  &.subj {
+    background: #d1fae5;
+    color: #065f46;
+  }
+}
+
+.tab-content {
+  animation: fadeInTab 0.2s ease;
+}
+
+@keyframes fadeInTab {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}

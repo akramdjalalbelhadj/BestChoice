@@ -340,6 +340,10 @@ public class ProjectService implements IProjectService {
                 .map(student -> student.getUser().getEmail())
                 .collect(Collectors.toSet());
 
+        String teacherName = (project.getTeacher() != null && project.getTeacher().getUser() != null)
+                ? project.getTeacher().getUser().getFirstName() + " " + project.getTeacher().getUser().getLastName()
+                : "Inconnu";
+
         return new ProjectResponse(
                 response.id(),
                 response.title(),
@@ -355,11 +359,10 @@ public class ProjectService implements IProjectService {
                 response.academicYear(),
                 response.targetProgram(),
                 response.teacherId(),
-                response.teacherName(),
+                teacherName,
                 skillNames,
                 keywordLabels,
                 studentEmails
-
         );
     }
 

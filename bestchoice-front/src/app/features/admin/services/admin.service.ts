@@ -34,6 +34,40 @@ export interface RegisterResponse {
 
 export interface NameCountEntry { name: string; count: number; }
 
+export interface ProjectSummary {
+  id: number;
+  title: string;
+  workTypes: string[];
+  requiredSkills: string[];
+  keywords: string[];
+  teacherId: number;
+  teacherName: string;
+  active: boolean;
+}
+
+export interface TeacherProjectGroup {
+  teacherName: string;
+  teacherId: number;
+  projects: ProjectSummary[];
+}
+
+export interface SubjectSummary {
+  id: number;
+  title: string;
+  workTypes: string[];
+  requiredSkills: string[];
+  keywords: string[];
+  teacherId: number;
+  teacherName: string;
+  active: boolean;
+}
+
+export interface TeacherSubjectGroup {
+  teacherName: string;
+  teacherId: number;
+  subjects: SubjectSummary[];
+}
+
 export interface AdminStats {
   totalProjects: number;
   activeProjects: number;
@@ -63,6 +97,14 @@ export class AdminService {
 
   getStats(): Observable<AdminStats> {
     return this.http.get<AdminStats>(`${environment.apiBaseUrl}/api/admin/stats`);
+  }
+
+  getAllProjects(): Observable<ProjectSummary[]> {
+    return this.http.get<ProjectSummary[]>(`${environment.apiBaseUrl}/api/projects`);
+  }
+
+  getAllSubjects(): Observable<SubjectSummary[]> {
+    return this.http.get<SubjectSummary[]>(`${environment.apiBaseUrl}/api/subjects/active`);
   }
 
   getAllUsers(): Observable<UserResponse[]> {

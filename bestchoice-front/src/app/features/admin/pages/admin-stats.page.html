@@ -81,160 +81,292 @@
           </div>
         </div>
 
-        <!-- ══════════════════════════════════════════════════ -->
-        <!-- SECTION PROJETS (collapsible)                      -->
-        <!-- ══════════════════════════════════════════════════ -->
-        <div class="section-header" (click)="projOpen.set(!projOpen())">
-          <h2>📁 Projets</h2>
-          <span class="chevron" [class.open]="projOpen()">›</span>
+        <!-- ── Tab Buttons ────────────────────────────────────── -->
+        <div class="tab-bar">
+          <button
+            class="tab-btn"
+            [class.active]="activeTab() === 'projects'"
+            (click)="activeTab.set('projects')">
+            <span class="tab-icon">📁</span>
+            <span class="tab-label">Statistiques Projets</span>
+            <span class="tab-badge">{{ stats()!.totalProjects }}</span>
+          </button>
+          <button
+            class="tab-btn"
+            [class.active]="activeTab() === 'subjects'"
+            (click)="activeTab.set('subjects')">
+            <span class="tab-icon">📋</span>
+            <span class="tab-label">Statistiques Options</span>
+            <span class="tab-badge subj">{{ stats()!.totalSubjects }}</span>
+          </button>
         </div>
 
-        @if (projOpen()) {
-          <div class="charts-row">
+        <!-- ══════════════════════════════════════════════════ -->
+        <!-- TAB PROJETS                                         -->
+        <!-- ══════════════════════════════════════════════════ -->
+        @if (activeTab() === 'projects') {
+          <div class="tab-content">
 
-            <!-- Donut projets -->
-            <div class="content-card donut-card">
-              <div class="card-header"><h3>Actifs / Inactifs</h3></div>
-              <div class="donut-wrap">
-                <div class="donut-container">
-                  <svg viewBox="0 0 36 36" class="donut-svg">
-                    <circle class="donut-bg" cx="18" cy="18" r="15.9" fill="none" stroke-width="3.5"/>
-                    <circle class="donut-fill proj" cx="18" cy="18" r="15.9" fill="none" stroke-width="3.5"
-                            [attr.stroke-dasharray]="projActivePct() + ' ' + (100 - projActivePct())"
-                            transform="rotate(-90 18 18)"/>
-                  </svg>
-                  <div class="donut-center">
-                    <span class="donut-pct">{{ projActivePct() }}%</span>
-                    <span class="donut-lbl">actifs</span>
+            <div class="charts-row">
+              <!-- Donut projets -->
+              <div class="content-card donut-card">
+                <div class="card-header"><h3>Actifs / Inactifs</h3></div>
+                <div class="donut-wrap">
+                  <div class="donut-container">
+                    <svg viewBox="0 0 36 36" class="donut-svg">
+                      <circle class="donut-bg" cx="18" cy="18" r="15.9" fill="none" stroke-width="3.5"/>
+                      <circle class="donut-fill proj" cx="18" cy="18" r="15.9" fill="none" stroke-width="3.5"
+                              [attr.stroke-dasharray]="projActivePct() + ' ' + (100 - projActivePct())"
+                              transform="rotate(-90 18 18)"/>
+                    </svg>
+                    <div class="donut-center">
+                      <span class="donut-pct">{{ projActivePct() }}%</span>
+                      <span class="donut-lbl">actifs</span>
+                    </div>
                   </div>
                 </div>
+                <div class="donut-legend">
+                  <div class="legend-row"><span class="dot primary"></span>Actifs — {{ stats()!.activeProjects }}</div>
+                  <div class="legend-row"><span class="dot muted"></span>Inactifs — {{ stats()!.inactiveProjects }}</div>
+                  <div class="legend-row"><span class="dot warn"></span>Complets — {{ stats()!.completedProjects }}</div>
+                </div>
+                <div class="extra-stat">
+                  <span class="extra-label">Capacité totale</span>
+                  <span class="extra-value">{{ stats()!.totalProjectCapacity }} places</span>
+                </div>
               </div>
-              <div class="donut-legend">
-                <div class="legend-row"><span class="dot primary"></span>Actifs — {{ stats()!.activeProjects }}</div>
-                <div class="legend-row"><span class="dot muted"></span>Inactifs — {{ stats()!.inactiveProjects }}</div>
-                <div class="legend-row"><span class="dot warn"></span>Complets — {{ stats()!.completedProjects }}</div>
-              </div>
-              <div class="extra-stat">
-                <span class="extra-label">Capacité totale</span>
-                <span class="extra-value">{{ stats()!.totalProjectCapacity }} places</span>
+
+              <!-- Barres types de travail projets -->
+              <div class="content-card">
+                <div class="card-header"><h3>Types de travail</h3></div>
+                @if (projWorkTypeBars().length === 0) {
+                  <p class="no-data">Aucune donnée</p>
+                } @else {
+                  <div class="bar-list">
+                    @for (b of projWorkTypeBars(); track b.label) {
+                      <div class="bar-row">
+                        <span class="bar-label">{{ b.label }}</span>
+                        <div class="bar-track"><div class="bar-fill proj" [style.width.%]="b.pct"></div></div>
+                        <span class="bar-count">{{ b.value }}</span>
+                      </div>
+                    }
+                  </div>
+                }
               </div>
             </div>
 
-            <!-- Barres : types de travail projets -->
-            <div class="content-card">
-              <div class="card-header"><h3>Types de travail</h3></div>
-              @if (projWorkTypeBars().length === 0) {
-                <p class="no-data">Aucune donnée</p>
+            <!-- Top enseignants projets -->
+            <div class="content-card wide">
+              <div class="card-header"><h3>Top enseignants — Projets</h3></div>
+              @if (projTeacherBars().length === 0) {
+                <p class="no-data">Aucun enseignant avec des projets</p>
               } @else {
                 <div class="bar-list">
-                  @for (b of projWorkTypeBars(); track b.label) {
-                    <div class="bar-row">
+                  @for (b of projTeacherBars(); track b.label; let i = $index) {
+                    <div class="bar-row ranked">
+                      <span class="rank">{{ i + 1 }}</span>
                       <span class="bar-label">{{ b.label }}</span>
                       <div class="bar-track"><div class="bar-fill proj" [style.width.%]="b.pct"></div></div>
-                      <span class="bar-count">{{ b.value }}</span>
+                      <span class="bar-count">{{ b.value }} projet{{ b.value > 1 ? 's' : '' }}</span>
                     </div>
                   }
                 </div>
               }
             </div>
 
-          </div>
+            <!-- Détail enseignants & leurs projets -->
+            <div class="section-header sub-header" (click)="teacherProjOpen.set(!teacherProjOpen())">
+              <h3>👨‍🏫 Détail des projets par enseignant</h3>
+              <span class="chevron" [class.open]="teacherProjOpen()">›</span>
+            </div>
 
-          <!-- Top enseignants projets -->
-          <div class="content-card wide">
-            <div class="card-header"><h3>Top enseignants — Projets</h3></div>
-            @if (projTeacherBars().length === 0) {
-              <p class="no-data">Aucun enseignant avec des projets</p>
-            } @else {
-              <div class="bar-list">
-                @for (b of projTeacherBars(); track b.label; let i = $index) {
-                  <div class="bar-row ranked">
-                    <span class="rank">{{ i + 1 }}</span>
-                    <span class="bar-label">{{ b.label }}</span>
-                    <div class="bar-track"><div class="bar-fill proj" [style.width.%]="b.pct"></div></div>
-                    <span class="bar-count">{{ b.value }} projet{{ b.value > 1 ? 's' : '' }}</span>
-                  </div>
-                }
-              </div>
+            @if (teacherProjOpen()) {
+              @if (teacherProjectGroups().length === 0) {
+                <p class="no-data">Aucun projet disponible</p>
+              } @else {
+                <div class="teacher-proj-grid">
+                  @for (group of teacherProjectGroups(); track group.teacherId) {
+                    <div class="teacher-proj-card">
+                      <div class="teacher-proj-header">
+                        <div class="teacher-avatar">{{ group.teacherName.charAt(0).toUpperCase() }}</div>
+                        <div>
+                          <div class="teacher-proj-name">{{ group.teacherName }}</div>
+                          <div class="teacher-proj-count">{{ group.projects.length }} projet{{ group.projects.length > 1 ? 's' : '' }}</div>
+                        </div>
+                      </div>
+                      <div class="proj-list">
+                        @for (proj of group.projects; track proj.id) {
+                          <div class="proj-item" [class.inactive]="!proj.active">
+                            <div class="proj-item-title">
+                              <span class="proj-dot" [class.active]="proj.active"></span>
+                              {{ proj.title }}
+                            </div>
+                            @if (proj.workTypes?.length) {
+                              <div class="chip-row">
+                                @for (wt of proj.workTypes; track wt) {
+                                  <span class="chip chip-work">{{ wt }}</span>
+                                }
+                              </div>
+                            }
+                            @if (proj.requiredSkills?.length) {
+                              <div class="chip-row">
+                                <span class="chip-section-label">🛠</span>
+                                @for (sk of proj.requiredSkills; track sk) {
+                                  <span class="chip chip-skill">{{ sk }}</span>
+                                }
+                              </div>
+                            }
+                            @if (proj.keywords?.length) {
+                              <div class="chip-row">
+                                <span class="chip-section-label">🏷</span>
+                                @for (kw of proj.keywords; track kw) {
+                                  <span class="chip chip-keyword">{{ kw }}</span>
+                                }
+                              </div>
+                            }
+                          </div>
+                        }
+                      </div>
+                    </div>
+                  }
+                </div>
+              }
             }
+
           </div>
         }
 
         <!-- ══════════════════════════════════════════════════ -->
-        <!-- SECTION OPTIONS (collapsible)                      -->
+        <!-- TAB OPTIONS                                         -->
         <!-- ══════════════════════════════════════════════════ -->
-        <div class="section-header" (click)="subjOpen.set(!subjOpen())">
-          <h2>📋 Options</h2>
-          <span class="chevron" [class.open]="subjOpen()">›</span>
-        </div>
+        @if (activeTab() === 'subjects') {
+          <div class="tab-content">
 
-        @if (subjOpen()) {
-          <div class="charts-row">
-
-            <!-- Donut options -->
-            <div class="content-card donut-card">
-              <div class="card-header"><h3>Actifs / Inactifs</h3></div>
-              <div class="donut-wrap">
-                <div class="donut-container">
-                  <svg viewBox="0 0 36 36" class="donut-svg">
-                    <circle class="donut-bg" cx="18" cy="18" r="15.9" fill="none" stroke-width="3.5"/>
-                    <circle class="donut-fill subj" cx="18" cy="18" r="15.9" fill="none" stroke-width="3.5"
-                            [attr.stroke-dasharray]="subjActivePct() + ' ' + (100 - subjActivePct())"
-                            transform="rotate(-90 18 18)"/>
-                  </svg>
-                  <div class="donut-center">
-                    <span class="donut-pct">{{ subjActivePct() }}%</span>
-                    <span class="donut-lbl">actifs</span>
+            <div class="charts-row">
+              <!-- Donut options -->
+              <div class="content-card donut-card">
+                <div class="card-header"><h3>Actifs / Inactifs</h3></div>
+                <div class="donut-wrap">
+                  <div class="donut-container">
+                    <svg viewBox="0 0 36 36" class="donut-svg">
+                      <circle class="donut-bg" cx="18" cy="18" r="15.9" fill="none" stroke-width="3.5"/>
+                      <circle class="donut-fill subj" cx="18" cy="18" r="15.9" fill="none" stroke-width="3.5"
+                              [attr.stroke-dasharray]="subjActivePct() + ' ' + (100 - subjActivePct())"
+                              transform="rotate(-90 18 18)"/>
+                    </svg>
+                    <div class="donut-center">
+                      <span class="donut-pct">{{ subjActivePct() }}%</span>
+                      <span class="donut-lbl">actifs</span>
+                    </div>
                   </div>
                 </div>
+                <div class="donut-legend">
+                  <div class="legend-row"><span class="dot subj"></span>Actifs — {{ stats()!.activeSubjects }}</div>
+                  <div class="legend-row"><span class="dot muted"></span>Inactifs — {{ stats()!.inactiveSubjects }}</div>
+                </div>
+                <div class="extra-stat">
+                  <span class="extra-label">Capacité totale</span>
+                  <span class="extra-value">{{ stats()!.totalSubjectCapacity }} places</span>
+                </div>
               </div>
-              <div class="donut-legend">
-                <div class="legend-row"><span class="dot subj"></span>Actifs — {{ stats()!.activeSubjects }}</div>
-                <div class="legend-row"><span class="dot muted"></span>Inactifs — {{ stats()!.inactiveSubjects }}</div>
-              </div>
-              <div class="extra-stat">
-                <span class="extra-label">Capacité totale</span>
-                <span class="extra-value">{{ stats()!.totalSubjectCapacity }} places</span>
+
+              <!-- Barres types de travail options -->
+              <div class="content-card">
+                <div class="card-header"><h3>Types de travail</h3></div>
+                @if (subjWorkTypeBars().length === 0) {
+                  <p class="no-data">Aucune donnée</p>
+                } @else {
+                  <div class="bar-list">
+                    @for (b of subjWorkTypeBars(); track b.label) {
+                      <div class="bar-row">
+                        <span class="bar-label">{{ b.label }}</span>
+                        <div class="bar-track"><div class="bar-fill subj" [style.width.%]="b.pct"></div></div>
+                        <span class="bar-count">{{ b.value }}</span>
+                      </div>
+                    }
+                  </div>
+                }
               </div>
             </div>
 
-            <!-- Barres : types de travail options -->
-            <div class="content-card">
-              <div class="card-header"><h3>Types de travail</h3></div>
-              @if (subjWorkTypeBars().length === 0) {
-                <p class="no-data">Aucune donnée</p>
+            <!-- Top enseignants options -->
+            <div class="content-card wide">
+              <div class="card-header"><h3>Top enseignants — Options</h3></div>
+              @if (subjTeacherBars().length === 0) {
+                <p class="no-data">Aucun enseignant avec des options</p>
               } @else {
                 <div class="bar-list">
-                  @for (b of subjWorkTypeBars(); track b.label) {
-                    <div class="bar-row">
+                  @for (b of subjTeacherBars(); track b.label; let i = $index) {
+                    <div class="bar-row ranked">
+                      <span class="rank">{{ i + 1 }}</span>
                       <span class="bar-label">{{ b.label }}</span>
                       <div class="bar-track"><div class="bar-fill subj" [style.width.%]="b.pct"></div></div>
-                      <span class="bar-count">{{ b.value }}</span>
+                      <span class="bar-count">{{ b.value }} option{{ b.value > 1 ? 's' : '' }}</span>
                     </div>
                   }
                 </div>
               }
             </div>
 
-          </div>
+            <!-- Détail enseignants & leurs options -->
+            <div class="section-header sub-header" (click)="teacherSubjOpen.set(!teacherSubjOpen())">
+              <h3>👨‍🏫 Détail des options par enseignant</h3>
+              <span class="chevron" [class.open]="teacherSubjOpen()">›</span>
+            </div>
 
-          <!-- Top enseignants options -->
-          <div class="content-card wide">
-            <div class="card-header"><h3>Top enseignants — Options</h3></div>
-            @if (subjTeacherBars().length === 0) {
-              <p class="no-data">Aucun enseignant avec des options</p>
-            } @else {
-              <div class="bar-list">
-                @for (b of subjTeacherBars(); track b.label; let i = $index) {
-                  <div class="bar-row ranked">
-                    <span class="rank">{{ i + 1 }}</span>
-                    <span class="bar-label">{{ b.label }}</span>
-                    <div class="bar-track"><div class="bar-fill subj" [style.width.%]="b.pct"></div></div>
-                    <span class="bar-count">{{ b.value }} option{{ b.value > 1 ? 's' : '' }}</span>
-                  </div>
-                }
-              </div>
+            @if (teacherSubjOpen()) {
+              @if (teacherSubjectGroups().length === 0) {
+                <p class="no-data">Aucune option disponible</p>
+              } @else {
+                <div class="teacher-proj-grid">
+                  @for (group of teacherSubjectGroups(); track group.teacherId) {
+                    <div class="teacher-proj-card">
+                      <div class="teacher-proj-header subj-header">
+                        <div class="teacher-avatar subj-avatar">{{ group.teacherName.charAt(0).toUpperCase() }}</div>
+                        <div>
+                          <div class="teacher-proj-name">{{ group.teacherName }}</div>
+                          <div class="teacher-proj-count">{{ group.subjects.length }} option{{ group.subjects.length > 1 ? 's' : '' }}</div>
+                        </div>
+                      </div>
+                      <div class="proj-list">
+                        @for (subj of group.subjects; track subj.id) {
+                          <div class="proj-item" [class.inactive]="!subj.active">
+                            <div class="proj-item-title">
+                              <span class="proj-dot" [class.active]="subj.active"></span>
+                              {{ subj.title }}
+                            </div>
+                            @if (subj.workTypes?.length) {
+                              <div class="chip-row">
+                                @for (wt of subj.workTypes; track wt) {
+                                  <span class="chip chip-work">{{ wt }}</span>
+                                }
+                              </div>
+                            }
+                            @if (subj.requiredSkills?.length) {
+                              <div class="chip-row">
+                                <span class="chip-section-label">🛠</span>
+                                @for (sk of subj.requiredSkills; track sk) {
+                                  <span class="chip chip-skill">{{ sk }}</span>
+                                }
+                              </div>
+                            }
+                            @if (subj.keywords?.length) {
+                              <div class="chip-row">
+                                <span class="chip-section-label">🏷</span>
+                                @for (kw of subj.keywords; track kw) {
+                                  <span class="chip chip-keyword">{{ kw }}</span>
+                                }
+                              </div>
+                            }
+                          </div>
+                        }
+                      </div>
+                    </div>
+                  }
+                </div>
+              }
             }
+
           </div>
         }
 

@@ -4,7 +4,8 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
-import { AdminService, AdminStats } from '../services/admin.service';
+import { forkJoin } from 'rxjs';
+import { AdminService, AdminStats, ProjectSummary, TeacherProjectGroup, SubjectSummary, TeacherSubjectGroup } from '../services/admin.service';
 import { AuthStore } from '../../../core/auth/auth.store';
 import { ThemeToggleComponent } from '../../../shared/theme-toggle.component';
 
@@ -30,12 +31,15 @@ export class AdminStatsPage implements OnInit {
   private readonly router       = inject(Router);
   private readonly cdr          = inject(ChangeDetectorRef);
 
-  stats     = signal<AdminStats | null>(null);
-  isLoading = signal(true);
-  errorMsg  = signal<string | null>(null);
+  stats       = signal<AdminStats | null>(null);
+  allProjects = signal<ProjectSummary[]>([]);
+  allSubjects = signal<SubjectSummary[]>([]);
+  isLoading   = signal(true);
+  errorMsg    = signal<string | null>(null);
 
-  projOpen = signal(true);
-  subjOpen = signal(true);
+  activeTab       = signal<'projects' | 'subjects'>('projects');
+  teacherProjOpen = signal(true);
+  teacherSubjOpen = signal(true);
 
   initials = computed(() => {
     const name = this.auth.displayName();
@@ -67,6 +71,28 @@ export class AdminStatsPage implements OnInit {
   projSemesterBars = computed(() => this.toBars(this.stats()?.projectsBySemester ?? {}, false));
   subjSemesterBars = computed(() => this.toBars(this.stats()?.subjectsBySemester ?? {}, false));
 
+  teacherProjectGroups = computed<TeacherProjectGroup[]>(() => {
+    const projects = this.allProjects();
+    const map = new Map<string, TeacherProjectGroup>();
+    for (const p of projects) {
+      const key = p.teacherName ?? 'Inconnu';
+      if (!map.has(key)) map.set(key, { teacherName: key, teacherId: p.teacherId, projects: [] });
+      map.get(key)!.projects.push(p);
+    }
+    return Array.from(map.values()).sort((a, b) => b.projects.length - a.projects.length);
+  });
+
+  teacherSubjectGroups = computed<TeacherSubjectGroup[]>(() => {
+    const subjects = this.allSubjects();
+    const map = new Map<string, TeacherSubjectGroup>();
+    for (const s of subjects) {
+      const key = s.teacherName ?? 'Inconnu';
+      if (!map.has(key)) map.set(key, { teacherName: key, teacherId: s.teacherId, subjects: [] });
+      map.get(key)!.subjects.push(s);
+    }
+    return Array.from(map.values()).sort((a, b) => b.subjects.length - a.subjects.length);
+  });
+
   projTeacherBars = computed(() => {
     const entries = this.stats()?.topTeachersByProjects ?? [];
     const max = Math.max(...entries.map(e => e.count), 1);
@@ -85,9 +111,23 @@ export class AdminStatsPage implements OnInit {
 
   private load() {
     this.isLoading.set(true);
-    this.adminService.getStats().subscribe({
-      next: s  => { this.stats.set(s); this.isLoading.set(false); this.cdr.markForCheck(); },
-      error: () => { this.errorMsg.set('Impossible de charger les statistiques.'); this.isLoading.set(false); this.cdr.markForCheck(); }
+    forkJoin({
+      stats:    this.adminService.getStats(),
+      projects: this.adminService.getAllProjects(),
+      subjects: this.adminService.getAllSubjects()
+    }).subscribe({
+      next: ({ stats, projects, subjects }) => {
+        this.stats.set(stats);
+        this.allProjects.set(projects);
+        this.allSubjects.set(subjects);
+        this.isLoading.set(false);
+        this.cdr.markForCheck();
+      },
+      error: () => {
+        this.errorMsg.set('Impossible de charger les statistiques.');
+        this.isLoading.set(false);
+        this.cdr.markForCheck();
+      }
     });
   }
 

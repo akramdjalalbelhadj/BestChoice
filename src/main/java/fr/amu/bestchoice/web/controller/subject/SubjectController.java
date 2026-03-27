@@ -4,6 +4,7 @@ import fr.amu.bestchoice.service.implementation.subject.SubjectService;
 import fr.amu.bestchoice.web.dto.PageResponseDto;
 import fr.amu.bestchoice.web.dto.subject.SubjectCreateRequest;
 import fr.amu.bestchoice.web.dto.subject.SubjectResponse;
+import fr.amu.bestchoice.web.dto.subject.SubjectUpdateRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -117,6 +118,20 @@ public class SubjectController {
     }
 
 
+
+    // ==================== UPDATE ====================
+
+    @Operation(summary = "Modifier une matière existante")
+    @PutMapping("/{id}")
+    public ResponseEntity<SubjectResponse> update(
+            @PathVariable Long id,
+            @Valid @RequestBody SubjectUpdateRequest request) {
+
+        log.info("PUT /api/subjects/{} - Modification de la matière", id);
+        SubjectResponse updated = subjectService.update(id, request);
+        log.info("PUT /api/subjects/{} - Matière modifiée avec succès", id);
+        return ResponseEntity.ok(updated);
+    }
 
     // ==================== ACTIVATION / DÉSACTIVATION ====================
 
