@@ -103,7 +103,7 @@
               <div class="preview-item">
                 <div class="item-main">
                   <span class="title">{{ p.title }}</span>
-                  <span class="subtitle">{{ p.workTypes?.join(', ') || 'Type non spécifié' }}</span>
+                  <span class="subtitle">{{ p.workTypes.join(', ') || 'Type non spécifié' }}</span>
                 </div>
                 <span class="badge" [class.published]="p.active">
                   {{ p.active ? 'Public' : 'Brouillon' }}
@@ -132,7 +132,7 @@
               <div class="preview-item">
                 <div class="item-main">
                   <span class="title">{{ s.title }}</span>
-                  <span class="subtitle">{{ s.maxStudents }} places • {{ s.workTypes?.join(', ') || 'Type non spécifié' }}</span>
+                  <span class="subtitle">{{ s.maxStudents }} places • {{ s.workTypes.join(', ') || 'Type non spécifié' }}</span>
                 </div>
                 <div class="capacity-tag">{{ s.maxStudents }} places</div>
               </div>

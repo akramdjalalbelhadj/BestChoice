@@ -88,7 +88,7 @@
                     <td class="col-main">
                       <span class="s-title">{{ s.title }}</span>
                       <div class="s-keywords">
-                        @for (k of (s.keywords ?? []); track k) {
+                        @for (k of s.keywords; track k) {
                           <span class="k-tag">#{{ k }}</span>
                         }
                       </div>
@@ -102,11 +102,11 @@
                     </td>
                     <td>
                       <div class="skill-bubbles">
-                        @for (sk of (s.requiredSkills ?? []).slice(0, 2); track sk) {
+                        @for (sk of s.requiredSkills.slice(0, 2); track sk) {
                           <span class="skill-pill">{{ sk }}</span>
                         }
-                        @if ((s.requiredSkills?.length ?? 0) > 2) {
-                          <span class="s-more">+{{ (s.requiredSkills?.length ?? 0) - 2 }}</span>
+                        @if (s.requiredSkills.length > 2) {
+                          <span class="s-more">+{{ s.requiredSkills.length - 2 }}</span>
                         }
                       </div>
                     </td>

@@ -195,14 +195,14 @@
                               <span class="proj-dot" [class.active]="proj.active"></span>
                               {{ proj.title }}
                             </div>
-                            @if (proj.workTypes?.length) {
+                            @if (proj.workTypes.length) {
                               <div class="chip-row">
                                 @for (wt of proj.workTypes; track wt) {
                                   <span class="chip chip-work">{{ wt }}</span>
                                 }
                               </div>
                             }
-                            @if (proj.requiredSkills?.length) {
+                            @if (proj.requiredSkills.length) {
                               <div class="chip-row">
                                 <span class="chip-section-label">Compétences</span>
                                 @for (sk of proj.requiredSkills; track sk) {
@@ -210,7 +210,7 @@
                                 }
                               </div>
                             }
-                            @if (proj.keywords?.length) {
+                            @if (proj.keywords.length) {
                               <div class="chip-row">
                                 <span class="chip-section-label">Mots-clés</span>
                                 @for (kw of proj.keywords; track kw) {
@@ -329,14 +329,14 @@
                               <span class="proj-dot" [class.active]="subj.active"></span>
                               {{ subj.title }}
                             </div>
-                            @if (subj.workTypes?.length) {
+                            @if (subj.workTypes.length) {
                               <div class="chip-row">
                                 @for (wt of subj.workTypes; track wt) {
                                   <span class="chip chip-work">{{ wt }}</span>
                                 }
                               </div>
                             }
-                            @if (subj.requiredSkills?.length) {
+                            @if (subj.requiredSkills.length) {
                               <div class="chip-row">
                                 <span class="chip-section-label">Compétences</span>
                                 @for (sk of subj.requiredSkills; track sk) {
@@ -344,7 +344,7 @@
                                 }
                               </div>
                             }
-                            @if (subj.keywords?.length) {
+                            @if (subj.keywords.length) {
                               <div class="chip-row">
                                 <span class="chip-section-label">Mots-clés</span>
                                 @for (kw of subj.keywords; track kw) {

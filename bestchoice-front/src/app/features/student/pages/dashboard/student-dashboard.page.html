@@ -95,7 +95,7 @@
           } @else {
             @for (match of topMatches(); track match.id) {
               <div class="match-item" [class.top-match]="match.accepted">
-                <div class="rank-badge">#{{ match.recommendationRank ?? ($index + 1) }}</div>
+                <div class="rank-badge">#{{ match.recommendationRank }}</div>
                 <div class="score-pill" [class.high]="(+match.globalScore) >= 0.7"
                                         [class.medium]="(+match.globalScore) >= 0.4 && (+match.globalScore) < 0.7">
                   {{ (+match.globalScore * 100).toFixed(0) }}%
